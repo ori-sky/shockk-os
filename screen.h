@@ -7,9 +7,11 @@
 
 #define SCREEN_XYTOL(X, Y) ((X) + (Y) * SCREEN_X)
 
+unsigned short screen_get_cursor(void);
 void screen_cursor_to(unsigned short);
-void screen_write_to(unsigned short, unsigned char);
-void screen_write(unsigned char);
+void screen_writec_to(unsigned short, unsigned char);
+void screen_writec(unsigned char);
+void screen_putc(unsigned char);
 void screen_clear(void);
 
 #endif
