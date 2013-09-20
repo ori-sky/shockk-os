@@ -31,13 +31,13 @@ mov cr0,eax
 ; make far jump to clear 16-bit instructions from pipeline
 ; code segment is first segment after null segment
 ; multiply by 8 to get segment identifier
-; TODO: broken!
 jmp 0x8:clear_pipe
 
 [BITS 32]
 clear_pipe:
 
 ; set data segment and stack segment to segment identifier 0x8
+; TODO: broken
 mov ax,0x8
 mov ds,ax
 mov ss,ax
@@ -123,9 +123,9 @@ gdt_end:
 
 gdt_desc:
 ; [0-15]  gdt size in bytes
-db gdt_end - gdt
+dw gdt_end - gdt
 ; [16-47] gdt memory address
-dw gdt
+dd gdt
 
 ; fill with zeros
 times 510-($-$$) db 0
