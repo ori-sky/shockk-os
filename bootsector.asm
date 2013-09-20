@@ -36,9 +36,8 @@ jmp 0x8:clear_pipe
 [BITS 32]
 clear_pipe:
 
-; set data segment and stack segment to segment identifier 0x8
-; TODO: broken
-mov ax,0x8
+; set data segment and stack segment to data segment identifier
+mov ax,0x10
 mov ds,ax
 mov ss,ax
 
