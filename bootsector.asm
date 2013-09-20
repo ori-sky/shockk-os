@@ -97,9 +97,6 @@ mov byte[0xB8001],0b00011011
 ; jump to kernel
 jmp 0x8:0x1000
 
-; loop
-jmp $
-
 ; global descriptor table
 gdt:
 
