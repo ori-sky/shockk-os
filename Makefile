@@ -16,25 +16,25 @@ KERNEL_OBJECTS=$(KERNEL_SOURCES:.c=.o)
 KERNEL_OBJECT=kernel.o
 KERNEL_BIN=kernel.bin
 
-all: bootsector kernel
+all: image
 
 run-qemu: bootsector
-	qemu -fda $(BOOTSECTOR_BIN)
+	qemu -fda $(IMAGE)
 
 clean:
 	rm -f $(BOOTSECTOR_BIN)
-	rm -f $ ($(KERNEL_OBJECTS) $(KERNEL_OBJECT) $(KERNEL_BIN)
+	rm -f $ $(KERNEL_OBJECTS) $(KERNEL_OBJECT) $(KERNEL_BIN)
 
-# TODO: combine into one file $(IMAGE)
 image: bootsector kernel
+	cat $(BOOTSECTOR_BIN) $(KERNEL_BIN) > $(IMAGE)
 
 bootsector:
 	nasm $(BOOTSECTOR_FLAGS) $(BOOTSECTOR_MAIN) -o $(BOOTSECTOR_BIN)
 
 kernel: $(KERNEL_OBJECTS)
 	$(CC) -ffreestanding $(CFLAGS) $(KERNEL_MAIN_SOURCE) -o $(KERNEL_MAIN_OBJECT)
-	ld $(KERNEL_LDFLAGS) -e $(KERNEL_ENTRY) -Ttext $(KERNEL_ORIGIN) -o $(KERNEL_OUTPUT) $(KERNEL_MAIN_OBJECT) $@
-	ld $(KERNEL_LDFLAGS) -e $(KERNEL_ENTRY) -Ttext $(KERNEL_ORIGIN) -o $(KERNEL_OBJECT) $(KERNEL_MAIN_OBJECT) $@ -i
+	ld $(KERNEL_LDFLAGS) -e $(KERNEL_ENTRY) -Ttext $(KERNEL_ORIGIN) -o $(KERNEL_OBJECT) $(KERNEL_MAIN_OBJECT) $(KERNEL_OBJECTS)
+	ld $(KERNEL_LDFLAGS) -e $(KERNEL_ENTRY) -Ttext $(KERNEL_ORIGIN) -o $(KERNEL_OBJECT) $(KERNEL_MAIN_OBJECT) $(KERNEL_OBJECTS) -i
 	objcopy -R .note -R .comment -S -O binary $(KERNEL_OBJECT) $(KERNEL_BIN)
 
 .c.o:
