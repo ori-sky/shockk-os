@@ -22,8 +22,8 @@ mov bx,0x1000
 ; command: read sector from disk
 mov ah,0x2
 
-; read 2 sectors
-mov al,0x2
+; read kernel sectors
+mov al,0x3
 
 ; disk cylinder
 xor ch,ch
