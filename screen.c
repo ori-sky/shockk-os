@@ -21,26 +21,26 @@ void screen_cursor_to(unsigned short location)
 	ports_out(0x3D5, location & 0xFF);
 }
 
-void screen_writec_to(unsigned short location, unsigned char c)
+void screen_writec_to(unsigned short location, char c)
 {
 	long offset = location * 2;
 	unsigned char *vidmem = (unsigned char *)(0xB8000 + offset);
 	*vidmem = c;
 }
 
-void screen_writec(unsigned char c)
+void screen_writec(char c)
 {
 	screen_writec_to(screen_get_cursor(), c);
 }
 
-void screen_putc(unsigned char c)
+void screen_putc(char c)
 {
 	screen_writec(c);
 	// TODO: prevent framebuffer overflows
 	screen_cursor_to(screen_get_cursor() + 1);
 }
 
-void screen_puts(unsigned char *s)
+void screen_puts(char *s)
 {
 	for(long i=0; s[i]!=0; ++i)
 	{

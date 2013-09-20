@@ -9,10 +9,10 @@
 
 unsigned short screen_get_cursor(void);
 void screen_cursor_to(unsigned short);
-void screen_writec_to(unsigned short, unsigned char);
-void screen_writec(unsigned char);
-void screen_putc(unsigned char);
-void screen_puts(unsigned char *);
+void screen_writec_to(unsigned short, char);
+void screen_writec(char);
+void screen_putc(char);
+void screen_puts(char *);
 void screen_clear(void);
 
 #endif
