@@ -4,9 +4,9 @@
 void screen_cursor_to(unsigned short location)
 {
 	ports_out(0x3D4, 14);
-	ports_out(0x3D5, location & 0xFF);
-	ports_out(0x3D4, 15);
 	ports_out(0x3D5, (location >> 8) & 0xFF);
+	ports_out(0x3D4, 15);
+	ports_out(0x3D5, location & 0xFF);
 }
 
 void screen_clear(void)
@@ -18,6 +18,4 @@ void screen_clear(void)
 		*vidmem++ = 0;
 		*vidmem++ = 0xF;
 	}
-
-	screen_cursor_to(0);
 }
