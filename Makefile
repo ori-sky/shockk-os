@@ -6,8 +6,8 @@ BOOTSECTOR_MAIN=bootsector.asm
 BOOTSECTOR_BIN=bootsector.bin
 
 KERNEL_CC=gcc
-KERNEL_CFLAGS=-c -Wall --std=c99 -g -O0
-KERNEL_LDFLAGS=
+KERNEL_CFLAGS=-m32 -c -Wall --std=c99 -g -O0
+KERNEL_LDFLAGS=-melf_i386
 KERNEL_MAIN_SOURCE=main.c
 KERNEL_MAIN_OBJECT=main.o
 KERNEL_ENTRY=main
@@ -20,7 +20,7 @@ KERNEL_BIN=kernel.bin
 all: image floppy
 
 run-qemu: image
-	qemu -fda $(IMAGE)
+	qemu -s -fda $(IMAGE)
 
 clean:
 	rm -f $(BOOTSECTOR_BIN)
@@ -37,7 +37,7 @@ bootsector:
 	nasm $(BOOTSECTOR_FLAGS) $(BOOTSECTOR_MAIN) -o $(BOOTSECTOR_BIN)
 
 kernel: $(KERNEL_OBJECTS)
-	$(KERNEL_CC) -ffreestanding $(CFLAGS) $(KERNEL_MAIN_SOURCE) -o $(KERNEL_MAIN_OBJECT)
+	$(KERNEL_CC) -ffreestanding $(KERNEL_CFLAGS) $(KERNEL_MAIN_SOURCE) -o $(KERNEL_MAIN_OBJECT)
 	ld $(KERNEL_LDFLAGS) -e $(KERNEL_ENTRY) -Ttext $(KERNEL_ORIGIN) -o $(KERNEL_OBJECT) $(KERNEL_MAIN_OBJECT) $(KERNEL_OBJECTS)
 	ld $(KERNEL_LDFLAGS) -e $(KERNEL_ENTRY) -Ttext $(KERNEL_ORIGIN) -o $(KERNEL_OBJECT) $(KERNEL_MAIN_OBJECT) $(KERNEL_OBJECTS) -i
 	objcopy -R .note -R .comment -S -O binary $(KERNEL_OBJECT) $(KERNEL_BIN)
