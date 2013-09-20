@@ -4,7 +4,7 @@
 reset_drive:
 
 ; command: reset drive
-mov ah,0
+xor ah,ah
 
 ; interrupt: hard disk
 int 0x13
