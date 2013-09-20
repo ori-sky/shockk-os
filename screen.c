@@ -40,6 +40,14 @@ void screen_putc(unsigned char c)
 	screen_cursor_to(screen_get_cursor() + 1);
 }
 
+void screen_puts(unsigned char *s)
+{
+	for(long i=0; s[i]!=0; ++i)
+	{
+		screen_putc(s[i]);
+	}
+}
+
 void screen_clear(void)
 {
 	unsigned char *vidmem = (unsigned char *)0xB8000;
