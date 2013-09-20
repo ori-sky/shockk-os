@@ -4,6 +4,10 @@ void main(void)
 {
 	screen_clear();
 	screen_cursor_to(SCREEN_XYTOL(0, 4));
-	screen_write('a');
+	screen_putc('h');
+	screen_putc('e');
+	screen_putc('l');
+	screen_putc('l');
+	screen_putc('o');
 	for(;;);
 }
