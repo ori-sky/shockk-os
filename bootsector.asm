@@ -4,14 +4,14 @@
 reset_drive:
 
 ; command: reset drive
-;mov ah,0
+mov ah,0
 
 ; interrupt: hard disk
-;int 0x13
+int 0x13
 	
 ; if error not zero, retry
-;or ah,ah
-;jnz reset_drive
+or ah,ah
+jnz reset_drive
 
 ; command: print character
 mov ah,0x0E
