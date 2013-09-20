@@ -5,7 +5,7 @@ SECTIONS
 	{
 		code = .; _code = .; __code = .;
 		*(.text)
-		. = ALIGN(4096);
+		. = ALIGN(512);
 	}
 
 	.data :
@@ -13,14 +13,14 @@ SECTIONS
 		data = .; _data = .; __data = .;
 		*(.data)
 		*(.rodata)
-		. = ALIGN(4096);
+		. = ALIGN(512);
 	}
 
 	.bss :
 	{
 		bss = .; _bss = .; _bss = .;
 		*(.bss)
-		. = ALIGN(4096);
+		. = ALIGN(512);
 	}
 
 	end = .; _end = .; __end = .;
