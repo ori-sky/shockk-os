@@ -1,4 +1,5 @@
 IMAGE=os.img
+FLOPPY_IMAGE=floppy.img
 
 BOOTSECTOR_FLAGS=-f bin
 BOOTSECTOR_MAIN=bootsector.asm
@@ -16,9 +17,9 @@ KERNEL_OBJECTS=$(KERNEL_SOURCES:.c=.o)
 KERNEL_OBJECT=kernel.o
 KERNEL_BIN=kernel.bin
 
-all: image
+all: image floppy
 
-run-qemu: bootsector
+run-qemu: image
 	qemu -fda $(IMAGE)
 
 clean:
@@ -27,6 +28,10 @@ clean:
 
 image: bootsector kernel
 	cat $(BOOTSECTOR_BIN) $(KERNEL_BIN) > $(IMAGE)
+
+floppy: image
+	dd bs=512 count=2820 if=/dev/zero of=$(FLOPPY_IMAGE)
+	dd conv=notrunc bs=512 if=$(IMAGE) of=$(FLOPPY_IMAGE)
 
 bootsector:
 	nasm $(BOOTSECTOR_FLAGS) $(BOOTSECTOR_MAIN) -o $(BOOTSECTOR_BIN)
