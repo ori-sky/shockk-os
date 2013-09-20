@@ -84,7 +84,7 @@ mov esp,0x90000
 ; frame buffer located at 0xB8000
 ; color text mode, applies to CGA, EGA, VGA
 
-mov byte[0xB8000],'A'
+;mov byte[0xB8000],'A'
 ; [0-3]   foreground color
 ; [4-6]   background color
 ; [7]     blinking flag
@@ -92,7 +92,7 @@ mov byte[0xB8000],'A'
 ;         0xB bright cyan foreground
 ;         0x1 blue background
 ;         0x0 not blinking
-mov byte[0xB8001],0b00011011
+;mov byte[0xB8001],0b00011011
 
 ; jump to kernel
 jmp 0x8:0x1000
