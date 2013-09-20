@@ -22,7 +22,7 @@ mov al,'A'
 mov bh,0x0E
 
 ; page 0
-mov bl,0
+xor bl,bl
 
 ; interrupt: screen
 int 0x10
