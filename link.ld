@@ -12,6 +12,12 @@ SECTIONS
 	{
 		data = .; _data = .; __data = .;
 		*(.data)
+		. = ALIGN(512);
+	}
+
+	.rodata :
+	{
+		rodata = .; _rodata = .; __rodata = .;
 		*(.rodata)
 		. = ALIGN(512);
 	}
