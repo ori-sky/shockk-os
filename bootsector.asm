@@ -13,6 +13,34 @@ int 0x13
 or ah,ah
 jnz reset_drive
 
+; load kernel to 0x1000
+; represented by 0000:1000 in real mode
+xor ax,ax
+mov es,ax
+mov bx,0x1000
+
+; command: read sector from disk
+mov ah,0x2
+
+; read 2 sectors
+mov al,0x2
+
+; disk cylinder
+xor ch,ch
+
+; disk sector - starts at 1
+mov cl,0x2
+
+; disk head
+xor dh,dh
+
+; interrupt: hard disk
+int 0x13
+
+; if error not zero, retry
+or ah,ah
+jnz reset_drive
+
 ; clear interrupts
 cli
 
@@ -65,6 +93,9 @@ mov byte[0xB8000],'A'
 ;         0x1 blue background
 ;         0x0 not blinking
 mov byte[0xB8001],0b00011011
+
+; jump to kernel
+jmp 0x8:0x1000
 
 ; loop
 jmp $
