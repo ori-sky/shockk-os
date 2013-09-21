@@ -133,12 +133,12 @@ dw 0xFFFF
 dw 0
 ; [0-7]   base address bits 16-23
 db 0
-; [8-11] segment type and attributes
-;        [8]  CPU access flag
-;        [9]  segment readable flag
-;        [10] allows less privileged code segments to jump to or call this segment
-;        [11] code segment flag
-;        [12] code or data segment flag
+; [8-11]  segment type and attributes
+;         [8]  CPU access flag
+;         [9]  segment readable flag
+;         [10] allows less privileged code segments to jump to or call this segment
+;         [11] code segment flag
+;         [12] code or data segment flag
 ; [13-14] privilege level - 0 most privileged, 3 least privileged
 ; [15]    segment present flag
 db 0b10011010
@@ -147,7 +147,7 @@ db 0b10011010
 ;         [20] 'Available to System Programmers' flag - ignored by CPU
 ;         [21] reserved
 ;         [22] size flag - protected mode 32-bit and not 16-bit
-; [23] granularity - multiplies segment limit by 4kB
+; [23]    granularity - multiplies segment limit by 4kB
 db 0b11001111
 ; [24-31] base address bits 24-31
 db 0
@@ -156,12 +156,12 @@ gdt_data:
 dw 0xFFFF
 dw 0
 db 0
-; [8-11] segment type and attributes
-;        [8]  CPU access flag
-;        [9]  segment writable flag
-;        [10] expand up flag - expands down if 0
-;        [11] code segment flag
-;        [12] code or data segment flag
+; [8-11]  segment type and attributes
+;         [8]  CPU access flag
+;         [9]  segment writable flag
+;         [10] expand up flag - expands down if 0
+;         [11] code segment flag
+;         [12] code or data segment flag
 ; [13-14] privilege level - 0 most privileged, 3 least privileged
 ; [15]    segment present flag
 db 0b10010010
