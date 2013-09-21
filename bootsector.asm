@@ -15,17 +15,17 @@ jnz reset_drive
 
 ; TODO: load idt into 0x1000
 
-; load kernel intto 0x2000
-; represented by 0000:2000 in real mode
+; load idt into 0x2000
+; represented by 0x0000:0x2000 in real mode
 xor ax,ax
 mov es,ax
-mov bx,0x2000
+mov bx,0x1000
 
 ; command: read sector from disk
 mov ah,0x2
 
-; read kernel sectors
-mov al,0x3
+; read number of idt sectors
+mov al,0x8
 
 ; disk cylinder
 xor ch,ch
@@ -34,7 +34,7 @@ xor ch,ch
 ; [0x1]       boot sector
 ; [0x2-0x9]   idt
 ; [0xA]       kernel
-mov cl,0xA
+mov cl,0x2
 
 ; disk head
 xor dh,dh
@@ -42,7 +42,21 @@ xor dh,dh
 ; interrupt: hard disk
 int 0x13
 
-; if error not zero, retry
+or ah,ah
+jnz reset_drive
+
+; load kernel into 0x2000
+xor ax,ax
+mov es,ax
+mov bx,0x2000
+
+mov ah,0x2
+mov al,0x3
+xor ch,ch
+mov cl,0xA
+xor dh,dh
+int 0x13
+
 or ah,ah
 jnz reset_drive
 
