@@ -24,7 +24,10 @@ run-qemu: image
 
 clean:
 	rm -f $(BOOTSECTOR_BIN)
-	rm -f $ $(KERNEL_OBJECTS) $(KERNEL_OBJECT) $(KERNEL_BIN)
+	rm -f $(KERNEL_BIN)
+	rm -f $(KERNEL_OBJECT)
+	rm -f $(KERNEL_OBJECTS)
+	rm -f $(KERNEL_MAIN_OBJECT)
 
 image: bootsector kernel
 	cat $(BOOTSECTOR_BIN) $(KERNEL_BIN) > $(IMAGE)
