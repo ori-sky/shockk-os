@@ -13,8 +13,6 @@ int 0x13
 or ah,ah
 jnz reset_drive
 
-; TODO: load idt into 0x1000
-
 ; load idt into 0x2000
 ; represented by 0x0000:0x2000 in real mode
 xor ax,ax
@@ -70,6 +68,9 @@ mov ds,ax
 ; load gdt
 lgdt [gdt_desc]
 
+; load idt
+lidt [idt_desc]
+
 ; set cr0 bit 0 to enter protected mode
 mov eax,cr0
 or eax,1
@@ -112,6 +113,8 @@ mov esp,0x90000
 ;         0x1 blue background
 ;         0x0 not blinking
 ;mov byte[0xB8001],0b00011011
+
+sti
 
 ; jump to kernel
 jmp 0x8:0x2000
