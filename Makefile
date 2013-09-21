@@ -5,13 +5,17 @@ BOOTSECTOR_FLAGS=-f bin
 BOOTSECTOR_MAIN=bootsector.asm
 BOOTSECTOR_BIN=bootsector.bin
 
+ASM_FLAGS=-f bin
+ASM_SOURCES=idt.asm
+ASM_BINS=$(ASM_SOURCES:.asm=.bin)
+
 KERNEL_CC=gcc
 KERNEL_CFLAGS=-m32 -c -Wall --std=c99 -g -O0
 KERNEL_LDFLAGS=-melf_i386 -T link.ld
 KERNEL_MAIN_SOURCE=main.c
 KERNEL_MAIN_OBJECT=main.o
 KERNEL_ENTRY=main
-KERNEL_ORIGIN=0x1000
+KERNEL_ORIGIN=0x2000
 KERNEL_SOURCES=ports.c screen.c
 KERNEL_OBJECTS=$(KERNEL_SOURCES:.c=.o)
 KERNEL_OBJECT=kernel.o
@@ -29,8 +33,8 @@ clean:
 	rm -f $(KERNEL_OBJECTS)
 	rm -f $(KERNEL_MAIN_OBJECT)
 
-image: bootsector kernel
-	cat $(BOOTSECTOR_BIN) $(KERNEL_BIN) > $(IMAGE)
+image: bootsector $(ASM_BINS) kernel
+	cat $(BOOTSECTOR_BIN) $(ASM_BINS) $(KERNEL_BIN) > $(IMAGE)
 
 floppy: image
 	dd bs=512 count=2820 if=/dev/zero of=$(FLOPPY_IMAGE)
@@ -39,11 +43,15 @@ floppy: image
 bootsector:
 	nasm $(BOOTSECTOR_FLAGS) $(BOOTSECTOR_MAIN) -o $(BOOTSECTOR_BIN)
 
+asm: $(ASM_BINS)
+
 kernel: $(KERNEL_OBJECTS)
 	$(KERNEL_CC) -ffreestanding $(KERNEL_CFLAGS) $(KERNEL_MAIN_SOURCE) -o $(KERNEL_MAIN_OBJECT)
-	ld $(KERNEL_LDFLAGS) -e $(KERNEL_ENTRY) -Ttext $(KERNEL_ORIGIN) -o $(KERNEL_OBJECT) $(KERNEL_MAIN_OBJECT) $(KERNEL_OBJECTS)
+	ld $(KERNEL_LDFLAGS) -e $(KERNEL_ENTRY) -Ttext $(KERNEL_ORIGIN) -o $(KERNEL_OBJECT) $(KERNEL_MAIN_OBJECT) $^
 	objcopy -R .note -R .comment -S -O binary $(KERNEL_OBJECT) $(KERNEL_BIN)
 
-.c.o:
-	$(KERNEL_CC) $(KERNEL_CFLAGS) $< -o $@
+%.bin: %.asm
+	nasm $(ASM_FLAGS) $^ -o $@
 
+%.o: %.c
+	$(KERNEL_CC) $(KERNEL_CFLAGS) $^ -o $@

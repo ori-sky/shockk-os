@@ -13,11 +13,13 @@ int 0x13
 or ah,ah
 jnz reset_drive
 
-; load kernel to 0x1000
-; represented by 0000:1000 in real mode
+; TODO: load idt into 0x1000
+
+; load kernel intto 0x2000
+; represented by 0000:2000 in real mode
 xor ax,ax
 mov es,ax
-mov bx,0x1000
+mov bx,0x2000
 
 ; command: read sector from disk
 mov ah,0x2
@@ -28,8 +30,11 @@ mov al,0x3
 ; disk cylinder
 xor ch,ch
 
-; disk sector - starts at 1
-mov cl,0x2
+; disk sector
+; [0x1]       boot sector
+; [0x2-0x9]   idt
+; [0xA]       kernel
+mov cl,0xA
 
 ; disk head
 xor dh,dh
@@ -95,7 +100,7 @@ mov esp,0x90000
 ;mov byte[0xB8001],0b00011011
 
 ; jump to kernel
-jmp 0x8:0x1000
+jmp 0x8:0x2000
 
 ; global descriptor table
 gdt:
@@ -153,6 +158,14 @@ gdt_desc:
 dw gdt_end - gdt
 ; [16-47] gdt memory address
 dd gdt
+
+idt_desc:
+; [0-15]  idt size in bytes - min value of 0x100
+;         value of 0x1000 = 0x200 interrupts
+dw 0x1000
+; [16-47] idt memory address
+;         idt loaded into 0x1000
+dd 0x1000
 
 ; fill with zeros
 times 510-($-$$) db 0
