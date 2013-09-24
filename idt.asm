@@ -2,7 +2,7 @@
 %rep 0x200
 
 ; [0-15]  base address bits 0-15
-dw 0x0
+dw 0x2200
 ; [16-31] selector for interrupt code segment
 ;         segment descriptor privilege level must be 0
 dw 0x8
