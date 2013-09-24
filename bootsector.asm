@@ -22,7 +22,7 @@ mov bx,0x1000
 ; command: read sector from disk
 mov ah,0x2
 
-; read number of idt sectors
+; idt sector count + 1 for first stage handler
 mov al,0x8
 
 ; disk cylinder
@@ -30,8 +30,8 @@ xor ch,ch
 
 ; disk sector
 ; [0x1]       boot sector
-; [0x2-0x9]   idt
-; [0xA]       kernel
+; [0x2-0xA]   idt
+; [0xB]       kernel
 mov cl,0x2
 
 ; disk head
@@ -51,7 +51,7 @@ mov bx,0x2000
 mov ah,0x2
 mov al,0x5
 xor ch,ch
-mov cl,0xA
+mov cl,0xB
 xor dh,dh
 int 0x13
 
