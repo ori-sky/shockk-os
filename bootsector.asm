@@ -49,7 +49,7 @@ mov es,ax
 mov bx,0x2000
 
 mov ah,0x2
-mov al,0x3
+mov al,0x5
 xor ch,ch
 mov cl,0xA
 xor dh,dh
@@ -58,7 +58,7 @@ int 0x13
 or ah,ah
 jnz reset_drive
 
-; clear interrupts
+; disable interrupts
 cli
 
 ; lgdt is loaded at ds:gdt_desc so ds must be set through ax
@@ -114,6 +114,7 @@ mov esp,0x90000
 ;         0x0 not blinking
 ;mov byte[0xB8001],0b00011011
 
+; enable interrupts
 sti
 
 ; jump to kernel
