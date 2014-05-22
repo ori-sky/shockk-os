@@ -1,93 +1,97 @@
 [BITS 16]
 [ORG 0x7C00]
 
+; enforce cs:ip
+jmp 0x0000:start
+start:
+
 reset_drive:
 
 ; command: reset drive
 xor ah,ah
 
-; interrupt: hard disk
+; interrupt: disk services
 int 0x13
-	
-; if error not zero, retry
-or ah,ah
-jnz reset_drive
 
-; load idt into 0x2000
-; represented by 0x0000:0x2000 in real mode
-xor ax,ax
-mov es,ax
-mov bx,0x1000
+; cf set on error
+jc reset_drive
 
-; command: read sector from disk
+; command: read sectors from drive
 mov ah,0x2
 
-; idt sector count + 1 for first stage handler
-mov al,0x8
+; sectors to read
+mov al,0x1
 
-; disk cylinder
+; cylinder
 xor ch,ch
 
-; disk sector
+; sector (1-based)
 ; [0x1]       boot sector
-; [0x2-0xA]   idt
-; [0xB]       kernel
+; [0x2]       kernel
 mov cl,0x2
 
-; disk head
+; head
 xor dh,dh
 
-; interrupt: hard disk
-int 0x13
-
-or ah,ah
-jnz reset_drive
-
+; buffer address pointer (es:bx)
 ; load kernel into 0x2000
 xor ax,ax
 mov es,ax
 mov bx,0x2000
 
-mov ah,0x2
-mov al,0x5
-xor ch,ch
-mov cl,0xB
-xor dh,dh
 int 0x13
-
-or ah,ah
-jnz reset_drive
+jc reset_drive
 
 ; disable interrupts
 cli
 
-; lgdt is loaded at ds:gdt_desc so ds must be set through ax
+; lgdt is loaded at ds:gdt_desc
 xor ax,ax
 mov ds,ax
 
 ; load gdt
 lgdt [gdt_desc]
 
-; load idt
-lidt [idt_desc]
-
-; set cr0 bit 0 to enter protected mode
+; enable protected mode
+; cr0
+; [0]  protected mode
+; [1]  monitor coprocessor
+; [2]  FPU emulation
+; [3]  task switched
+; [4]  math coprocessor extension type
+; [5]  floating point error reporting
+; [16] write protect
+; [18] alignment mask
+; [29] write-back mode
+; [30] cache disable
 mov eax,cr0
 or eax,1
 mov cr0,eax
 
+; enter 32-bit mode
 ; make far jump to clear 16-bit instructions from pipeline
-; code segment is first segment after null segment
-; multiply by 8 to get segment identifier
+; [0x0]  null segment selector
+; [0x8]  code segment selector
+; [0x10] data segment selector
 jmp 0x8:clear_pipe
 
 [BITS 32]
 clear_pipe:
 
-; set data segment and stack segment to data segment identifier
+; set segment registers to data segment selector
+; segment registers
+; [cs] code
+; [ds] data
+; [ss] stack
+; [es] extra data
+; [fs] extra data #2
+; [gs] extra data #3
 mov ax,0x10
 mov ds,ax
 mov ss,ax
+mov es,ax
+mov fs,ax
+mov gs,ax
 
 ; table of first MB
 ; [    0-  3FF]   RAM         real mode, interrupt vector table
@@ -123,10 +127,11 @@ jmp 0x8:0x2000
 ; global descriptor table
 gdt:
 
+; null segment
 gdt_null:
-
 dq 0
 
+; code segment
 gdt_code:
 ; [0-15]  segment limiter bits 0-15
 dw 0xFFFF
@@ -153,6 +158,7 @@ db 0b11001111
 ; [24-31] base address bits 24-31
 db 0
 
+; data segment
 gdt_data:
 dw 0xFFFF
 dw 0
@@ -177,15 +183,7 @@ dw gdt_end - gdt
 ; [16-47] gdt memory address
 dd gdt
 
-idt_desc:
-; [0-15]  idt size in bytes - min value of 0x100
-;         value of 0x1000 = 0x200 interrupts
-dw 0x1000
-; [16-47] idt memory address
-;         idt loaded into 0x1000
-dd 0x1000
-
-; fill with zeros
+; zero rest of sector
 times 510-($-$$) db 0
 
 ; boot sector signature
