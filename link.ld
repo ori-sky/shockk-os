@@ -1,27 +1,24 @@
 ENTRY(entry)
 SECTIONS
 {
-	.text :
+	.text BLOCK(512) : ALIGN(512)
 	{
 		*(.text)
-		. = ALIGN(512);
 	}
 
-	.data :
-	{
-		*(.data)
-		. = ALIGN(512);
-	}
-
-	.rodata :
+	.rodata BLOCK(512) : ALIGN(512)
 	{
 		*(.rodata)
-		. = ALIGN(512);
 	}
 
-	.bss :
+	.data BLOCK(512) : ALIGN(512)
 	{
+		*(.data)
+	}
+
+	.bss BLOCK(512) : ALIGN(512)
+	{
+		*(COMMON)
 		*(.bss)
-		. = ALIGN(512);
 	}
 }
