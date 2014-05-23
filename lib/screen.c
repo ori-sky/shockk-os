@@ -46,8 +46,16 @@ void screen_writec(char c, unsigned short loc)
 
 void screen_putc(char c)
 {
-	screen_writec(c, screen_cursor_loc());
-	screen_cursor_by(1);
+	switch(c)
+	{
+		case '\n':
+			screen_cursor_to(SCREEN_XYTOLOC(0, SCREEN_LOCTOY(screen_cursor_loc()) + 1));
+			break;
+		default:
+			screen_writec(c, screen_cursor_loc());
+			screen_cursor_by(1);
+			break;
+	}
 }
 
 void screen_puts(char *s)
