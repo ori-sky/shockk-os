@@ -20,7 +20,7 @@ jc reset_drive
 mov ah,0x2
 
 ; sectors to read
-mov al,0x1
+mov al,0x5
 
 ; cylinder
 xor ch,ch
@@ -119,7 +119,7 @@ mov esp,0x90000
 ;mov byte[0xB8001],0b00011011
 
 ; enable interrupts
-sti
+;sti
 
 ; jump to kernel
 jmp 0x8:0x2000
