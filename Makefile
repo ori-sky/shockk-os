@@ -3,14 +3,14 @@ FLOPPY_IMAGE=floppy.img
 
 K_ENTRY=entry
 K_ORIGIN=0x2000
-K_SRCS=
+K_SRCS=$(shell find lib -name "*.c" -print)
 K_OBJS=$(K_SRCS:.c=.o)
 
 ASM=nasm
 LD=ld
 
 ASM_FLAGS=-f bin
-CFLAGS=-c -Wall --std=c99 -O -ffreestanding
+CFLAGS=-c -Wall --std=c99 -O -ffreestanding -Iinclude
 #LDFLAGS=-m elf_i386 -s -T link.ld -e $(K_ENTRY) -Ttext=$(K_ORIGIN)
 LDFLAGS=-s -T link.ld -e $(K_ENTRY) -Ttext=$(K_ORIGIN)
 
