@@ -16,6 +16,12 @@ int 0x13
 ; cf set on error
 jc reset_drive
 
+; buffer address pointer (es:bx)
+; load kernel into 0x2000
+xor ax,ax
+mov es,ax
+mov bx,0x2000
+
 ; command: read sectors from drive
 mov ah,0x2
 
@@ -32,12 +38,6 @@ mov cl,0x2
 
 ; head
 xor dh,dh
-
-; buffer address pointer (es:bx)
-; load kernel into 0x2000
-xor ax,ax
-mov es,ax
-mov bx,0x2000
 
 int 0x13
 jc reset_drive
