@@ -27,6 +27,7 @@
 #define PIC_ICW4_BUF_MASTER 0x0C /* buffered mode for master */
 #define PIC_ICW4_SFNM       0x10 /* {not} special fully nested mode */
 
+extern void pic_set_masks(unsigned char, unsigned char);
 extern void pic_remap(unsigned char, unsigned char);
 
 #endif

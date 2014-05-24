@@ -7,6 +7,7 @@ void entry(void)
 {
 	gdt_init();
 	pic_remap(0x20, 0x28);
+	pic_set_masks(0, 0);
 	idt_init();
 
 	screen_clear();

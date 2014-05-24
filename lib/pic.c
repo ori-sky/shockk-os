@@ -1,6 +1,12 @@
 #include <pic.h>
 #include <ports.h>
 
+void pic_set_masks(unsigned char mask_master, unsigned char mask_slave)
+{
+	ports_out(PIC_PORT_MASTER_DATA, mask_master);
+	ports_out(PIC_PORT_SLAVE_DATA, mask_slave);
+}
+
 void pic_remap(unsigned char offset_master, unsigned char offset_slave)
 {
 	/* save data masks */
