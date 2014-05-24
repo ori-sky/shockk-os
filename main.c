@@ -11,7 +11,7 @@ void entry(void)
 
 	screen_clear();
 	screen_cursor_to(0);
-	screen_puts("ShockkOS v0.1.0\n");
+	screen_puts("Shockk OS v0.1.0\n");
 
 	__asm__ volatile("sti");
 
