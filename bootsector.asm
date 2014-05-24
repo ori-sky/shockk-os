@@ -26,7 +26,7 @@ mov bx,0x2000
 mov ah,0x2
 
 ; sectors to read
-mov al,0x5
+mov al,0xF
 
 ; cylinder
 xor ch,ch
