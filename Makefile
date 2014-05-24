@@ -3,8 +3,10 @@ FLOPPY_IMAGE=floppy.img
 
 K_ENTRY=entry
 K_ORIGIN=0x2000
-K_SRCS=$(shell find lib -name "*.c" -print)
-K_OBJS=$(K_SRCS:.c=.o)
+K_C_SRCS=$(shell find lib -name "*.c" -print)
+K_S_SRCS=$(shell find lib -name "*.asm" -print)
+K_C_OBJS=$(K_C_SRCS:.c=.o)
+K_S_OBJS=$(K_S_SRCS:.asm=.s.o)
 
 ASM=nasm
 LD=ld
@@ -24,7 +26,8 @@ clean:
 	rm -f kernel.bin
 	rm -f kernel.o
 	rm -f main.o
-	rm -f $(K_OBJS)
+	rm -f $(K_C_OBJS)
+	rm -f $(K_S_OBJS)
 
 image: bootsector kernel
 	cat bootsector.bin kernel.bin > $(IMAGE)
@@ -36,10 +39,13 @@ floppy: image
 bootsector: bootsector.asm
 	$(ASM) $(ASM_FLAGS) bootsector.asm -o bootsector.bin
 
-kernel: $(K_OBJS)
+kernel: $(K_C_OBJS) $(K_S_OBJS)
 	$(CC) $(CFLAGS) main.c -o main.o
 	$(LD) $(LDFLAGS) main.o $^ -o kernel.o
 	objcopy -R .note -R .comment -S -O binary kernel.o kernel.bin
 
 %.o: %.c
 	$(CC) $(CFLAGS) $^ -o $@
+
+%.s.o: %.asm
+	$(ASM) -f elf $^ -o $@
