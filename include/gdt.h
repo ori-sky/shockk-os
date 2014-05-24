@@ -31,6 +31,7 @@ struct gdt_pointer
 	uint32_t base;
 } __attribute__((packed));
 
+extern void gdt_flush(uint32_t);
 extern void gdt_set_gate(uint16_t, uint32_t, uint32_t, uint8_t, uint8_t, uint8_t,
                          uint8_t, uint8_t, uint8_t, uint8_t, uint8_t);
 extern void gdt_init(void);
