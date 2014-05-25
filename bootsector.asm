@@ -47,16 +47,16 @@ ret
 load_kernel:
 
 ; buffer address pointer (es:bx)
-; load kernel into 0x2000
+; load kernel into 0x1000
 xor ax,ax
 mov es,ax
-mov bx,0x2000
+mov bx,0x1000
 
 ; command: read sectors from drive
 mov ah,0x2
 
 ; sectors to read
-mov al,45
+mov al,34
 
 ; cylinder
 xor ch,ch
@@ -142,7 +142,7 @@ mov esp,0x90000
 ;sti
 
 ; jump to kernel
-jmp 0x8:0x2000
+jmp 0x8:0x1000
 
 ; global descriptor table
 gdt:

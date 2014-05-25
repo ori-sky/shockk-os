@@ -2,7 +2,7 @@ IMAGE=os.img
 FLOPPY_IMAGE=floppy.img
 
 K_ENTRY=entry
-K_ORIGIN=0x2000
+K_ORIGIN=0x1000
 K_C_SRCS=$(shell find lib -name "*.c" -print)
 K_S_SRCS=$(shell find lib -name "*.asm" -print)
 K_C_OBJS=$(K_C_SRCS:.c=.o)
