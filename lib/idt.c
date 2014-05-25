@@ -543,14 +543,21 @@ void idt_init(void)
 
 struct cpu_state * idt_isr_callback(struct cpu_state *state)
 {
-	uint8_t code = ports_in(0x60);
-	(void) code;
+	char interrupt[4];
+	interrupt[0] = 0x30 + state->interrupt / 100 % 10;
+	interrupt[1] = 0x30 + state->interrupt / 10 % 10;
+	interrupt[2] = 0x30 + state->interrupt % 10;
+	interrupt[3] = 0;
+	screen_puts("interrupt ");
+	screen_puts(interrupt);
+	screen_putc('\n');
+
 	switch(state->interrupt)
 	{
 		case 0x20: // IRQ0  programmable interval timer
 			break;
 		case 0x21: // IRQ1  keyboard
-			screen_puts("IRQ1 ");
+			ports_in(0x60);
 			break;
 	}
 	return state;
