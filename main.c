@@ -16,7 +16,7 @@ void entry(void)
 
 	__asm__ volatile("sti");
 
-	// loop
+	/* loop */
 	for(;;)
 		__asm__("hlt");
 }

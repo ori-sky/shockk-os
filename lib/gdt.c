@@ -32,8 +32,8 @@ void gdt_init(void)
 	pointer.base = (uint32_t)&entries;
 
 	gdt_set_gate(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-	gdt_set_gate(1, 0, 0xFFFF, 1, 0, 1, 1, 0, 1, 0, 1);
-	gdt_set_gate(2, 0, 0xFFFF, 1, 0, 0, 1, 0, 1, 0, 1);
+	gdt_set_gate(1, 0, 0xFFFFFFFF, 1, 0, 1, 1, 0, 1, 0, 1);
+	gdt_set_gate(2, 0, 0xFFFFFFFF, 1, 0, 0, 1, 0, 1, 0, 1);
 
 	gdt_flush((uint32_t)&pointer);
 }
