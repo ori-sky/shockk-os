@@ -16,6 +16,36 @@ int 0x13
 ; cf set on error
 jc reset_drive
 
+; disable interrupts
+cli
+
+; lgdt is loaded at ds:gdt_desc
+xor ax,ax
+mov ds,ax
+
+; load gdt
+lgdt [gdt_desc]
+
+; enable A20 line
+call empty_8042
+mov al,0xD1 ; command write
+out 0x64,al
+call empty_8042
+mov al,0xDF ; A20 on
+out 0x60,al
+call empty_8042
+jmp load_kernel
+
+empty_8042:
+; loop until keyboard command queue is empty
+
+in al,0x64
+test al,2
+jnz empty_8042
+ret
+
+load_kernel:
+
 ; buffer address pointer (es:bx)
 ; load kernel into 0x2000
 xor ax,ax
@@ -41,16 +71,6 @@ xor dh,dh
 
 int 0x13
 jc reset_drive
-
-; disable interrupts
-cli
-
-; lgdt is loaded at ds:gdt_desc
-xor ax,ax
-mov ds,ax
-
-; load gdt
-lgdt [gdt_desc]
 
 ; enable protected mode
 ; cr0
