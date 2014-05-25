@@ -19,7 +19,7 @@ jc reset_drive
 ; disable interrupts
 cli
 
-; lgdt is loaded at ds:gdt_desc
+; gdt is loaded at ds:gdt_desc
 xor ax,ax
 mov ds,ax
 
