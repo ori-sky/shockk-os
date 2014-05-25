@@ -37,6 +37,13 @@ void screen_clear(void)
 	}
 }
 
+char screen_readc(unsigned short loc)
+{
+	unsigned long offset = loc * 2;
+	unsigned char *vidmem = (unsigned char *)(0xB8000 + offset);
+	return *vidmem;
+}
+
 void screen_writec(char c, unsigned short loc)
 {
 	unsigned long offset = loc * 2;
@@ -44,12 +51,33 @@ void screen_writec(char c, unsigned short loc)
 	*vidmem = c;
 }
 
+void screen_scroll(void)
+{
+	for(unsigned short x=0; x<SCREEN_X; ++x)
+	{
+		for(unsigned short y=0; y<SCREEN_Y-1; ++y)
+		{
+			screen_writec(screen_readc(SCREEN_XYTOLOC(x, y + 1)), SCREEN_XYTOLOC(x, y));
+		}
+
+		screen_writec(0, SCREEN_XYTOLOC(x, SCREEN_Y - 1));
+	}
+}
+
 void screen_putc(char c)
 {
+	unsigned short loc = screen_cursor_loc();
+	unsigned short newloc;
 	switch(c)
 	{
 		case '\n':
-			screen_cursor_to(SCREEN_XYTOLOC(0, SCREEN_LOCTOY(screen_cursor_loc()) + 1));
+			if(SCREEN_LOCTOY(loc) == SCREEN_Y - 1)
+			{
+				screen_scroll();
+				newloc = SCREEN_XYTOLOC(0, SCREEN_LOCTOY(loc));
+			}
+			else newloc = SCREEN_XYTOLOC(0, SCREEN_LOCTOY(loc) + 1);
+			screen_cursor_to(newloc);
 			break;
 		default:
 			screen_writec(c, screen_cursor_loc());
