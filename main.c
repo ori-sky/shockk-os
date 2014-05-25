@@ -7,7 +7,7 @@ void entry(void)
 {
 	gdt_init();
 	pic_remap(0x20, 0x28);
-	pic_set_masks(0, 0);
+	pic_set_masks(0xFC, 0xFF);
 	idt_init();
 
 	screen_clear();
@@ -18,7 +18,5 @@ void entry(void)
 
 	// loop
 	for(;;)
-	{
 		__asm__("hlt");
-	}
 }

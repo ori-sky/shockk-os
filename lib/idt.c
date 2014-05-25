@@ -1,4 +1,5 @@
 #include <idt.h>
+#include <ports.h>
 #include <screen.h>
 
 extern void isr0(void);
@@ -542,6 +543,15 @@ void idt_init(void)
 
 struct cpu_state * idt_isr_callback(struct cpu_state *state)
 {
-	screen_putc('a');
+	uint8_t code = ports_in(0x60);
+	(void) code;
+	switch(state->interrupt)
+	{
+		case 0x20: // IRQ0  programmable interval timer
+			break;
+		case 0x21: // IRQ1  keyboard
+			screen_puts("IRQ1 ");
+			break;
+	}
 	return state;
 }
