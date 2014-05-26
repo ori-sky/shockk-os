@@ -3,7 +3,7 @@
 unsigned char ports_in(unsigned short port)
 {
 	unsigned char result;
-	__asm__("in %%dx, %%al" : "=a" (result) : "d" (port));
+	__asm__ volatile("in %%dx, %%al" : "=a" (result) : "d" (port));
 	return result;
 }
 
