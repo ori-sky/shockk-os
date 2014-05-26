@@ -78,7 +78,6 @@ void screen_scroll(void)
 void screen_putc(char c)
 {
 	unsigned short loc = screen_cursor_loc();
-	unsigned short newloc;
 	switch(c)
 	{
 		case '\r':
