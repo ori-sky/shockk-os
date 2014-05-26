@@ -1,12 +1,13 @@
 #include <gdt.h>
 #include <pic.h>
 #include <idt.h>
+#include <interrupts.h>
 #include <screen.h>
 
 void entry(void)
 {
 	gdt_init();
-	pic_remap(0x20, 0x28);
+	pic_remap(IRQ0, IRQ8);
 	pic_set_masks(0xFC, 0xFF);
 	idt_init();
 
