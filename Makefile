@@ -9,12 +9,12 @@ K_C_OBJS=$(K_C_SRCS:.c=.o)
 K_S_OBJS=$(K_S_SRCS:.asm=.s.o)
 
 ASM=nasm
-LD=ld
+CC=gcc
+LD=gcc
 
 ASM_FLAGS=-f bin
-CFLAGS=-c -Wall --std=c99 -O -ffreestanding -Iinclude
-#LDFLAGS=-m elf_i386 -s -T link.ld -e $(K_ENTRY) -Ttext=$(K_ORIGIN)
-LDFLAGS=-s -T link.ld -e $(K_ENTRY) -Ttext=$(K_ORIGIN)
+CFLAGS=-c -Wall --std=c99 -Iinclude -Os -ffreestanding
+LDFLAGS=-s -T link.ld -e $(K_ENTRY) -Ttext=$(K_ORIGIN) -Os -nostdlib -lgcc
 
 all: image floppy
 
