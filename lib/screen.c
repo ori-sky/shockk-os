@@ -51,6 +51,17 @@ void screen_writec(char c, unsigned short loc)
 	*vidmem = c;
 }
 
+/* carriage return */
+void screen_CR(void)
+{
+	screen_CR_at(SCREEN_LOCTOY(screen_cursor_loc()));
+}
+
+void screen_CR_at(unsigned short y)
+{
+	screen_cursor_to(SCREEN_XYTOLOC(0, y));
+}
+
 void screen_scroll(void)
 {
 	for(unsigned short x=0; x<SCREEN_X; ++x)
@@ -73,18 +84,17 @@ void screen_putc(char c)
 		case '\n':
 			if(SCREEN_LOCTOY(loc) == SCREEN_Y - 1)
 			{
+				screen_CR_at(SCREEN_Y - 1);
 				screen_scroll();
-				newloc = SCREEN_XYTOLOC(0, SCREEN_LOCTOY(loc));
 			}
-			else newloc = SCREEN_XYTOLOC(0, SCREEN_LOCTOY(loc) + 1);
-			screen_cursor_to(newloc);
+			else screen_cursor_to(SCREEN_XYTOLOC(0, SCREEN_LOCTOY(loc) + 1));
 			break;
 		default:
 			screen_writec(c, screen_cursor_loc());
 			if(loc == SCREEN_SIZE - 1)
 			{
+				screen_CR_at(SCREEN_Y - 1);
 				screen_scroll();
-				screen_cursor_to(SCREEN_XYTOLOC(0, SCREEN_Y - 1));
 			}
 			else screen_cursor_by(1);
 			break;
