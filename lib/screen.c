@@ -80,9 +80,13 @@ void screen_putc(char c)
 			screen_cursor_to(newloc);
 			break;
 		default:
-			// TODO: scroll if current position is SCREEN_SIZE - 1
 			screen_writec(c, screen_cursor_loc());
-			screen_cursor_by(1);
+			if(loc == SCREEN_SIZE - 1)
+			{
+				screen_scroll();
+				screen_cursor_to(SCREEN_XYTOLOC(0, SCREEN_Y - 1));
+			}
+			else screen_cursor_by(1);
 			break;
 	}
 }
