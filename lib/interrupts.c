@@ -19,10 +19,14 @@ struct cpu_state * interrupts_callback(struct cpu_state *state)
 
 	switch(state->interrupt)
 	{
+		case EXC_DIVIDE_BY_ZERO:
+			//screen_puts("DIVIDE BY ZERO\n");
+			break;
 		case IRQ0:
 			break;
 		case IRQ1:
 			ports_in(0x60);
+			screen_putc(5 / 0);
 			break;
 	}
 	return state;
