@@ -81,6 +81,9 @@ void screen_putc(char c)
 	unsigned short newloc;
 	switch(c)
 	{
+		case '\r':
+			screen_CR_at(SCREEN_LOCTOY(loc));
+			break;
 		case '\n':
 			if(SCREEN_LOCTOY(loc) == SCREEN_Y - 1)
 			{
