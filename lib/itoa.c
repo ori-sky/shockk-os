@@ -10,7 +10,9 @@ char * uitoa(unsigned int value, char *str, int base)
 	unsigned short div = 1;
 	for(unsigned char i=log; i!=(unsigned char)(-1); --i, div*=base)
 	{
-		str[i] = '0' + value / div % base;
+		unsigned char offset = value / div % base;
+		unsigned char base = offset < 10 ? '0' : 'a' - 10;
+		str[i] = base + offset;
 	}
 
 	return str;
