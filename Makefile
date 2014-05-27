@@ -14,7 +14,7 @@ LD=gcc
 
 ASM_FLAGS=-f bin
 CFLAGS=-c -Wall --std=c99 -Iinclude -Os -ffreestanding
-LDFLAGS=-s -T link.ld -e $(K_ENTRY) -Ttext=$(K_ORIGIN) -Os -nostdlib -lgcc
+LDFLAGS=-s -e $(K_ENTRY) -Ttext=$(K_ORIGIN) -Os -nostdlib -lgcc
 
 all: image floppy
 
