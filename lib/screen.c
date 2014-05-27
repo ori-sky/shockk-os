@@ -5,20 +5,20 @@ unsigned short screen_cursor_loc(void)
 {
 	unsigned short location;
 
-	ports_out(0x3D4, 14);
-	location = ports_in(0x3D5) << 8;
-	ports_out(0x3D4, 15);
-	location |= ports_in(0x3D5);
+	ports_outb(0x3D4, 14);
+	location = ports_inb(0x3D5) << 8;
+	ports_outb(0x3D4, 15);
+	location |= ports_inb(0x3D5);
 
 	return location;
 }
 
 void screen_cursor_to(unsigned short loc)
 {
-	ports_out(0x3D4, 14);
-	ports_out(0x3D5, (loc >> 8) & 0xFF);
-	ports_out(0x3D4, 15);
-	ports_out(0x3D5, loc & 0xFF);
+	ports_outb(0x3D4, 14);
+	ports_outb(0x3D5, (loc >> 8) & 0xFF);
+	ports_outb(0x3D4, 15);
+	ports_outb(0x3D5, loc & 0xFF);
 }
 
 void screen_cursor_by(unsigned short n)

@@ -6,7 +6,7 @@
 
 struct cpu_state * interrupts_callback(struct cpu_state *state)
 {
-	char str[4];
+	char str[32];
 
 	switch(state->interrupt)
 	{
@@ -16,8 +16,8 @@ struct cpu_state * interrupts_callback(struct cpu_state *state)
 		case IRQ0:
 			break;
 		case IRQ1:
-			uitoa(ports_in(0x60), str, 16);
-			screen_puts("scancode 0x");
+			uitoa(ports_inb(0x60), str, 2);
+			screen_puts("scancode 0b");
 			screen_puts(str);
 			screen_putc('\n');
 			break;
