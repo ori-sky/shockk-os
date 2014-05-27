@@ -1,18 +1,16 @@
 #include <interrupts.h>
+#include <stdlib.h>
 #include <kernel.h>
 #include <ports.h>
 #include <screen.h>
 
 struct cpu_state * interrupts_callback(struct cpu_state *state)
 {
-	char interrupt[4];
-	interrupt[0] = 0x30 + state->interrupt / 100 % 10;
-	interrupt[1] = 0x30 + state->interrupt / 10 % 10;
-	interrupt[2] = 0x30 + state->interrupt % 10;
-	interrupt[3] = 0;
-	//screen_puts("interrupt ");
-	//screen_puts(interrupt);
-	//screen_putc('\n');
+	char str[4];
+	uitoa(state->interrupt, str, 10);
+	screen_puts("interrupt ");
+	screen_puts(str);
+	screen_putc('\n');
 
 	switch(state->interrupt)
 	{
