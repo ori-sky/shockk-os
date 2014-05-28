@@ -15,15 +15,17 @@ unsigned short screen_cursor_loc(void)
 
 void screen_cursor_to(unsigned short loc)
 {
+	if(loc >= SCREEN_SIZE) loc = SCREEN_SIZE - 1;
 	ports_outb(0x3D4, 14);
 	ports_outb(0x3D5, (loc >> 8) & 0xFF);
 	ports_outb(0x3D4, 15);
 	ports_outb(0x3D5, loc & 0xFF);
 }
 
-void screen_cursor_by(unsigned short n)
+void screen_cursor_by(short n)
 {
-	screen_cursor_to(screen_cursor_loc() + n);
+	unsigned short loc = screen_cursor_loc();
+	screen_cursor_to((short)loc + n >= 0 ? loc + n : 0);
 }
 
 void screen_clear(void)
@@ -80,6 +82,12 @@ void screen_putc(char c)
 	unsigned short loc = screen_cursor_loc();
 	switch(c)
 	{
+		case 0:
+			break;
+		case '\b':
+			screen_cursor_by(-1);
+			screen_writec(0, screen_cursor_loc());
+			break;
 		case '\r':
 			screen_CR_at(SCREEN_LOCTOY(loc));
 			break;
@@ -92,7 +100,7 @@ void screen_putc(char c)
 			else screen_cursor_to(SCREEN_XYTOLOC(0, SCREEN_LOCTOY(loc) + 1));
 			break;
 		default:
-			screen_writec(c, screen_cursor_loc());
+			screen_writec(c, loc);
 			if(loc == SCREEN_SIZE - 1)
 			{
 				screen_CR_at(SCREEN_Y - 1);

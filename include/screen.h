@@ -11,7 +11,7 @@
 
 extern unsigned short screen_cursor_loc(void);
 extern void screen_cursor_to(unsigned short);
-extern void screen_cursor_by(unsigned short);
+extern void screen_cursor_by(short);
 extern void screen_clear(void);
 extern char screen_readc(unsigned short);
 extern void screen_writec(char, unsigned short);
