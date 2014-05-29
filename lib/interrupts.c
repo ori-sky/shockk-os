@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <kernel.h>
 #include <ports.h>
+#include <syscall.h>
 #include <keyboard.h>
 #include <screen.h>
 
@@ -20,8 +21,10 @@ struct cpu_state * interrupts_handler(struct cpu_state *state)
 		case IRQ1:
 			scancode = ports_inb(0x60);
 			if(!(scancode & 0x80)) screen_putc(keymap_en[scancode & 0x7F]);
+			//printf("test");
 			break;
 		case 0x80: /* syscall */
+			syscall_handler(state);
 			break;
 	}
 	return state;
