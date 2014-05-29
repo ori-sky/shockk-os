@@ -52,7 +52,7 @@ INTERRUPT_ERR 14
 	%assign i i+1
 %endrep
 
-[EXTERN idt_isr_callback]
+[EXTERN idt_isr_handler]
 
 isr_stub:
 
@@ -109,7 +109,7 @@ out dx,ax
 no_eoi:
 
 push esp
-call idt_isr_callback
+call idt_isr_handler
 
 return:
 

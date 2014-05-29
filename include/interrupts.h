@@ -43,6 +43,6 @@
 #define EXC_VIRT_EXCEPTION       0x14
 #define EXC_SECURITY_EXCEPTION   0x1E
 
-extern struct cpu_state * interrupts_callback(struct cpu_state *);
+extern struct cpu_state * interrupts_handler(struct cpu_state *);
 
 #endif

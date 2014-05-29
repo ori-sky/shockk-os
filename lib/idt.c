@@ -540,7 +540,7 @@ void idt_init(void)
 	idt_load(&pointer);
 }
 
-struct cpu_state * idt_isr_callback(struct cpu_state *state)
+struct cpu_state * idt_isr_handler(struct cpu_state *state)
 {
-	return interrupts_callback(state);
+	return interrupts_handler(state);
 }

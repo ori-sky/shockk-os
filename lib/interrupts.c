@@ -5,7 +5,7 @@
 #include <keyboard.h>
 #include <screen.h>
 
-struct cpu_state * interrupts_callback(struct cpu_state *state)
+struct cpu_state * interrupts_handler(struct cpu_state *state)
 {
 	char str[32];
 	unsigned char scancode;
@@ -20,6 +20,8 @@ struct cpu_state * interrupts_callback(struct cpu_state *state)
 		case IRQ1:
 			scancode = ports_inb(0x60);
 			if(!(scancode & 0x80)) screen_putc(keymap_en[scancode & 0x7F]);
+			break;
+		case 0x80: /* syscall */
 			break;
 	}
 	return state;

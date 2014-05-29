@@ -32,6 +32,6 @@ extern void idt_load(void *);
 extern void idt_set_gate(uint8_t, uint32_t, uint16_t, uint8_t, uint8_t, uint8_t,
                          uint8_t);
 extern void idt_init(void);
-extern struct cpu_state * idt_isr_callback(struct cpu_state *);
+extern struct cpu_state * idt_isr_handler(struct cpu_state *);
 
 #endif
