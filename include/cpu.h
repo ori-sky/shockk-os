@@ -1,6 +1,8 @@
 #ifndef CPU_H
 #define CPU_H
 
+#include <stdint.h>
+
 struct cpu_state
 {
 	uint32_t ds;
