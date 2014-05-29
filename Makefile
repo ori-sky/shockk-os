@@ -9,8 +9,8 @@ K_C_OBJS=$(K_C_SRCS:.c=.o)
 K_S_OBJS=$(K_S_SRCS:.asm=.s.o)
 
 ASM=nasm
-CC=gcc
-LD=gcc
+CC=$(CROSS_TARGET)-gcc
+LD=$(CROSS_TARGET)-gcc
 
 ASM_FLAGS=-f bin
 CFLAGS=-c -Wall --std=c99 -Iinclude -Os -ffreestanding
