@@ -4,5 +4,5 @@ void entry(void)
 	for(unsigned short col = 0; col < 80*24; ++col) {
 		ptr[col << 1] = 'A' + col % 80 % 26;
 	}
-	for(;;);
+	__asm__("hlt");
 }
