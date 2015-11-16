@@ -10,7 +10,7 @@ reset_drive:
     mov es, ax                                                                  ; es = null selector
     mov bx, 0x1000                                                              ; bx = location to load kernel into
     mov ah, 0x2                                                                 ; command = read sectors from drive
-    mov al, 4                                                                   ; number of sectors to read
+    mov al, 1                                                                   ; number of sectors to read
     xor ch, ch                                                                  ; disk cylinder to read from
     mov cl, 2                                                                   ; sector to begin reading from
                                                                                 ; bootsector is sector 1 (1-based)
@@ -35,7 +35,7 @@ protected_mode:
     mov gs, ax                                                                  ; set extra data segment #3
     mov esp, 0x90000                                                            ; stack from 0x90000 to 0x9FFFF
                                                                                 ; video RAM begins at 0xA0000
-    jmp 0x8:0x1000                                                              ; far jump to kernel
+    call 0x8:0x1000                                                             ; far jump to kernel
 gdt:
 gdt_null:                                                                       ; null segment
     dq 0                                                                        ; null
