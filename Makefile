@@ -13,7 +13,7 @@ CC=$(CROSS_TARGET)-gcc
 LD=$(CROSS_TARGET)-ld
 
 ASM_FLAGS=-f bin
-CFLAGS=-c -Wall --std=c99 -Iinclude -ffreestanding
+CFLAGS=-c -Wall -Wextra -Wpedantic -std=c99 -ffreestanding -Iinclude
 LDFLAGS=-s -e $(K_ENTRY) -Ttext=$(K_ORIGIN) -nostdlib
 
 all: image floppy
