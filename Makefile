@@ -10,12 +10,10 @@ K_S_OBJS=$(K_S_SRCS:.asm=.s.o)
 
 ASM=nasm
 CC=$(CROSS_TARGET)-gcc
-CXX=$(CROSS_TARGET)-g++
 LD=$(CROSS_TARGET)-ld
 
 ASM_FLAGS=-f bin
-CFLAGS=-c -Wall -Wextra -Wpedantic --std=c99 -ffreestanding -Iinclude
-CXXFLAGS=-c -Wall -Wextra -Wpedantic --std=c++11 -ffreestanding -Iinclude
+CFLAGS=-c -Wall --std=c99 -Iinclude -ffreestanding
 LDFLAGS=-s -e $(K_ENTRY) -Ttext=$(K_ORIGIN) -nostdlib
 
 all: image floppy
@@ -46,8 +44,8 @@ kernel: main.o
 	$(LD) $(LDFLAGS) $^ -o kernel.o
 	objcopy -R .note -R .comment -S -O binary kernel.o kernel.bin
 
-%.o: %.cpp
-	$(CXX) $(CXXFLAGS) $^ -o $@
+%.o: %.c
+	$(CC) $(CFLAGS) $^ -o $@
 
 %.s.o: %.asm
 	$(ASM) -f elf $^ -o $@
