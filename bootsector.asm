@@ -1,211 +1,93 @@
-[BITS 16]
-[ORG 0x7C00]
-
-; enforce cs:ip
-jmp 0x0000:start
+[BITS 16]                                                                       ; 16-bit instructions
+[ORG 0x7C00]                                                                    ; bootsector is loaded at 0x7C00
+    jmp 0x0:start                                                               ; enforce cs:ip
 start:
-
 reset_drive:
-
-; command: reset drive
-xor ah,ah
-
-; interrupt: disk services
-int 0x13
-
-; cf set on error
-jc reset_drive
-
-; disable interrupts
-cli
-
-; gdt is loaded at ds:gdt_desc
-xor ax,ax
-mov ds,ax
-
-; load gdt
-lgdt [gdt_desc]
-
-; enable A20 line
-call empty_8042
-mov al,0xD1 ; command write
-out 0x64,al
-call empty_8042
-mov al,0xDF ; A20 on
-out 0x60,al
-call empty_8042
-jmp load_kernel
-
-empty_8042:
-; loop until keyboard command queue is empty
-
-in al,0x64
-test al,2
-jnz empty_8042
-ret
-
-load_kernel:
-
-; buffer address pointer (es:bx)
-; load kernel into 0x1000
-xor ax,ax
-mov es,ax
-mov bx,0x1000
-
-; command: read sectors from drive
-mov ah,0x2
-
-; sectors to read
-mov al,34
-
-; cylinder
-xor ch,ch
-
-; sector (1-based)
-; [0x1]       boot sector
-; [0x2]       kernel
-mov cl,0x2
-
-; head
-xor dh,dh
-
-int 0x13
-jc reset_drive
-
-; enable protected mode
-; cr0
-; [0]  protected mode
-; [1]  monitor coprocessor
-; [2]  FPU emulation
-; [3]  task switched
-; [4]  math coprocessor extension type
-; [5]  floating point error reporting
-; [16] write protect
-; [18] alignment mask
-; [29] write-back mode
-; [30] cache disable
-mov eax,cr0
-or eax,1
-mov cr0,eax
-
-; enter 32-bit mode
-; make far jump to clear 16-bit instructions from pipeline
-; [0x0]  null segment selector
-; [0x8]  code segment selector
-; [0x10] data segment selector
-jmp 0x8:clear_pipe
-
-[BITS 32]
-clear_pipe:
-
-; set segment registers to data segment selector
-; segment registers
-; [cs] code
-; [ds] data
-; [ss] stack
-; [es] extra data
-; [fs] extra data #2
-; [gs] extra data #3
-mov ax,0x10
-mov ds,ax
-mov ss,ax
-mov es,ax
-mov fs,ax
-mov gs,ax
-
-; table of first MB
-; [    0-  3FF]   RAM         real mode, interrupt vector table
-; [  400-  4FF]   RAM         BIOS data area
-; [  500-9FFFF]   RAM         free memory, 7C00 used for boot sector
-; [A0000-BFFFF]   video RAM   video memory
-; [C0000-C7FFF]   video ROM   video BIOS
-; [C8000-EFFFF]               BIOS shadow area
-; [F0000-FFFFF]   ROM         system BIOS
-
-; set stack pointer to 0x90000 - size of 0xFFFF
-mov esp,0x90000
-
-; frame buffer located at 0xB8000
-; color text mode, applies to CGA, EGA, VGA
-
-;mov byte[0xB8000],'A'
-; [0-3]   foreground color
-; [4-6]   background color
-; [7]     blinking flag
-; using:
-;         0xB bright cyan foreground
-;         0x1 blue background
-;         0x0 not blinking
-;mov byte[0xB8001],0b00011011
-
-; enable interrupts
-;sti
-
-; jump to kernel
-jmp 0x8:0x1000
-
-; global descriptor table
+    xor ah, ah                                                                  ; command = reset drive
+    int 0x13                                                                    ; interrupt = disk services
+    jc reset_drive                                                              ; carry flag set on error
+    xor ax, ax                                                                  ; buffer address pointer (es:bx)
+    mov es, ax                                                                  ; es = null selector
+    mov bx, 0x1000                                                              ; bx = location to load kernel into
+    mov ah, 0x2                                                                 ; command = read sectors from drive
+    mov al, 4                                                                   ; number of sectors to read
+    xor ch, ch                                                                  ; disk cylinder to read from
+    mov cl, 2                                                                   ; sector to begin reading from
+                                                                                ; bootsector is sector 1 (1-based)
+    xor dh, dh                                                                  ; disk head to read from
+    int 0x13                                                                    ; interrupt = disk services
+    jc reset_drive                                                              ; carry flag set on error
+    cli                                                                         ; disable interrupts
+    xor ax, ax                                                                  ; null selector
+    mov ds, ax                                                                  ; set data segment
+    lgdt [gdt_desc]                                                             ; load global descriptor table
+    mov eax, cr0                                                                ; retrieve current value of cr0
+    or al, 1                                                                    ; set Protection Enable bit
+    mov cr0, eax                                                                ; store new value of cr0
+    jmp 0x8:protected_mode                                                      ; far jump to code selector
+[BITS 32]                                                                       ; 32-bit instructions
+protected_mode:
+    mov ax, 0x10                                                                ; data selector is 0x10
+    mov ds, ax                                                                  ; set data segment
+    mov ss, ax                                                                  ; set stack segment
+    mov es, ax                                                                  ; set extra data segment #1
+    mov fs, ax                                                                  ; set extra data segment #2
+    mov gs, ax                                                                  ; set extra data segment #3
+    mov esp, 0x90000                                                            ; stack from 0x90000 to 0x9FFFF
+                                                                                ; video RAM begins at 0xA0000
+    jmp 0x8:0x1000                                                              ; far jump to kernel
 gdt:
-
-; null segment
-gdt_null:
-dq 0
-
-; code segment
-gdt_code:
-; [0-15]  segment limiter bits 0-15
-dw 0xFFFF
-; [16-31] base address bits 0-15
-dw 0
-; [0-7]   base address bits 16-23
-db 0
-; [8-11]  segment type and attributes
-;         [8]  CPU access flag
-;         [9]  segment readable flag
-;         [10] allows less privileged code segments to jump to or call this segment
-;         [11] code segment flag
-;         [12] code or data segment flag
-; [13-14] privilege level - 0 most privileged, 3 least privileged
-; [15]    segment present flag
-db 0b10011010
-; [16-19] segment limiter bits 16-19
-; [20-22] attributes
-;         [20] 'Available to System Programmers' flag - ignored by CPU
-;         [21] reserved
-;         [22] size flag - protected mode 32-bit and not 16-bit
-; [23]    granularity - multiplies segment limit by 4kB
-db 0b11001111
-; [24-31] base address bits 24-31
-db 0
-
-; data segment
-gdt_data:
-dw 0xFFFF
-dw 0
-db 0
-; [8-11]  segment type and attributes
-;         [8]  CPU access flag
-;         [9]  segment writable flag
-;         [10] expand up flag - expands down if 0
-;         [11] code segment flag
-;         [12] code or data segment flag
-; [13-14] privilege level - 0 most privileged, 3 least privileged
-; [15]    segment present flag
-db 0b10010010
-db 0b11001111
-db 0
-
+gdt_null:                                                                       ; null segment
+    dq 0                                                                        ; null
+gdt_code:                                                                       ; code segment
+    dw 0xFFFF                                                                   ; bits 0-15 of segment limiter
+    dw 0                                                                        ; bits 0-15 of base address
+    db 0                                                                        ; bits 16-23 of base address
+    db 10011010b                                                                ; access byte
+                                                                                ; [ 1] segment present flag
+                                                                                ; [ 2] privilege ring level
+                                                                                ; [ 1] code/data flag
+                                                                                ; [ 1] executable (code) flag
+                                                                                ; [ 1] direction/conforming flag
+                                                                                ; [ 1] read/write flag
+                                                                                ; [ 1] CPU access flag
+    db 11001111b                                                                ; flags nibble and limiter nibble
+                                                                                ; [ 1] page granularity flag
+                                                                                ; [ 1] size (32-bit) flag
+                                                                                ; [ 1] reserved
+                                                                                ; [ 1] available to system programmers
+                                                                                ; [ 4] bits 16-19 of segment limiter
+    db 0                                                                        ; bits 24-31 of base address
+gdt_data:                                                                       ; data segment
+    dw 0xFFFF                                                                   ; bits 0-15 of segment limiter
+    dw 0                                                                        ; bits 0-15 of base address
+    db 0                                                                        ; bits 16-23 of base address
+    db 10010010b                                                                ; access byte
+    db 11001111b                                                                ; flags nibble and limiter nibble
+    db 0                                                                        ; bits 24-31 of base address
 gdt_end:
-
 gdt_desc:
-; [0-15]  gdt size in bytes
-dw gdt_end - gdt
-; [16-47] gdt memory address
-dd gdt
+    dw gdt_end - gdt                                                            ; gdt size in bytes
+    dd gdt                                                                      ; gdt memory address
+    times 510-($-$$) db 0                                                       ; fill rest of sector with zeros
+    db 0x55, 0xAA                                                               ; bootsector signature
 
-; zero rest of sector
-times 510-($-$$) db 0
 
-; boot sector signature
-db 0x55
-db 0xAA
+
+; ; enable A20 line
+; call empty_8042
+; mov al,0xD1 ; command write
+; out 0x64,al
+; call empty_8042
+; mov al,0xDF ; A20 on
+; out 0x60,al
+; call empty_8042
+; jmp load_kernel
+; 
+; empty_8042:
+; ; loop until keyboard command queue is empty
+; 
+; in al,0x64
+; test al,2
+; jnz empty_8042
+; ret
