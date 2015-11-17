@@ -3,16 +3,13 @@ FLOPPY_IMAGE=floppy.img
 
 K_ENTRY=entry
 K_ORIGIN=0x1000
-K_C_SRCS=$(shell find lib -name "*.c" -print)
-K_S_SRCS=$(shell find lib -name "*.asm" -print)
-K_C_OBJS=$(K_C_SRCS:.c=.o)
-K_S_OBJS=$(K_S_SRCS:.asm=.s.o)
+K_OBJS=main.o isr.s.o
 
 ASM=nasm
 CC=$(CROSS_TARGET)-gcc
 LD=$(CROSS_TARGET)-ld
 
-ASM_FLAGS=-f bin
+ASM_FLAGS=-f elf
 CFLAGS=-c -Wall -Wextra -Wpedantic -std=c99 -ffreestanding -Iinclude -O2
 LDFLAGS=-s -e $(K_ENTRY) -Ttext=$(K_ORIGIN) -nostdlib
 
@@ -23,11 +20,11 @@ run-qemu: floppy
 
 clean:
 	rm -fv bootsector.bin
-	rm -fv kernel.bin
+	rm -fv $(K_OBJS)
 	rm -fv kernel.o
-	rm -fv main.o
-	rm -fv $(K_C_OBJS)
-	rm -fv $(K_S_OBJS)
+	rm -fv kernel.bin
+	rm -fv os.img
+	rm -fv floppy.img
 
 image: bootsector kernel
 	cat bootsector.bin kernel.bin > $(IMAGE)
@@ -37,10 +34,10 @@ floppy: image
 	dd conv=notrunc bs=512 if=$(IMAGE) of=$(FLOPPY_IMAGE)
 
 bootsector: bootsector.asm
-	$(ASM) $(ASM_FLAGS) bootsector.asm -o bootsector.bin
+	$(ASM) -f bin $^ -o bootsector.bin
 
 #kernel: main.o $(K_C_OBJS) $(K_S_OBJS)
-kernel: main.o
+kernel: $(K_OBJS)
 	$(LD) $(LDFLAGS) $^ -o kernel.o
 	objcopy -R .note -R .comment -S -O binary kernel.o kernel.bin
 
@@ -48,4 +45,4 @@ kernel: main.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 %.s.o: %.asm
-	$(ASM) -f elf $^ -o $@
+	$(ASM) $(ASM_FLAGS) $^ -o $@

@@ -10,7 +10,7 @@ reset_drive:
     mov es, ax                                                                  ; es = null selector
     mov bx, 0x1000                                                              ; bx = location to load kernel into
     mov ah, 0x2                                                                 ; command = read sectors from drive
-    mov al, 1                                                                   ; number of sectors to read
+    mov al, 4                                                                   ; number of sectors to read
     xor ch, ch                                                                  ; disk cylinder to read from
     mov cl, 2                                                                   ; sector to begin reading from
                                                                                 ; bootsector is sector 1 (1-based)
