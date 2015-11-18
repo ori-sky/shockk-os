@@ -3,6 +3,7 @@
 #include "pic.h"
 #include "idt.h"
 #include "irq.h"
+#include "screen.h"
 
 void entry(void) {
 	pic_remap(IRQ0, IRQ8);
@@ -19,5 +20,9 @@ void entry(void) {
 		ptr[col << 1] = 'A' + col % 80 % 26;
 	}
 
+	struct Screen screen;
+	screen_init(&screen, (uint8_t *)0xB8000);
+
+	__asm__ __volatile__ ("int $0x50");
 	for(;;) { __asm__ __volatile__ ("hlt"); }
 }

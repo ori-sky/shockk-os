@@ -1,18 +1,21 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
-#define SCREEN_X 80
-#define SCREEN_Y 25
-#define SCREEN_SIZE (SCREEN_X * SCREEN_Y)
+#include <stdint.h>
 
-#define SCREEN_XYTOL(X, Y) ((X) + (Y) * SCREEN_X)
+#define SCREEN_ROWS 25
+#define SCREEN_COLUMNS 80
+#define SCREEN_CELLS (SCREEN_ROWS * SCREEN_COLUMNS)
 
-unsigned short screen_get_cursor(void);
-void screen_cursor_to(unsigned short);
-void screen_writec_to(unsigned short, char);
-void screen_writec(char);
-void screen_putc(char);
-void screen_puts(char *);
-void screen_clear(void);
+#define SCREEN_COORDS_TO_CELL(R, C) ((R) * SCREEN_COLUMNS + (C))
+
+struct Screen {
+	volatile uint8_t *buffer;
+	uint8_t row;
+	uint8_t column;
+} __attribute__((packed));
+
+void screen_init(struct Screen *, volatile uint8_t *);
+void screen_cursor_to(struct Screen *, uint8_t, uint8_t);
 
 #endif
