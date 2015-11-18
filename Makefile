@@ -7,7 +7,7 @@ K_OBJS=main.o ports.o pic.o idt.o isr.s.o isr.o screen.o
 
 ASM=nasm
 CC=$(CROSS_TARGET)-gcc
-LD=$(CROSS_TARGET)-ld
+LD=$(CROSS_TARGET)-gcc
 
 ASM_FLAGS=-f elf
 CFLAGS=-c -Wall -Wextra -Wpedantic -std=c99 -ffreestanding -Iinclude -O2
