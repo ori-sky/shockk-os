@@ -3,7 +3,7 @@ FLOPPY_IMAGE=floppy.img
 
 K_ENTRY=entry
 K_ORIGIN=0x1000
-K_OBJS=main.o ports.o pic.o isr.s.o
+K_OBJS=main.o ports.o pic.o idt.o isr.s.o
 
 ASM=nasm
 CC=$(CROSS_TARGET)-gcc
