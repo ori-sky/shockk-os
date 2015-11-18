@@ -6,16 +6,17 @@
 #define SCREEN_ROWS 25
 #define SCREEN_COLUMNS 80
 #define SCREEN_CELLS (SCREEN_ROWS * SCREEN_COLUMNS)
+#define SCREEN_BUFFER ((unsigned char*)0xB8000)
 
 #define SCREEN_COORDS_TO_CELL(R, C) ((R) * SCREEN_COLUMNS + (C))
+#define SCREEN_CELL_TO_ROW(C) ((C) / SCREEN_COLUMNS)
 
-struct Screen {
-	volatile uint8_t *buffer;
-	uint8_t row;
-	uint8_t column;
-} __attribute__((packed));
-
-void screen_init(struct Screen *, volatile uint8_t *);
-void screen_cursor_to(struct Screen *, uint8_t, uint8_t);
+void screen_init(void);
+void screen_cursor_to(const unsigned short);
+void screen_cursor_by(short);
+void screen_write_at(const unsigned short, const char);
+char screen_read_at(const unsigned short);
+void screen_put(const char);
+void screen_print(const char *s);
 
 #endif

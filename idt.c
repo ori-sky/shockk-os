@@ -525,4 +525,6 @@ void idt_init(volatile struct IDT *idt) {
 
 	idt->descriptor.limiter = sizeof(idt->entries);
 	idt->descriptor.baseAddress = idt;
+
+	__asm__ __volatile__ ("lidt (%0)" : : "r" (&idt->descriptor));
 }
