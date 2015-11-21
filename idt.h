@@ -6,8 +6,11 @@
 struct IDTEntry {
 	uint16_t base_address_low;
 	uint16_t selector;
-	uint8_t zero;
-	uint8_t attributes;
+	uint8_t reserved;
+	uint8_t type : 4;
+	uint8_t storage_segment : 1;
+	uint8_t privilege : 2;
+	uint8_t present : 1;
 	uint16_t base_address_high;
 } __attribute__((packed));
 
