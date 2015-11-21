@@ -266,6 +266,9 @@ inline void set_entry(volatile struct IDTEntry *entry, void (*handler)(void), ui
 }
 
 void idt_init(volatile struct IDT *idt) {
+	idt->descriptor.limiter = sizeof(idt->entries);
+	idt->descriptor.baseAddress = &idt->entries;
+
 	set_entry(&idt->entries[  0], isr_stub_0,   0x8E);
 	set_entry(&idt->entries[  1], isr_stub_1,   0x8E);
 	set_entry(&idt->entries[  2], isr_stub_2,   0x8E);
@@ -522,9 +525,6 @@ void idt_init(volatile struct IDT *idt) {
 	set_entry(&idt->entries[253], isr_stub_253, 0x8E);
 	set_entry(&idt->entries[254], isr_stub_254, 0x8E);
 	set_entry(&idt->entries[255], isr_stub_255, 0x8E);
-
-	idt->descriptor.limiter = sizeof(idt->entries);
-	idt->descriptor.baseAddress = idt;
 
 	__asm__ __volatile__ ("lidt (%0)" : : "r" (&idt->descriptor));
 }

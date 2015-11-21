@@ -17,8 +17,8 @@ struct IDTDescriptor {
 } __attribute__((packed));
 
 struct IDT {
-	struct IDTEntry entries[256];
 	struct IDTDescriptor descriptor;
+	struct IDTEntry entries[256];
 } __attribute__((packed));
 
 void idt_init(volatile struct IDT *);
