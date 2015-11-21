@@ -6,6 +6,7 @@
 #include "tss.h"
 #include "screen.h"
 
+void kernel_main(void) __attribute__((noreturn));
 void kernel_main(void) {
 	struct IDT *idt = (struct IDT *)0x500;
 	struct TSS *tss = (struct TSS *)(0x500 + sizeof(struct IDT));
@@ -23,6 +24,7 @@ void kernel_main(void) {
 	for(;;) { __asm__ __volatile__ ("hlt"); }
 }
 
+void user_main(void) __attribute__((noreturn));
 void user_main(void) {
 	__asm__ __volatile__ ("int $0x80");
 	for(;;);

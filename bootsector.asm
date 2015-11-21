@@ -35,7 +35,7 @@ protected_mode:
     mov gs, ax                                                                  ; set extra data segment #3
     mov esp, 0x70000                                                            ; set stack pointer
                                                                                 ; video RAM begins at 0xA0000
-    call 0x8:0x10000                                                            ; far jump to kernel
+    jmp 0x8:0x10000                                                             ; far jump to kernel
 gdt:
 gdt_null:                                                                       ; null segment
     dq 0                                                                        ; null
