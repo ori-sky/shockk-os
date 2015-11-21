@@ -26,6 +26,8 @@ void kernel_main(void) {
 
 void user_main(void) __attribute__((noreturn));
 void user_main(void) {
-	__asm__ __volatile__ ("int $0x80");
+	__asm__ __volatile__ ("int $0x80" : : "a" (':'));
+	__asm__ __volatile__ ("int $0x80" : : "a" ('D'));
+	__asm__ __volatile__ ("int $0x80" : : "a" ('\n'));
 	for(;;);
 }

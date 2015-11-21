@@ -1,5 +1,5 @@
 extern isr_main
-global isr_stub
+extern syscall_main
 
 [BITS 32]                                                                       ; 32-bit instructions
 isr_stub:
@@ -25,6 +25,15 @@ isr_stub:
         jmp isr_stub                                                            ; jump to common ISR stub
 %endmacro
 
+%macro SYSCALL_INTERRUPT 1
+    global isr_stub_%1
+    isr_stub_%1:
+        push eax                                                                ; push command code
+        call syscall_main                                                       ; call C syscall handler
+        add esp, 4                                                              ; clean up pushed command code
+        iret                                                                    ; return from interrupt
+%endmacro
+
 INTERRUPT 0
 INTERRUPT 1
 INTERRUPT 2
@@ -42,7 +51,15 @@ DEBUG_INTERRUPT 13
 DEBUG_INTERRUPT 14
 
 %assign i 15
-%rep 256-15
+%rep 128-15
+    INTERRUPT i
+    %assign i i+1
+%endrep
+
+SYSCALL_INTERRUPT 128
+
+%assign i 129
+%rep 256-129
     INTERRUPT i
     %assign i i+1
 %endrep
