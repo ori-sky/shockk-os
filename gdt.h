@@ -2,6 +2,7 @@
 #define GDT_H
 
 #include <stdint.h>
+#include "tss.h"
 
 struct GDTEntry {
 	uint16_t limiter_low;
@@ -28,6 +29,6 @@ struct GDT {
 	struct GDTEntry entries[6];
 } __attribute__((packed));
 
-void gdt_init(volatile struct GDT *);
+void gdt_init(volatile struct GDT *, volatile struct TSS *);
 
 #endif

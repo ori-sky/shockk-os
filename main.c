@@ -15,7 +15,7 @@ void entry(void) {
 	pic_set_masks(0, 0);
 	idt_init(idt);
 	__asm__ __volatile__ ("sti");
-	gdt_init(gdt);
+	gdt_init(gdt, tss);
 	tss_init(tss);
 	screen_init();
 

@@ -26,7 +26,7 @@ inline void set_tss_entry(volatile struct GDTEntry *entry, uint32_t base_address
 	entry->type = 1 | 8; /* TSS type with bit 1 (busy flag) cleared */
 }
 
-void gdt_init(volatile struct GDT *gdt) {
+void gdt_init(volatile struct GDT *gdt, volatile struct TSS *tss) {
 	gdt->descriptor.limiter = sizeof(gdt->entries);
 	gdt->descriptor.base_address = &gdt->entries;
 
@@ -34,7 +34,7 @@ void gdt_init(volatile struct GDT *gdt) {
 	set_entry(&gdt->entries[2], 0x0, 0xFFFFF, true, false);
 	set_entry(&gdt->entries[3], 0x0, 0xFFFFF, false, true);
 	set_entry(&gdt->entries[4], 0x0, 0xFFFFF, false, false);
-	set_tss_entry(&gdt->entries[5], 0x0, 0xFFFFF, true);
+	set_tss_entry(&gdt->entries[5], tss, sizeof(struct TSS), true);
 
 	__asm__ __volatile__ ("lgdt (%0)" : : "r" (&gdt->descriptor));
 }
