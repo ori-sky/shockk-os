@@ -13,7 +13,7 @@ inline char * uitoa(unsigned int value, char *str, unsigned int base) {
 	unsigned short div = 1;
 	for(unsigned char i=log; i!=(unsigned char)(-1); --i, div*=base) {
 		unsigned char offset = value / div % base;
-		unsigned char base = offset < 10 ? '0' : 'a' - 10;
+		unsigned char base = offset < 10 ? '0' : 'A' - 10;
 		str[i] = base + offset;
 	}
 
@@ -38,7 +38,7 @@ void isr_main(struct CPUState cpu_state) {
 
 	screen_put('a' + i++ % 26);
 
-	char interrupt_string[] = "0x00\n";
+	char interrupt_string[] = "0x  \n";
 	uitoa(cpu_state.interrupt, &interrupt_string[2], 16);
 	screen_print(interrupt_string);
 }
