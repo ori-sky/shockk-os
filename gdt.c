@@ -9,10 +9,10 @@ inline void set_entry(volatile struct GDTEntry *entry, uint32_t base_address, ui
 	entry->access = access;
 
 	uint8_t flags_and_limiter_high = 0;
-	flags_and_limiter_high |= 1 << 7;
-	flags_and_limiter_high |= 1 << 6;
-	flags_and_limiter_high |= 0 << 5;
-	flags_and_limiter_high |= 0 << 4;
+	flags_and_limiter_high |= 1 << 7; /* page granularity flag */
+	flags_and_limiter_high |= 1 << 6; /* size flag */
+	flags_and_limiter_high |= 0 << 5; /* reserved */
+	flags_and_limiter_high |= 0 << 4; /* available to system programmers */
 	flags_and_limiter_high |= (limiter >> 16) & 0xF;
 	entry->flags_and_limiter_high = flags_and_limiter_high;
 }
