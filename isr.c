@@ -4,6 +4,8 @@
 #include "cpu.h"
 #include "screen.h"
 
+static unsigned int i;
+
 inline char * uitoa(unsigned int value, char *str, unsigned int base) {
 	unsigned char log = 0;
 	for(unsigned int n=value; n>=base; n/=base) { ++log; }
@@ -34,8 +36,7 @@ void isr_main(struct CPUState cpu_state) {
 		break;
 	}
 
-	volatile unsigned int *i = (unsigned int *)0x80000;
-	screen_put('a' + (*i)++ % 26);
+	screen_put('a' + i++ % 26);
 
 	char interrupt_string[] = "0x00\n";
 	uitoa(cpu_state.interrupt, &interrupt_string[2], 16);
