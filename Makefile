@@ -2,7 +2,7 @@ IMAGE=os.img
 FLOPPY_IMAGE=floppy.img
 
 K_ENTRY=entry
-K_ORIGIN=0x1000
+K_ORIGIN=0x10000
 K_OBJS=main.o ports.o pic.o gdt.o tss.o idt.o isr.s.o isr.o screen.o
 
 ASM=nasm

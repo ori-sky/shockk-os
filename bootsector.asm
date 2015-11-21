@@ -6,9 +6,9 @@ reset_drive:
     xor ah, ah                                                                  ; command = reset drive
     int 0x13                                                                    ; interrupt = disk services
     jc reset_drive                                                              ; carry flag set on error
-    xor ax, ax                                                                  ; buffer address pointer (es:bx)
-    mov es, ax                                                                  ; es = null selector
-    mov bx, 0x1000                                                              ; bx = location to load kernel into
+    mov ax, 0x1000
+    mov es, ax                                                                  ; es:bx = location to load kernel into
+    mov bx, 0x0
     mov ah, 0x2                                                                 ; command = read sectors from drive
     mov al, 38                                                                  ; number of sectors to read
     xor ch, ch                                                                  ; disk cylinder to read from
@@ -35,7 +35,7 @@ protected_mode:
     mov gs, ax                                                                  ; set extra data segment #3
     mov esp, 0x90000                                                            ; stack from 0x90000 to 0x9FFFF
                                                                                 ; video RAM begins at 0xA0000
-    call 0x8:0x1000                                                             ; far jump to kernel
+    call 0x8:0x10000                                                            ; far jump to kernel
 gdt:
 gdt_null:                                                                       ; null segment
     dq 0                                                                        ; null
