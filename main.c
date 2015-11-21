@@ -19,6 +19,11 @@ void kernel_main(void) {
 	tss_init(tss);
 	screen_init();
 
-	__asm__ __volatile__ ("int $0x50");
+	user_enter();
 	for(;;) { __asm__ __volatile__ ("hlt"); }
+}
+
+void user_main(void) {
+	__asm__ __volatile__ ("int $0x80");
+	for(;;);
 }
