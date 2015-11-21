@@ -46,7 +46,7 @@ gdt_code:                                                                       
     db 10011010b                                                                ; access byte
                                                                                 ; [ 1] segment present flag
                                                                                 ; [ 2] privilege ring level
-                                                                                ; [ 1] code/data flag
+                                                                                ; [ 1] data/code flag
                                                                                 ; [ 1] executable (code) flag
                                                                                 ; [ 1] direction/conforming flag
                                                                                 ; [ 1] read/write flag
