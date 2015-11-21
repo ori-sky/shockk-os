@@ -9,9 +9,9 @@
 void entry(void) {
 	pic_remap(IRQ0, IRQ8);
 	pic_set_masks(0, 0);
+	idt_init((struct IDT *)(0x500));
 
-	gdt_init((struct GDT *)(0x500));
-	idt_init((struct IDT *)(0x500 + sizeof(struct GDT)));
+	gdt_init((struct GDT *)(0x500 + sizeof(struct IDT)));
 
 	__asm__ __volatile__ ("sti");
 
