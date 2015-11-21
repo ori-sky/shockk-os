@@ -6,7 +6,7 @@
 #include "tss.h"
 #include "screen.h"
 
-void entry(void) {
+void kernel_main(void) {
 	struct IDT *idt = (struct IDT *)0x500;
 	struct TSS *tss = (struct TSS *)(0x500 + sizeof(struct IDT));
 	struct GDT *gdt = (struct GDT *)(0x500 + sizeof(struct IDT) + sizeof(struct TSS));
