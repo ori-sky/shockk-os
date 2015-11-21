@@ -258,16 +258,16 @@ extern void isr_stub_254(void);
 extern void isr_stub_255(void);
 
 inline void set_entry(volatile struct IDTEntry *entry, void (*handler)(void), uint8_t attributes) {
-	entry->baseAddressLow = handler;
+	entry->base_address_low = handler;
 	entry->selector = 0x8;
 	entry->zero = 0;
 	entry->attributes = attributes;
-	entry->baseAddressHigh = 0;
+	entry->base_address_high = 0;
 }
 
 void idt_init(volatile struct IDT *idt) {
 	idt->descriptor.limiter = sizeof(idt->entries);
-	idt->descriptor.baseAddress = &idt->entries;
+	idt->descriptor.base_address = &idt->entries;
 
 	set_entry(&idt->entries[  0], isr_stub_0,   0x8E);
 	set_entry(&idt->entries[  1], isr_stub_1,   0x8E);

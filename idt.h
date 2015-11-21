@@ -4,16 +4,16 @@
 #include <stdint.h>
 
 struct IDTEntry {
-	uint16_t baseAddressLow;
+	uint16_t base_address_low;
 	uint16_t selector;
 	uint8_t zero;
 	uint8_t attributes;
-	uint16_t baseAddressHigh;
+	uint16_t base_address_high;
 } __attribute__((packed));
 
 struct IDTDescriptor {
 	uint16_t limiter;
-	uint32_t baseAddress;
+	uint32_t base_address;
 } __attribute__((packed));
 
 struct IDT {
