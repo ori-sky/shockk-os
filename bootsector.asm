@@ -27,7 +27,7 @@ reset_drive:
     jmp 0x8:protected_mode                                                      ; far jump to code selector
 [BITS 32]                                                                       ; 32-bit instructions
 protected_mode:
-    mov ax, 0x10                                                                ; data selector is 0x10
+    mov ax, 0x10                                                                ; segment selector is 0x10
     mov ds, ax                                                                  ; set data segment
     mov ss, ax                                                                  ; set stack segment
     mov es, ax                                                                  ; set extra data segment #1
