@@ -19,7 +19,7 @@ struct GDTDescriptor {
 
 struct GDT {
 	struct GDTDescriptor descriptor;
-	struct GDTEntry entries[3];
+	struct GDTEntry entries[5];
 } __attribute__((packed));
 
 void gdt_init(volatile struct GDT *);

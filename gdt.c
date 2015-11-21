@@ -22,9 +22,9 @@ inline uint8_t make_access(bool privileged, bool executable, bool dir_con, bool 
 	access |= 1 << 7;                     /* segment present flag */
 	if(!privileged) { access |= 3 << 5; } /* privilege ring level */
 	access |= 1 << 4;                     /* code/data flag */
-	if(!executable) { access |= 1 << 3; } /* executable flag */
-	if(!dir_con)    { access |= 1 << 2; } /* direction/conforming flag */
-	if(!read_write) { access |= 1 << 1; } /* read/write flag */
+	if(executable) { access |= 1 << 3; } /* executable flag */
+	if(dir_con)    { access |= 1 << 2; } /* direction/conforming flag */
+	if(read_write) { access |= 1 << 1; } /* read/write flag */
 	access |= 1 << 0;                     /* CPU access flag */
 	return access;
 }
@@ -38,7 +38,9 @@ void gdt_init(volatile struct GDT *gdt) {
 		((unsigned char *)&gdt->entries[0])[i] = 0;
 	}
 	set_entry(&gdt->entries[1], 0x0, 0xFFFFF, make_access(true, true, false, true));
-	set_entry(&gdt->entries[1], 0x0, 0xFFFFF, make_access(true, false, false, true));
+	set_entry(&gdt->entries[2], 0x0, 0xFFFFF, make_access(true, false, false, true));
+	set_entry(&gdt->entries[3], 0x0, 0xFFFFF, make_access(false, true, false, true));
+	set_entry(&gdt->entries[4], 0x0, 0xFFFFF, make_access(false, false, false, true));
 
 	__asm__ __volatile__ ("lgdt (%0)" : : "r" (&gdt->descriptor));
 }
