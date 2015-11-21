@@ -33,10 +33,6 @@ void gdt_init(volatile struct GDT *gdt) {
 	gdt->descriptor.limiter = sizeof(gdt->entries);
 	gdt->descriptor.base_address = &gdt->entries;
 
-	/* null segment */
-	for(unsigned int i = 0; i < sizeof(struct GDTEntry); ++i) {
-		((unsigned char *)&gdt->entries[0])[i] = 0;
-	}
 	set_entry(&gdt->entries[1], 0x0, 0xFFFFF, make_access(true, true, false, true));
 	set_entry(&gdt->entries[2], 0x0, 0xFFFFF, make_access(true, false, false, true));
 	set_entry(&gdt->entries[3], 0x0, 0xFFFFF, make_access(false, true, false, true));
