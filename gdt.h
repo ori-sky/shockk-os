@@ -5,10 +5,16 @@
 
 struct GDTEntry {
 	uint16_t limiter_low;
-	uint16_t base_address_low;
-	uint8_t base_address_mid;
-	uint8_t access;
-	uint8_t flags_and_limiter_high;
+	uint32_t base_address_low : 24;
+	uint8_t type : 4;
+	uint8_t code_data : 1;
+	uint8_t privilege : 2;
+	uint8_t present : 1;
+	uint8_t limiter_high : 4;
+	uint8_t available : 1;
+	uint8_t reserved : 1;
+	uint8_t size : 1;
+	uint8_t granularity : 1;
 	uint8_t base_address_high;
 } __attribute__((packed));
 
@@ -19,7 +25,7 @@ struct GDTDescriptor {
 
 struct GDT {
 	struct GDTDescriptor descriptor;
-	struct GDTEntry entries[5];
+	struct GDTEntry entries[6];
 } __attribute__((packed));
 
 void gdt_init(volatile struct GDT *);
