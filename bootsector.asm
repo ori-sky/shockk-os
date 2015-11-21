@@ -33,7 +33,7 @@ protected_mode:
     mov es, ax                                                                  ; set extra data segment #1
     mov fs, ax                                                                  ; set extra data segment #2
     mov gs, ax                                                                  ; set extra data segment #3
-    mov esp, 0x90000                                                            ; stack from 0x90000 to 0x9FFFF
+    mov esp, 0x70000                                                            ; set stack pointer
                                                                                 ; video RAM begins at 0xA0000
     call 0x8:0x10000                                                            ; far jump to kernel
 gdt:
