@@ -258,11 +258,12 @@ extern void isr_stub_254(void);
 extern void isr_stub_255(void);
 
 inline void set_entry(volatile struct IDTEntry *entry, void (*handler)(void), uint8_t attributes) {
-	entry->base_address_low = handler;
+	uint32_t base_address = (uint32_t)handler;
+	entry->base_address_low = base_address & 0xFFFF;
+	entry->base_address_high = (base_address >> 16) & 0xFFFF;
 	entry->selector = 0x8;
 	entry->zero = 0;
 	entry->attributes = attributes;
-	entry->base_address_high = 0;
 }
 
 void idt_init(volatile struct IDT *idt) {
