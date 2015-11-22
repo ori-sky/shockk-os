@@ -5,6 +5,9 @@
 #include "gdt.h"
 #include "tss.h"
 #include "screen.h"
+#include "syscall.h"
+
+extern void user_enter(void);
 
 void kernel_main(void) __attribute__((noreturn));
 void kernel_main(void) {
@@ -26,8 +29,8 @@ void kernel_main(void) {
 
 void user_main(void) __attribute__((noreturn));
 void user_main(void) {
-	__asm__ __volatile__ ("int $0x80" : : "a" (':'));
-	__asm__ __volatile__ ("int $0x80" : : "a" ('D'));
-	__asm__ __volatile__ ("int $0x80" : : "a" ('\n'));
+	syscall_put(':');
+	syscall_put('D');
+	syscall_put('\n');
 	for(;;);
 }
