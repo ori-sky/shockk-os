@@ -1,4 +1,4 @@
-#include "tss.h"
+#include <kernel/tss.h>
 
 void tss_init(volatile struct TSS *tss) {
 	for(unsigned int i = 0; i < sizeof(struct TSS); ++i) {

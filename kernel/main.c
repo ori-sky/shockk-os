@@ -1,11 +1,11 @@
 #include <stdint.h>
-#include "pic.h"
-#include "irq.h"
-#include "idt.h"
-#include "gdt.h"
-#include "tss.h"
-#include "screen.h"
-#include "syscall.h"
+#include <kernel/pic.h>
+#include <kernel/irq.h>
+#include <kernel/idt.h>
+#include <kernel/gdt.h>
+#include <kernel/tss.h>
+#include <kernel/screen.h>
+#include <kernel/syscall.h>
 
 extern void user_enter(void);
 

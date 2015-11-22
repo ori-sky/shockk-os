@@ -1,5 +1,5 @@
-#include "pic.h"
-#include "ports.h"
+#include <kernel/ports.h>
+#include <kernel/pic.h>
 
 void pic_set_masks(unsigned char mask_master, unsigned char mask_slave) {
 	ports_outb(PIC_PORT_MASTER_DATA, mask_master);

@@ -1,48 +1,29 @@
 IMAGE=os.img
 FLOPPY_IMAGE=floppy.img
 
-K_ENTRY=kernel_main
-K_ORIGIN=0x10000
-K_OBJS=main.o ports.o pic.o gdt.o tss.o idt.o isr.s.o isr.o syscall.o screen.o user.s.o
-
-ASM=nasm
-CC=$(CROSS_TARGET)-gcc
-LD=$(CROSS_TARGET)-gcc
-
-ASM_FLAGS=-f elf
-CFLAGS=-c -Wall -Wextra -Wpedantic -std=c99 -ffreestanding -Iinclude -O2
-LDFLAGS=-s -e $(K_ENTRY) -Ttext=$(K_ORIGIN) -nostdlib
-
-all: image floppy
+all: floppy
 
 run-qemu: floppy
 	qemu -s -fda $(FLOPPY_IMAGE)
-
-clean:
-	rm -fv bootsector.bin
-	rm -fv $(K_OBJS)
-	rm -fv kernel.o
-	rm -fv kernel.bin
-	rm -fv os.img
-	rm -fv floppy.img
-
-image: bootsector kernel
-	cat bootsector.bin kernel.bin > $(IMAGE)
 
 floppy: image
 	dd bs=512 count=2820 if=/dev/zero of=$(FLOPPY_IMAGE)
 	dd conv=notrunc bs=512 if=$(IMAGE) of=$(FLOPPY_IMAGE)
 
-bootsector: bootsector.asm
-	$(ASM) -f bin $^ -o bootsector.bin
+image: bootloader  kernel
+	cat bootloader/bootloader.bin kernel/kernel.bin > $(IMAGE)
 
-#kernel: main.o $(K_C_OBJS) $(K_S_OBJS)
-kernel: $(K_OBJS)
-	$(LD) $(LDFLAGS) $^ -o kernel.o
-	objcopy -R .note -R .comment -S -O binary kernel.o kernel.bin
+.PHONY: bootloader
+bootloader:
+	cd bootloader && $(MAKE)
 
-%.o: %.c
-	$(CC) $(CFLAGS) $^ -o $@
+.PHONY: kernel
+kernel:
+	cd kernel && $(MAKE)
 
-%.s.o: %.asm
-	$(ASM) $(ASM_FLAGS) $^ -o $@
+.PHONY: clean
+clean:
+	cd bootloader && $(MAKE) clean
+	cd kernel && $(MAKE) clean
+	rm -fv os.img
+	rm -fv floppy.img

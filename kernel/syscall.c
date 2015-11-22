@@ -1,6 +1,6 @@
-#include "syscall.h"
 #include <stdarg.h>
-#include "screen.h"
+#include <kernel/screen.h>
+#include <kernel/syscall.h>
 
 int syscall_main(int command, int arg1, int arg2, int arg3) {
 	switch(command) {

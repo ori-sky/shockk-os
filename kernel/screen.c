@@ -1,5 +1,5 @@
-#include "screen.h"
-#include "ports.h"
+#include <kernel/ports.h>
+#include <kernel/screen.h>
 
 static unsigned short screen_cell;
 

@@ -1,4 +1,4 @@
-#include "ports.h"
+#include <kernel/ports.h>
 
 unsigned char ports_inb(unsigned short port) {
 	unsigned char result;

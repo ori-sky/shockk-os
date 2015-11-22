@@ -1,5 +1,5 @@
-#include "gdt.h"
 #include <stdbool.h>
+#include <kernel/gdt.h>
 
 inline void set_entry_common(volatile struct GDTEntry *entry, uint32_t base_address, uint32_t limiter, bool privileged) {
 	entry->base_address_low = base_address & 0xFFFFFF;

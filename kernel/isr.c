@@ -1,8 +1,8 @@
-#include "ports.h"
-#include "pic.h"
-#include "irq.h"
-#include "cpu.h"
-#include "screen.h"
+#include <kernel/ports.h>
+#include <kernel/pic.h>
+#include <kernel/irq.h>
+#include <kernel/cpu.h>
+#include <kernel/screen.h>
 
 static unsigned int i;
 

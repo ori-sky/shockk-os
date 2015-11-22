@@ -1,5 +1,5 @@
-#include "idt.h"
 #include <stdbool.h>
+#include <kernel/idt.h>
 
 extern void isr_stub_0(void);
 extern void isr_stub_1(void);
