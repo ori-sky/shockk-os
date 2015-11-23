@@ -531,5 +531,5 @@ void idt_init(volatile struct IDT *idt) {
 	set_entry(&idt->entries[254], isr_stub_254, true);
 	set_entry(&idt->entries[255], isr_stub_255, true);
 
-	__asm__ __volatile__ ("lidt (%0)" : : "r" (&idt->descriptor));
+	__asm__ ("lidt (%0)" : : "r" (&idt->descriptor));
 }

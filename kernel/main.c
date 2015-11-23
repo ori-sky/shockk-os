@@ -18,13 +18,13 @@ void kernel_main(void) {
 	pic_remap(IRQ0, IRQ8);
 	pic_set_masks(0, 0);
 	idt_init(idt);
-	__asm__ __volatile__ ("sti");
+	__asm__ ("sti");
 	gdt_init(gdt, tss);
 	tss_init(tss);
 	screen_init();
 
 	user_enter();
-	for(;;) { __asm__ __volatile__ ("hlt"); }
+	for(;;) { __asm__ ("hlt"); }
 }
 
 void user_main(void) __attribute__((noreturn));

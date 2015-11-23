@@ -36,5 +36,5 @@ void gdt_init(volatile struct GDT *gdt, volatile struct TSS *tss) {
 	set_entry(&gdt->entries[4], 0x0, 0xFFFFF, false, false);
 	set_tss_entry(&gdt->entries[5], tss, sizeof(struct TSS), true);
 
-	__asm__ __volatile__ ("lgdt (%0)" : : "r" (&gdt->descriptor));
+	__asm__ ("lgdt (%0)" : : "r" (&gdt->descriptor));
 }

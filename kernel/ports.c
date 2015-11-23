@@ -7,5 +7,5 @@ unsigned char ports_inb(unsigned short port) {
 }
 
 void ports_outb(unsigned short port, unsigned char data) {
-	__asm__ __volatile__ ("out %0, %1" : : "a" (data), "d" (port));
+	__asm__ ("out %0, %1" : : "a" (data), "d" (port));
 }
