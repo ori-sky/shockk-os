@@ -6,21 +6,22 @@
 #include <kernel/idt.h>
 #include <kernel/gdt.h>
 #include <kernel/tss.h>
+#include <kernel/panic.h>
+#include <kernel/memory.h>
 #include <kernel/screen.h>
 #include <kernel/syscall.h>
-#include <kernel/panic.h>
 
 extern void user_enter(void);
 
 void kernel_main(void) __attribute__((noreturn));
 void kernel_main(void) {
-	struct IDT *idt = (struct IDT *)0x500;
-	struct TSS *tss = (struct TSS *)(0x500 + sizeof(struct IDT));
-	struct GDT *gdt = (struct GDT *)(0x500 + sizeof(struct IDT) + sizeof(struct TSS));
+	struct IDT *idt = kmalloc(sizeof(struct IDT));
+	struct TSS *tss = kmalloc(sizeof(struct TSS));
+	struct GDT *gdt = kmalloc(sizeof(struct GDT));
 
 	screen_init();
 
-	if(a20_enable()) { kernel_panic("failed to enable A20 line"); }
+	if(!a20_enable()) { kernel_panic("failed to enable A20 line"); }
 
 	pit_set(1 << 15);
 	pic_remap(IRQ0, IRQ8);
