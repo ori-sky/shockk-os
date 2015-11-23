@@ -32,5 +32,6 @@ void user_main(void) {
 	syscall_put(':');
 	syscall_put('D');
 	syscall_put('\n');
+	syscall_put('\n');
 	for(;;);
 }
