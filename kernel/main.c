@@ -14,13 +14,13 @@ extern void user_enter(void);
 
 void kernel_main(void) __attribute__((noreturn));
 void kernel_main(void) {
-	screen_init();
-
-	if(a20_enable()) { kernel_panic("failed to enable A20 line"); }
-
 	struct IDT *idt = (struct IDT *)0x500;
 	struct TSS *tss = (struct TSS *)(0x500 + sizeof(struct IDT));
 	struct GDT *gdt = (struct GDT *)(0x500 + sizeof(struct IDT) + sizeof(struct TSS));
+
+	screen_init();
+
+	if(a20_enable()) { kernel_panic("failed to enable A20 line"); }
 
 	pit_set(1 << 15);
 	pic_remap(IRQ0, IRQ8);
