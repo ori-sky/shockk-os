@@ -33,6 +33,6 @@ struct TSS {
 	uint32_t iomap_base;
 } __attribute__((packed));
 
-void tss_init(volatile struct TSS *);
+void tss_init(struct TSS *);
 
 #endif

@@ -31,11 +31,11 @@ void kernel_main(void) {
 
 	__asm__ ("sti");
 
-	pci_check_buses();
+	pci_enumerate_buses();
 	gdt_init(gdt, tss);
 	tss_init(tss);
 
-	user_enter(kmalloc(1 << 20));
+	user_enter(kmalloc(1 << 20) + (1 << 20));
 	for(;;) { __asm__ ("hlt"); }
 }
 

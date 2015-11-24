@@ -6,7 +6,7 @@
 
 static unsigned int i;
 
-inline char * uitoa(unsigned int value, char *str, unsigned int base) {
+char * uitoa(unsigned int value, char *str, unsigned int base) {
 	unsigned char log = 0;
 	for(unsigned int n=value; n>=base; n/=base) { ++log; }
 
