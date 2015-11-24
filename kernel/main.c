@@ -11,13 +11,13 @@
 #include <kernel/screen.h>
 #include <kernel/syscall.h>
 
-extern void user_enter(void);
+extern void user_enter(void *);
 
 void kernel_main(void) __attribute__((noreturn));
 void kernel_main(void) {
-	struct IDT *idt = kmalloc(sizeof(struct IDT));
-	struct TSS *tss = kmalloc(sizeof(struct TSS));
-	struct GDT *gdt = kmalloc(sizeof(struct GDT));
+	volatile struct IDT *idt = kmalloc(sizeof(struct IDT));
+	volatile struct TSS *tss = kmalloc(sizeof(struct TSS));
+	volatile struct GDT *gdt = kmalloc(sizeof(struct GDT));
 
 	screen_init();
 
@@ -33,7 +33,7 @@ void kernel_main(void) {
 	gdt_init(gdt, tss);
 	tss_init(tss);
 
-	user_enter();
+	user_enter(kmalloc(1 << 20));
 	for(;;) { __asm__ ("hlt"); }
 }
 
