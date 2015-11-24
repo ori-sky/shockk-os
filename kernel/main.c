@@ -10,6 +10,7 @@
 #include <kernel/memory.h>
 #include <kernel/screen.h>
 #include <kernel/syscall.h>
+#include <kernel/pci.h>
 
 extern void user_enter(void *);
 
@@ -30,6 +31,7 @@ void kernel_main(void) {
 
 	__asm__ ("sti");
 
+	pci_check_buses();
 	gdt_init(gdt, tss);
 	tss_init(tss);
 
