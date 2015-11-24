@@ -1,7 +1,11 @@
 #ifndef PORTS_H
 #define PORTS_H
 
-unsigned char ports_inb(unsigned short port);
-void ports_outb(unsigned short port, unsigned char data);
+#include <stdint.h>
+
+uint8_t ports_inb(unsigned short port);
+uint32_t ports_inl(unsigned short port);
+void ports_outb(unsigned short port, uint8_t data);
+void ports_outl(unsigned short port, uint32_t data);
 
 #endif
