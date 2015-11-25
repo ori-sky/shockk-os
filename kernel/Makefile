@@ -6,12 +6,15 @@ ASM=nasm
 CC=$(CROSS_TARGET)-gcc
 LD=$(CROSS_TARGET)-gcc
 
-ASM_FLAGS=-f elf
-CFLAGS=-c -Wall -Wextra -Wpedantic -std=c99 -ffreestanding -I../include -O2
-LDFLAGS=-s -e $(ENTRY) -Ttext=$(ORIGIN) -nostdlib
+K_ASM_FLAGS=-f elf
+K_CFLAGS=-c -Wall -Wextra -Wpedantic -std=c99 -ffreestanding -I../include -O2
+K_LDFLAGS=-s -e $(ENTRY) -Ttext=$(ORIGIN) -nostdlib
+ASM_FLAGS=
+CFLAGS=
+LDFLAGS=
 
 kernel: $(OBJS)
-	$(LD) $(LDFLAGS) $^ -o kernel.o
+	$(LD) $(K_LDFLAGS) $(LDFLAGS) $^ -o kernel.o
 	objcopy -R .note -R .comment -S -O binary kernel.o kernel.bin
 
 .PHONY: clean
@@ -21,7 +24,7 @@ clean:
 	rm -fv kernel.bin
 
 %.o: %.c
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $(K_CFLAGS) $(CFLAGS) $^ -o $@
 
 %.s.o: %.asm
-	$(ASM) $(ASM_FLAGS) $^ -o $@
+	$(ASM) $(K_ASM_FLAGS) $(ASM_FLAGS) $^ -o $@
