@@ -7,7 +7,7 @@ start:
     mov es, ax                                                                  ; es:bx = location to load kernel into
     mov bx, 0x0
     mov ah, 0x2                                                                 ; command = read sectors from drive
-    mov al, 128                                                                 ; number of sectors to read
+    mov al, 72                                                                  ; number of sectors to read
     xor ch, ch                                                                  ; disk cylinder to read from
     mov cl, 2                                                                   ; sector to begin reading from
                                                                                 ; bootsector is sector 1 (1-based)
