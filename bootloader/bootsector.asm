@@ -2,10 +2,7 @@
 [ORG 0x7C00]                                                                    ; bootsector is loaded at 0x7C00
     jmp 0x0:start                                                               ; enforce cs:ip
 start:
-reset_drive:
-    xor ah, ah                                                                  ; command = reset drive
-    int 0x13                                                                    ; interrupt = disk services
-    jc reset_drive                                                              ; carry flag set on error
+    call reset_drive
     mov ax, 0x1000
     mov es, ax                                                                  ; es:bx = location to load kernel into
     mov bx, 0x0
@@ -16,7 +13,9 @@ reset_drive:
                                                                                 ; bootsector is sector 1 (1-based)
     xor dh, dh                                                                  ; disk head to read from
     int 0x13                                                                    ; interrupt = disk services
-    jc reset_drive                                                              ; carry flag set on error
+    jnc success                                                                 ; carry flag set on error
+    call reset_drive
+success:
     cli                                                                         ; disable interrupts
     xor ax, ax                                                                  ; null selector
     mov ds, ax                                                                  ; set data segment
@@ -36,6 +35,11 @@ protected_mode:
     mov esp, 0x70000                                                            ; set stack pointer
                                                                                 ; video RAM begins at 0xA0000
     jmp 0x8:0x10000                                                             ; far jump to kernel
+reset_drive:
+    xor ah, ah                                                                  ; command = reset drive
+    int 0x13                                                                    ; interrupt = disk services
+    jc reset_drive                                                              ; carry flag set on error
+    ret
 gdt:
 gdt_null:                                                                       ; null segment
     dq 0                                                                        ; null
