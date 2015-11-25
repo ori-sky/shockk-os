@@ -73,7 +73,7 @@ gdt_end:
 gdt_desc:
     dw gdt_end - gdt                                                            ; gdt size in bytes
     dd gdt                                                                      ; gdt memory address
-    times 510-($-$$) db 0                                                       ; fill rest of sector with zeros
+    times 510-($-$$) db 0                                                       ; fill rest of sector with zeroes
     db 0x55, 0xAA                                                               ; bootsector signature
 
 
