@@ -16,9 +16,11 @@ extern void user_enter(void *);
 
 void kernel_main(void) __attribute__((noreturn));
 void kernel_main(void) {
-	volatile struct IDT *idt = kmalloc(sizeof(struct IDT));
-	volatile struct TSS *tss = kmalloc(sizeof(struct TSS));
-	volatile struct GDT *gdt = kmalloc(sizeof(struct GDT));
+	struct IDT *idt = kmalloc(sizeof(struct IDT));
+	struct TSS *tss = kmalloc(sizeof(struct TSS));
+	struct GDT *gdt = kmalloc(sizeof(struct GDT));
+	struct PCIEnumeration *pci_enum = kmalloc(sizeof(struct PCIEnumeration));
+	pci_enum->count = 0;
 
 	screen_init();
 
@@ -31,7 +33,22 @@ void kernel_main(void) {
 
 	__asm__ ("sti");
 
-	pci_enumerate_buses();
+	pci_enumerate_buses(pci_enum);
+	for(uint16_t i = 0; i < pci_enum->count; ++i) {
+		switch(pci_enum->identifiers[i].baseclass) {
+		case 0x1: /* mass storage controller */
+			switch(pci_enum->identifiers[i].subclass) {
+			case 0x1: /* IDE */
+				screen_print("found IDE controller\n");
+				break;
+			case 0x6: /* serial ATA */
+				screen_print("found serial ATA controller\n");
+				break;
+			}
+			break;
+		}
+	}
+
 	gdt_init(gdt, tss);
 	tss_init(tss);
 

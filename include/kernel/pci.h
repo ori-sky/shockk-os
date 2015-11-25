@@ -18,7 +18,7 @@ union PCIConfigAddress {
 	struct {
 		uint8_t offset;
 		uint8_t function : 3;
-		uint8_t device     : 5;
+		uint8_t device   : 5;
 		uint8_t bus;
 		uint8_t reserved : 7;
 		uint8_t enable   : 1;
@@ -41,15 +41,25 @@ struct PCIDevice {
 	uint32_t base_address_5;
 };
 
-typedef void (*pci_enumerate_cb)(void);
+struct PCIIdentifier {
+	uint8_t bus;
+	uint8_t device   : 5;
+	uint8_t function : 3;
+	uint8_t baseclass;
+	uint8_t subclass;
+};
 
+struct PCIEnumeration {
+	uint16_t count;
+	struct PCIIdentifier identifiers[1024];
+};
+
+void pci_enumerate_buses(struct PCIEnumeration *);
+void pci_enumerate_bus(struct PCIEnumeration *, uint8_t bus);
+void pci_enumerate_device(struct PCIEnumeration *, uint8_t bus, uint8_t device);
+void pci_enumerate_function(struct PCIEnumeration *, uint8_t bus, uint8_t device, uint8_t function);
 uint32_t pci_config_read(uint8_t bus, uint8_t device, uint8_t function, uint8_t offset);
 uint16_t pci_config_read_word(uint8_t bus, uint8_t device, uint8_t function, uint8_t offset);
 uint8_t pci_config_read_byte(uint8_t bus, uint8_t device, uint8_t function, uint8_t offset);
-
-void pci_enumerate_buses(void);
-void pci_enumerate_bus(uint8_t bus);
-void pci_enumerate_device(uint8_t bus, uint8_t device);
-void pci_enumerate_function(uint8_t bus, uint8_t device, uint8_t function);
 
 #endif
