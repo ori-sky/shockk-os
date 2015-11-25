@@ -16,6 +16,7 @@ isr_stub:
         push 0                                                                  ; push null error code
         push %1                                                                 ; push interrupt number
         jmp isr_stub                                                            ; jump to common ISR stub
+        times 32-($-isr_stub_%1) db 0                                           ; align stub to 32 bytes
 %endmacro
 
 %macro DEBUG_INTERRUPT 1
@@ -23,6 +24,7 @@ isr_stub:
     isr_stub_%1:
         push %1                                                                 ; push interrupt number
         jmp isr_stub                                                            ; jump to common ISR stub
+        times 32-($-isr_stub_%1) db 0                                           ; align stub to 32 bytes
 %endmacro
 
 %macro SYSCALL_INTERRUPT 1
@@ -39,6 +41,7 @@ isr_stub:
         pop ecx                                                                 ; pop argument 2
         pop edx                                                                 ; pop argument 3
         iret                                                                    ; return from interrupt
+        times 32-($-isr_stub_%1) db 0                                           ; align stub to 32 bytes
 %endmacro
 
 INTERRUPT 0
