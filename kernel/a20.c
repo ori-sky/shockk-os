@@ -1,11 +1,11 @@
 #include <kernel/ports.h>
 #include <kernel/a20.h>
 
-inline void a20_wait_test(unsigned char test) {
+void a20_wait_test(unsigned char test) {
 	while((ports_inb(0x64) & test) != 0) {}
 }
 
-inline void a20_enable_kbd(void) {
+void a20_enable_kbd(void) {
 	a20_wait_test(2);
 	ports_outb(0x64, 0xAD); /* disable keyboard */
 
@@ -27,7 +27,7 @@ inline void a20_enable_kbd(void) {
 	a20_wait_test(2);
 }
 
-inline void a20_enable_fast(void) {
+void a20_enable_fast(void) {
 	unsigned char input = ports_inb(0x92);
 	ports_outb(0x92, input | 2);
 }

@@ -6,7 +6,7 @@
 
 static unsigned int alpha_counter;
 
-inline char * uitoa(unsigned int value, char *str, unsigned int num_base) {
+char * uitoa(unsigned int value, char *str, unsigned int num_base) {
 	unsigned char log = 0;
 	for(unsigned int n=value; n>=num_base; n/=num_base) { ++log; }
 
