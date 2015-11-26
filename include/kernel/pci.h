@@ -25,22 +25,6 @@ union PCIConfigAddress {
 	} __attribute__((packed)) fields;
 } __attribute__((packed));
 
-struct PCIDevice {
-	uint16_t device_id;
-	uint16_t vendor_id;
-	uint16_t status;
-	uint8_t class_code;
-	uint8_t subclass_code;
-	uint8_t revision_id;
-	uint8_t header_type;
-	uint32_t base_address_0;
-	uint32_t base_address_1;
-	uint32_t base_address_2;
-	uint32_t base_address_3;
-	uint32_t base_address_4;
-	uint32_t base_address_5;
-};
-
 struct PCIIdentifier {
 	uint8_t bus;
 	uint8_t device   : 5;
