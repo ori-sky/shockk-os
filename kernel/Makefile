@@ -7,7 +7,7 @@ CC=$(CROSS_TARGET)-gcc
 LD=$(CROSS_TARGET)-gcc
 
 K_ASM_FLAGS=-f elf
-K_CFLAGS=-I../include -c -ffreestanding -std=c11 -O2 -Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wredundant-decls -Wshadow -Wstrict-overflow=5 -Wundef -Wdisabled-optimization -Wsign-conversion -Wstack-protector -Wswitch-default -Wabi -Waggregate-return -Winline -Wpadded -Wswitch-enum -Wunsafe-loop-optimizations
+K_CFLAGS=-I../include -c -ffreestanding -std=c11 -O2 -mno-sse -Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual -Wformat=2 -Winit-self -Wmissing-include-dirs -Wredundant-decls -Wshadow -Wstrict-overflow=5 -Wundef -Wdisabled-optimization -Wsign-conversion -Wstack-protector -Wswitch-default -Wabi -Waggregate-return -Winline -Wpadded -Wswitch-enum
 K_LDFLAGS=-s -e $(ENTRY) -Ttext=$(ORIGIN) -nostdlib
 ASM_FLAGS=
 CFLAGS=
