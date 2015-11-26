@@ -44,11 +44,7 @@ void kernel_main(void) {
 			case 0x6: /* serial ATA */
 				screen_print("found serial ATA controller\n");
 				break;
-			default:
-				break;
 			}
-			break;
-		default:
 			break;
 		}
 	}

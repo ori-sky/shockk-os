@@ -54,11 +54,7 @@ void pci_enumerate_function(struct PCIEnumeration *pci_enum, uint8_t bus, uint8_
 		case 0x4: /* PCI-to-PCI */
 			pci_enumerate_bus(pci_enum, pci_config_read_byte(bus, device, function, PCI_OFFSET_SECONDARY_BUS));
 			break;
-		default:
-			break;
 		}
-		break;
-	default:
 		break;
 	}
 }
