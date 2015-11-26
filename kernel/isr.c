@@ -33,13 +33,13 @@ void isr_main(struct CPUState cpu_state) {
 	char interrupt_string[] = "0x  \n";
 
 	switch(cpu_state.interrupt) {
-	case IRQ1:
+	case IRQ0:
+		break;
+	default:
 		ports_inb(0x60);
 		screen_put('a' + alpha_counter++ % 26);
 		uitoa(cpu_state.interrupt, &interrupt_string[2], 16);
 		screen_print(interrupt_string);
-		break;
-	default:
 		break;
 	}
 }
