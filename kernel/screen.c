@@ -38,11 +38,11 @@ void screen_cursor_by(short n) {
 }
 
 void screen_write_at(const unsigned short cell, const char c) {
-	SCREEN_BUFFER[cell << 1] = c;
+	SCREEN_BUFFER[cell << 1] = *(const unsigned char *)&c;
 }
 
 char screen_read_at(const unsigned short cell) {
-	return SCREEN_BUFFER[cell << 1];
+	return *(char *)&SCREEN_BUFFER[cell << 1];
 }
 
 void screen_put(const char c) {

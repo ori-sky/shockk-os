@@ -39,5 +39,7 @@ void isr_main(struct CPUState cpu_state) {
 		uitoa(cpu_state.interrupt, &interrupt_string[2], 16);
 		screen_print(interrupt_string);
 		break;
+	default:
+		break;
 	}
 }
