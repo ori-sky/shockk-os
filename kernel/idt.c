@@ -5,7 +5,7 @@ extern void isr_stub_0(void);
 extern void isr_stub_1(void);
 extern void isr_stub_128(void);
 
-inline void set_entry(volatile struct IDTEntry *entry, void (*handler)(void), bool restricted) {
+inline void set_entry(struct IDTEntry *entry, void (*handler)(void), bool restricted) {
 	uint32_t base_address = (uint32_t)handler;
 	entry->base_address_low = base_address & 0xFFFF;
 	entry->base_address_high = (base_address >> 16) & 0xFFFF;
@@ -17,15 +17,16 @@ inline void set_entry(volatile struct IDTEntry *entry, void (*handler)(void), bo
 	entry->present = 1;
 }
 
-void idt_init(volatile struct IDT *idt) {
+void idt_init(struct IDT *idt) {
 	idt->descriptor.limiter = sizeof(idt->entries);
-	idt->descriptor.base_address = &idt->entries;
+	idt->descriptor.base_address = (uint32_t)&idt->entries;
 
 	uint32_t stub_size = (uint32_t)isr_stub_1 - (uint32_t)isr_stub_0;
 
 	uint16_t entry;
 	for(entry = 0; entry < 128; ++entry) {
-		set_entry(&idt->entries[entry], isr_stub_0 + entry * stub_size, true);
+		void (*stub)(void) = (void (*)(void))((uint32_t)isr_stub_0 + entry * stub_size);
+		set_entry(&idt->entries[entry], stub, true);
 	}
 	set_entry(&idt->entries[128], isr_stub_128, false);
 

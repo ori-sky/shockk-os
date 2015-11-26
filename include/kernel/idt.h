@@ -24,6 +24,6 @@ struct IDT {
 	struct IDTEntry entries[256];
 } __attribute__((packed));
 
-void idt_init(volatile struct IDT *);
+void idt_init(struct IDT *);
 
 #endif

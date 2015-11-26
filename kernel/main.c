@@ -12,7 +12,7 @@
 #include <kernel/syscall.h>
 #include <kernel/pci.h>
 
-extern void user_enter(void *);
+extern void user_enter(void *) __attribute__((noreturn));
 
 void kernel_main(void) __attribute__((noreturn));
 void kernel_main(void) {
@@ -52,8 +52,8 @@ void kernel_main(void) {
 	gdt_init(gdt, tss);
 	tss_init(tss);
 
-	user_enter(kmalloc(1 << 20) + (1 << 20));
-	for(;;) { __asm__ ("hlt"); }
+	unsigned char *user_stack = kmalloc(1 << 20);
+	user_enter(&user_stack[1 << 20]);
 }
 
 void user_main(void) __attribute__((noreturn));

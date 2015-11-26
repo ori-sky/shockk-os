@@ -29,6 +29,6 @@ struct GDT {
 	struct GDTEntry entries[6];
 } __attribute__((packed));
 
-void gdt_init(volatile struct GDT *, volatile struct TSS *);
+void gdt_init(struct GDT *, struct TSS *);
 
 #endif

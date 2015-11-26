@@ -23,7 +23,7 @@ void pic_remap(unsigned char offset_master, unsigned char offset_slave) {
 	 * slave PIC at IRQ2 (bit 2)
 	 * slave's cascade identity is IRQ2
 	 */
-	ports_outb(PIC_PORT_MASTER_DATA, 0b00000100);
+	ports_outb(PIC_PORT_MASTER_DATA, 4);
 	ports_outb(PIC_PORT_SLAVE_DATA, 2);
 
 	/* write ICW4 (additional environment info) */
