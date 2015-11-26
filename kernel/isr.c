@@ -14,7 +14,7 @@ char * uitoa(unsigned int value, char *str, unsigned int num_base) {
 	for(unsigned char i=log; i!=(unsigned char)(-1); --i, div*=num_base) {
 		unsigned char offset = value / div % num_base;
 		unsigned char base = offset < 10 ? '0' : 'A' - 10;
-		str[i] = base + offset;
+		str[i] = (char)(base + offset);
 	}
 
 	return str;

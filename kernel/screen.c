@@ -34,15 +34,15 @@ void screen_cursor_by(short n) {
 		screen_scroll();
 		n -= SCREEN_COLUMNS;
 	}
-	screen_cursor_to(screen_cell + n);
+	screen_cursor_to((unsigned short)(screen_cell + n));
 }
 
 void screen_write_at(const unsigned short cell, const char c) {
-	SCREEN_BUFFER[cell << 1] = *(const unsigned char *)&c;
+	SCREEN_BUFFER[cell << 1] = (uint8_t)c;
 }
 
 char screen_read_at(const unsigned short cell) {
-	return *(char *)&SCREEN_BUFFER[cell << 1];
+	return (char)SCREEN_BUFFER[cell << 1];
 }
 
 void screen_put(const char c) {
@@ -65,6 +65,6 @@ void screen_put(const char c) {
 
 void screen_print(const char *s) {
 	while(*s != '\0') {
-		screen_put(*(s++));
+		screen_put(*s++);
 	}
 }

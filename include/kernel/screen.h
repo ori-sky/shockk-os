@@ -6,7 +6,7 @@
 #define SCREEN_ROWS 25
 #define SCREEN_COLUMNS 80
 #define SCREEN_CELLS (SCREEN_ROWS * SCREEN_COLUMNS)
-#define SCREEN_BUFFER ((unsigned char *)0xB8000)
+#define SCREEN_BUFFER ((uint8_t *)0xB8000)
 
 #define SCREEN_COORDS_TO_CELL(R, C) ((R) * SCREEN_COLUMNS + (C))
 #define SCREEN_CELL_TO_ROW(C) ((C) / SCREEN_COLUMNS)
