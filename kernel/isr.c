@@ -4,15 +4,15 @@
 #include <kernel/cpu.h>
 #include <kernel/screen.h>
 
-static unsigned int i;
+static unsigned int alpha_counter;
 
-char * uitoa(unsigned int value, char *str, unsigned int base) {
+inline char * uitoa(unsigned int value, char *str, unsigned int num_base) {
 	unsigned char log = 0;
-	for(unsigned int n=value; n>=base; n/=base) { ++log; }
+	for(unsigned int n=value; n>=num_base; n/=num_base) { ++log; }
 
 	unsigned short div = 1;
-	for(unsigned char i=log; i!=(unsigned char)(-1); --i, div*=base) {
-		unsigned char offset = value / div % base;
+	for(unsigned char i=log; i!=(unsigned char)(-1); --i, div*=num_base) {
+		unsigned char offset = value / div % num_base;
 		unsigned char base = offset < 10 ? '0' : 'A' - 10;
 		str[i] = base + offset;
 	}
@@ -35,7 +35,7 @@ void isr_main(struct CPUState cpu_state) {
 	switch(cpu_state.interrupt) {
 	case IRQ1:
 		ports_inb(0x60);
-		screen_put('a' + i++ % 26);
+		screen_put('a' + alpha_counter++ % 26);
 		uitoa(cpu_state.interrupt, &interrupt_string[2], 16);
 		screen_print(interrupt_string);
 		break;
