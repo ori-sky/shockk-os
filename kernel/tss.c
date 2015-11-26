@@ -2,9 +2,6 @@
 #include <kernel/tss.h>
 
 void tss_init(struct TSS *tss) {
-	for(unsigned int i = 0; i < sizeof(struct TSS); ++i) {
-		((unsigned char *)tss)[i] = 0;
-	}
 	unsigned char *stack = kmalloc(1 << 20);
 	tss->esp0 = (uint32_t)&stack[1 << 20];
 	tss->ss0 = 0x10;
