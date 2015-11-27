@@ -21,7 +21,7 @@ struct IDTDescriptor {
 
 struct IDT {
 	struct IDTDescriptor descriptor;
-	struct IDTEntry entries[128];
+	struct IDTEntry entries[129];
 } __attribute__((packed));
 
 void idt_init(struct IDT *);
