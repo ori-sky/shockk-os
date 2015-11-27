@@ -16,7 +16,19 @@ void * page_allocator_alloc(struct PageAllocator *page_allocator) {
 			return (void *)(PAGE_ALLOCATOR_HEAD + page * PAGE_ALLOCATOR_PAGE_SIZE);
 		}
 	}
-	return NULL;
+	return PAGE_ALLOCATOR_PTR_ERROR;
+}
+
+void * page_allocator_alloc_at(struct PageAllocator *page_allocator, void *ptr) {
+	size_t page = ((size_t)ptr - PAGE_ALLOCATOR_HEAD) / PAGE_ALLOCATOR_PAGE_SIZE;
+	size_t byte = page >> 3;
+	uint8_t index = page % 8;
+	if(page_allocator->bitmap[byte] & (1 << index)) {
+		return PAGE_ALLOCATOR_PTR_ERROR;
+	} else {
+		page_allocator->bitmap[byte] |= 1 << index;
+		return ptr;
+	}
 }
 
 void page_allocator_free(struct PageAllocator *page_allocator, void *ptr) {
@@ -28,13 +40,13 @@ void page_allocator_free(struct PageAllocator *page_allocator, void *ptr) {
 
 void page_allocator_test(struct PageAllocator *page_allocator) {
 	for(size_t i = 0; i < PAGE_ALLOCATOR_NUM_PAGES; ++i) {
-		if(page_allocator_alloc(page_allocator) == NULL) { kernel_panic("page_allocator test failed (exhausted)"); }
+		if(page_allocator_alloc(page_allocator) == PAGE_ALLOCATOR_PTR_ERROR) { kernel_panic("page_allocator test failed (exhausted)"); }
 	}
 
-	if(page_allocator_alloc(page_allocator) != NULL) { kernel_panic("page_allocator test failed (upper bound)"); }
+	if(page_allocator_alloc(page_allocator) != PAGE_ALLOCATOR_PTR_ERROR) { kernel_panic("page_allocator test failed (upper bound)"); }
 
 	page_allocator_free(page_allocator, (void *)PAGE_ALLOCATOR_HEAD);
-	if(page_allocator_alloc(page_allocator) == NULL) { kernel_panic("page_allocator test failed (free)"); }
+	if(page_allocator_alloc(page_allocator) == PAGE_ALLOCATOR_PTR_ERROR) { kernel_panic("page_allocator test failed (free)"); }
 
 	page_allocator_init(page_allocator);
 }
