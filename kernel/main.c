@@ -17,26 +17,25 @@ extern void user_enter(void *) __attribute__((noreturn));
 
 void kernel_main(void) __attribute__((noreturn));
 void kernel_main(void) {
-	struct IDT *idt = kmalloc(sizeof(struct IDT));
-	struct Pager *pager = kmalloc(sizeof(struct Pager));
-	struct TSS *tss = kmalloc(sizeof(struct TSS));
-	struct GDT *gdt = kmalloc(sizeof(struct GDT));
-	struct PCIEnumeration *pci_enum = kmalloc(sizeof(struct PCIEnumeration));
-	pci_enum->count = 0;
-
 	screen_init();
 
 	if(!a20_enable()) { kernel_panic("failed to enable A20 line"); }
+
+	struct Pager *pager = kmalloc(sizeof(struct Pager));
 	pager_init(pager);
 	pager_test(pager);
 
 	pit_set(1 << 15);
 	pic_remap(IRQ0, IRQ8);
 	pic_set_masks(0, 0);
+
+	struct IDT *idt = kmalloc(sizeof(struct IDT));
 	idt_init(idt);
 
 	__asm__ ("sti");
 
+	struct PCIEnumeration *pci_enum = kmalloc(sizeof(struct PCIEnumeration));
+	pci_enum->count = 0;
 	pci_enumerate_buses(pci_enum);
 	for(uint16_t i = 0; i < pci_enum->count; ++i) {
 		switch(pci_enum->identifiers[i].baseclass) {
@@ -53,6 +52,8 @@ void kernel_main(void) {
 		}
 	}
 
+	struct GDT *gdt = kmalloc(sizeof(struct GDT));
+	struct TSS *tss = kmalloc(sizeof(struct TSS));
 	gdt_init(gdt, tss);
 	tss_init(tss);
 
