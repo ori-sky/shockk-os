@@ -14,6 +14,13 @@ struct CPUState {
 	uint32_t eax;
 	uint32_t interrupt;
 	uint32_t error;
+
+	/* pushed automatically by CPU */
+	uint32_t iret_eip;
+	uint32_t iret_cs;
+	uint32_t iret_eflags;
+	uint32_t iret_esp;
+	uint32_t iret_ss;
 };
 
 #endif
