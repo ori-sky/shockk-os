@@ -17,24 +17,33 @@ void isr_main(struct CPUState cpu_state) {
 		}
 	}
 
-	char gpf_s[] = "GPF at 0x           \n";
-	char interrupt_s[] = "0x   \n";
+	char s0[] = "        ";
+	char s1[] = "        ";
+	char s2[] = "                                ";
+	char s3[] = "                                ";
 
 	switch(cpu_state.interrupt) {
 	case 0x0: /* divide by zero */
 		screen_print("divide-by-zero error\n");
 		break;
 	case 0xD: /* general protection fault */
-		itoa(cpu_state.iret_eip, &gpf_s[9], 16);
-		screen_print(gpf_s);
+		screen_print("GPF at 0x");
+		itoa(cpu_state.iret_eip, s0, 16);
+		screen_print(s0);
+		screen_print(" error=0b");
+		itoa(cpu_state.error, s2, 2);
+		screen_print(s2);
+		screen_put('\n');
 		break;
 	case IRQ0:
 		break;
 	default:
 		ports_inb(0x60);
 		screen_put('a' + alpha_counter++ % 26);
-		itoa(cpu_state.interrupt, &interrupt_s[2], 16);
-		screen_print(interrupt_s);
+		screen_print("0x");
+		itoa(cpu_state.interrupt, s0, 16);
+		screen_print(s0);
+		screen_put('\n');
 		break;
 	}
 }
