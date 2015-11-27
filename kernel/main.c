@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <kernel/a20.h>
-#include <kernel/pager.h>
+#include <kernel/page_allocator.h>
 #include <kernel/pit.h>
 #include <kernel/pic.h>
 #include <kernel/irq.h>
@@ -21,9 +21,9 @@ void kernel_main(void) {
 
 	if(!a20_enable()) { kernel_panic("failed to enable A20 line"); }
 
-	struct Pager *pager = kmalloc(sizeof(struct Pager));
-	pager_init(pager);
-	pager_test(pager);
+	struct PageAllocator *page_allocator = kmalloc(sizeof(struct PageAllocator));
+	page_allocator_init(page_allocator);
+	page_allocator_test(page_allocator);
 
 	pit_set(1 << 15);
 	pic_remap(IRQ0, IRQ8);
