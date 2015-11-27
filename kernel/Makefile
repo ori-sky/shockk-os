@@ -1,6 +1,6 @@
 ENTRY=kernel_main
 ORIGIN=0x10000
-OBJS=main.o ports.o a20.o memory.o pit.o pic.o gdt.o tss.o idt.o isr.s.o isr.o syscall.o screen.o panic.o user.s.o pci.o
+OBJS=main.o ports.o a20.o pager.o memory.o pit.o pic.o gdt.o tss.o idt.o isr.s.o isr.o syscall.o screen.o panic.o itoa.o user.s.o pci.o
 
 ASM=nasm
 CC=$(CROSS_TARGET)-gcc

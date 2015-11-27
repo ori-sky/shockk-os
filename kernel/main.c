@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <kernel/a20.h>
+#include <kernel/pager.h>
 #include <kernel/pit.h>
 #include <kernel/pic.h>
 #include <kernel/irq.h>
@@ -17,6 +18,7 @@ extern void user_enter(void *) __attribute__((noreturn));
 void kernel_main(void) __attribute__((noreturn));
 void kernel_main(void) {
 	struct IDT *idt = kmalloc(sizeof(struct IDT));
+	struct Pager *pager = kmalloc(sizeof(struct Pager));
 	struct TSS *tss = kmalloc(sizeof(struct TSS));
 	struct GDT *gdt = kmalloc(sizeof(struct GDT));
 	struct PCIEnumeration *pci_enum = kmalloc(sizeof(struct PCIEnumeration));
@@ -25,6 +27,8 @@ void kernel_main(void) {
 	screen_init();
 
 	if(!a20_enable()) { kernel_panic("failed to enable A20 line"); }
+	pager_init(pager);
+	pager_test(pager);
 
 	pit_set(1 << 15);
 	pic_remap(IRQ0, IRQ8);
