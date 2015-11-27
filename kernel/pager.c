@@ -10,7 +10,7 @@ void pager_init(struct Pager *pager) {
 void * pager_alloc(struct Pager *pager) {
 	for(size_t byte = 0; byte < sizeof(pager->bitmap); ++byte) {
 		if(pager->bitmap[byte] != 0xFF) {
-			uint8_t index = __builtin_ctz(~pager->bitmap[byte]);
+			uint8_t index = __builtin_ctz((unsigned int)~pager->bitmap[byte]);
 			pager->bitmap[byte] |= 1 << index;
 			size_t page = (byte << 3) + index;
 			return (void *)(PAGER_HEAD + page * PAGER_PAGE_SIZE);

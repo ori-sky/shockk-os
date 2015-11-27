@@ -1,32 +1,29 @@
 #include <kernel/itoa.h>
 
-int itoa(int value, char *sp, int radix) {
+int itoa(int value, char *str, int radix) {
 	char tmp[16];
-	char *tp = tmp;
-	int i;
-	unsigned v;
+	char *ptr = tmp;
 
 	int sign = radix == 10 && value < 0;
-	v = sign ? -value : (unsigned)value;
+	unsigned int v = sign ? (unsigned int)-value : (unsigned int)value;
 
-	while (v || tp == tmp) {
-		i = v % radix;
-		v /= radix;
-		if (i < 10) {
-			*tp++ = i + '0';
+	while(v || ptr == tmp) {
+		int i = (int)v % radix;
+		v /= (unsigned int)radix;
+		if(i < 10) {
+			*ptr++ = i + '0';
 		} else {
-			*tp++ = i + 'a' - 10;
+			*ptr++ = i + 'a' - 10;
 		}
 	}
 
-	int len = tp - tmp;
+	int len = ptr - tmp;
 
 	if(sign) {
-		*sp++ = '-';
+		*str++ = '-';
 		++len;
 	}
 
-	while (tp > tmp) { *sp++ = *--tp; }
-
+	while(ptr > tmp) { *str++ = *--ptr; }
 	return len;
 }

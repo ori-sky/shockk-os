@@ -18,9 +18,7 @@ void isr_main(struct CPUState cpu_state) {
 	}
 
 	char s0[] = "        ";
-	char s1[] = "        ";
-	char s2[] = "                                ";
-	char s3[] = "                                ";
+	char s1[] = "                                ";
 
 	switch(cpu_state.interrupt) {
 	case 0x0: /* divide by zero */
@@ -28,11 +26,11 @@ void isr_main(struct CPUState cpu_state) {
 		break;
 	case 0xD: /* general protection fault */
 		screen_print("GPF at 0x");
-		itoa(cpu_state.iret_eip, s0, 16);
+		itoa((int)cpu_state.iret_eip, s0, 16);
 		screen_print(s0);
 		screen_print(" error=0b");
-		itoa(cpu_state.error, s2, 2);
-		screen_print(s2);
+		itoa((int)cpu_state.error, s1, 2);
+		screen_print(s1);
 		screen_put('\n');
 		break;
 	case IRQ0:
@@ -41,7 +39,7 @@ void isr_main(struct CPUState cpu_state) {
 		ports_inb(0x60);
 		screen_put('a' + alpha_counter++ % 26);
 		screen_print("0x");
-		itoa(cpu_state.interrupt, s0, 16);
+		itoa((int)cpu_state.interrupt, s0, 16);
 		screen_print(s0);
 		screen_put('\n');
 		break;
