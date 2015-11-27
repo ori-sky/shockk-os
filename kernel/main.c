@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <kernel/a20.h>
+#include <kernel/memory.h>
 #include <kernel/page_allocator.h>
+#include <kernel/pager.h>
 #include <kernel/pit.h>
 #include <kernel/pic.h>
 #include <kernel/irq.h>
@@ -8,7 +10,6 @@
 #include <kernel/gdt.h>
 #include <kernel/tss.h>
 #include <kernel/panic.h>
-#include <kernel/memory.h>
 #include <kernel/screen.h>
 #include <kernel/syscall.h>
 #include <kernel/pci.h>
@@ -24,6 +25,9 @@ void kernel_main(void) {
 	struct PageAllocator *page_allocator = kmalloc(sizeof(struct PageAllocator));
 	page_allocator_init(page_allocator);
 	page_allocator_test(page_allocator);
+
+	struct Pager *pager = kmalloc(sizeof(struct Pager));
+	pager_init(pager, page_allocator);
 
 	pit_set(1 << 15);
 	pic_remap(IRQ0, IRQ8);
