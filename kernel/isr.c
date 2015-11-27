@@ -3,22 +3,9 @@
 #include <kernel/irq.h>
 #include <kernel/cpu.h>
 #include <kernel/screen.h>
+#include <kernel/itoa.h>
 
 static unsigned int alpha_counter;
-
-char * uitoa(unsigned int value, char *str, unsigned int num_base) {
-	unsigned char log = 0;
-	for(unsigned int n=value; n>=num_base; n/=num_base) { ++log; }
-
-	unsigned short div = 1;
-	for(unsigned char i=log; i!=(unsigned char)(-1); --i, div*=num_base) {
-		unsigned char offset = value / div % num_base;
-		unsigned char base = offset < 10 ? '0' : 'A' - 10;
-		str[i] = (char)(base + offset);
-	}
-
-	return str;
-}
 
 void isr_main(struct CPUState cpu_state) {
 	if(cpu_state.interrupt == IRQ7) { return; }
@@ -30,16 +17,24 @@ void isr_main(struct CPUState cpu_state) {
 		}
 	}
 
-	char interrupt_string[] = "0x  \n";
+	char gpf_s[] = "GPF at 0x           \n";
+	char interrupt_s[] = "0x   \n";
 
 	switch(cpu_state.interrupt) {
+	case 0x0: /* divide by zero */
+		screen_print("divide-by-zero error\n");
+		break;
+	case 0xD: /* general protection fault */
+		itoa(cpu_state.iret_eip, &gpf_s[9], 16);
+		screen_print(gpf_s);
+		break;
 	case IRQ0:
 		break;
 	default:
 		ports_inb(0x60);
 		screen_put('a' + alpha_counter++ % 26);
-		uitoa(cpu_state.interrupt, &interrupt_string[2], 16);
-		screen_print(interrupt_string);
+		itoa(cpu_state.interrupt, &interrupt_s[2], 16);
+		screen_print(interrupt_s);
 		break;
 	}
 }
