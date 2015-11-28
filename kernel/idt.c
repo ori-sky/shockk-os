@@ -33,7 +33,7 @@ void idt_init(struct IDT *idt) {
 		idt_set_entry(&idt->entries[entry], stub, true);
 	}
 	for(entry = 32; entry < 48; ++entry) {
-		void (*stub)(void) = (void (*)(void))((uint32_t)isr_stub_32 + (entry - 32) * stub_size);
+		void (*stub)(void) = (void (*)(void))((uint32_t)isr_stub_32 + (entry - 32u) * stub_size);
 		idt_set_entry(&idt->entries[entry], stub, true);
 	}
 	idt_set_entry(&idt->entries[128], isr_stub_128, false);
