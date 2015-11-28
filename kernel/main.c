@@ -28,6 +28,7 @@ void kernel_main(void) {
 
 	struct Pager *pager = kmalloc(sizeof(struct Pager));
 	pager_init(pager, page_allocator);
+	pager_enable();
 
 	pit_set(1 << 15);
 	pic_remap(IRQ0, IRQ8);

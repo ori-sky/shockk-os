@@ -23,12 +23,8 @@ void * page_allocator_alloc_at(struct PageAllocator *page_allocator, void *ptr) 
 	size_t page = ((size_t)ptr - PAGE_ALLOCATOR_HEAD) / PAGE_ALLOCATOR_PAGE_SIZE;
 	size_t byte = page >> 3;
 	uint8_t index = page % 8;
-	if(page_allocator->bitmap[byte] & (1 << index)) {
-		return PAGE_ALLOCATOR_PTR_ERROR;
-	} else {
-		page_allocator->bitmap[byte] |= 1 << index;
-		return ptr;
-	}
+	page_allocator->bitmap[byte] |= 1 << index;
+	return ptr;
 }
 
 void page_allocator_free(struct PageAllocator *page_allocator, void *ptr) {
