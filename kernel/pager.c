@@ -12,6 +12,10 @@ void pager_init(struct Pager *pager, struct PageAllocator *allocator) {
 		pager->directory->tables[table].present = 0;
 		pager->directory->tables[table].writable = 1;
 		pager->directory->tables[table].unprivileged = 1;
+		pager->directory->tables[table].write_through = 0;
+		pager->directory->tables[table].disable_cache = 0;
+		pager->directory->tables[table].accessed = 0;
+		pager->directory->tables[table].page_size = 0;
 	}
 
 	/* initialize tables */
@@ -25,6 +29,11 @@ void pager_init(struct Pager *pager, struct PageAllocator *allocator) {
 			table_addr->pages[page].present = 1;
 			table_addr->pages[page].writable = 1;
 			table_addr->pages[page].unprivileged = 1;
+			table_addr->pages[page].write_through = 0;
+			table_addr->pages[page].disable_cache = 0;
+			table_addr->pages[page].accessed = 0;
+			table_addr->pages[page].dirty = 0;
+			table_addr->pages[page].reserved = 0;
 			table_addr->pages[page].address = (uint32_t)addr >> 12;
 		}
 	}
