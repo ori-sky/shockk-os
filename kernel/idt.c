@@ -3,6 +3,7 @@
 
 extern void isr_stub_0(void);
 extern void isr_stub_1(void);
+extern void isr_stub_32(void);
 extern void isr_stub_128(void);
 
 void idt_set_entry(struct IDTEntry *entry, void (*handler)(void), bool restricted) {
@@ -25,7 +26,14 @@ void idt_init(struct IDT *idt) {
 
 	uint16_t entry;
 	for(entry = 0; entry < 128; ++entry) {
+		idt->entries[entry].present = 0;
+	}
+	for(entry = 0; entry < 20; ++entry) {
 		void (*stub)(void) = (void (*)(void))((uint32_t)isr_stub_0 + entry * stub_size);
+		idt_set_entry(&idt->entries[entry], stub, true);
+	}
+	for(entry = 32; entry < 48; ++entry) {
+		void (*stub)(void) = (void (*)(void))((uint32_t)isr_stub_32 + (entry - 32) * stub_size);
 		idt_set_entry(&idt->entries[entry], stub, true);
 	}
 	idt_set_entry(&idt->entries[128], isr_stub_128, false);

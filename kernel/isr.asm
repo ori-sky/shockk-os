@@ -59,9 +59,16 @@ DEBUG_INTERRUPT 11
 DEBUG_INTERRUPT 12
 DEBUG_INTERRUPT 13
 DEBUG_INTERRUPT 14
+INTERRUPT 15
+INTERRUPT 16
+INTERRUPT 17
+INTERRUPT 18
+INTERRUPT 19
 
-%assign i 15
-%rep 48-15
+; exceptions 20-31 are reserved by Intel and should not be used
+
+%assign i 32
+%rep 48-32
     INTERRUPT i
     %assign i i+1
 %endrep
