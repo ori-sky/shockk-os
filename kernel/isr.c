@@ -33,6 +33,15 @@ void isr_main(struct CPUState cpu_state) {
 		screen_print(s1);
 		screen_put('\n');
 		break;
+	case 0xE: /* page fault */
+		screen_print("page fault at 0x");
+		itoa((int)cpu_state.iret_eip, s0, 16);
+		screen_print(s0);
+		screen_print(" error=0b");
+		itoa((int)cpu_state.error, s1, 2);
+		screen_print(s1);
+		screen_put('\n');
+		break;
 	case IRQ0:
 		break;
 	default:
