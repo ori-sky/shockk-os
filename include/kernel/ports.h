@@ -7,7 +7,7 @@
 uint8_t ports_inb(unsigned short);
 uint16_t ports_ins(unsigned short);
 uint32_t ports_inl(unsigned short);
-void ports_str_ins(uint16_t *, size_t);
+void ports_str_ins(unsigned short, volatile uint16_t *, size_t);
 void ports_outb(unsigned short, uint8_t);
 void ports_outs(unsigned short, uint16_t);
 void ports_outl(unsigned short, uint32_t);
