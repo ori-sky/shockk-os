@@ -58,6 +58,8 @@ void kernel_main(void) {
 	}
 
 	screen_print("ATA driver loading bootsector\n");
+
+	ata_init();
 	volatile uint8_t *sector_ptr = kmalloc(512);
 	ata_read(0, 1, sector_ptr);
 	if(sector_ptr[510] != 0x55 || sector_ptr[511] != 0xAA) { kernel_panic("ATA driver failed to load bootsector"); }
