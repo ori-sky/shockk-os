@@ -19,7 +19,7 @@ uint32_t ports_inl(unsigned short port) {
 }
 
 void ports_str_ins(unsigned short port, volatile uint16_t *buffer, size_t count) {
-	__asm__ ("rep insw" : : "dx" (port), "c" (count), "D" (buffer) : "memory");
+	__asm__ ("rep insw" : : "d" (port), "c" (count), "D" (buffer) : "memory");
 }
 
 void ports_outb(unsigned short port, uint8_t data) {
