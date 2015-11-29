@@ -4,7 +4,7 @@
 #include <kernel/pci.h>
 
 void pci_enumerate_buses(struct PCIEnumeration *pci_enum) {
-	struct PCIIdentifier id = {0};
+	struct PCIIdentifier id = {0, 0, 0};
 	pci_enum->count = 0;
 
 	/* single PCI host controller */
