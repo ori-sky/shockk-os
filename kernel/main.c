@@ -40,12 +40,11 @@ void kernel_main(void) {
 	__asm__ ("sti");
 
 	struct PCIEnumeration *pci_enum = kmalloc(sizeof(struct PCIEnumeration));
-	pci_enum->count = 0;
 	pci_enumerate_buses(pci_enum);
 	for(uint16_t i = 0; i < pci_enum->count; ++i) {
-		switch(pci_enum->identifiers[i].baseclass) {
+		switch(pci_enum->info[i].baseclass) {
 		case 0x1: /* mass storage controller */
-			switch(pci_enum->identifiers[i].subclass) {
+			switch(pci_enum->info[i].subclass) {
 			case 0x1: /* IDE */
 				screen_print("found IDE controller\n");
 				break;

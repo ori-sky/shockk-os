@@ -13,37 +13,39 @@
 #define PCI_OFFSET_HEADER_TYPE   0x0D
 #define PCI_OFFSET_SECONDARY_BUS 0x1A
 
+struct PCIIdentifier {
+	uint8_t function : 3;
+	uint8_t device   : 5;
+	uint8_t bus;
+} __attribute__((packed));
+
 union PCIConfigAddress {
 	uint32_t bits;
 	struct {
 		uint8_t offset;
-		uint8_t function : 3;
-		uint8_t device   : 5;
-		uint8_t bus;
+		struct PCIIdentifier id;
 		uint8_t reserved : 7;
 		uint8_t enable   : 1;
 	} __attribute__((packed)) fields;
 } __attribute__((packed));
 
-struct PCIIdentifier {
-	uint8_t bus;
-	uint8_t device   : 5;
-	uint8_t function : 3;
+struct PCIDeviceInfo {
+	struct PCIIdentifier id;
 	uint8_t baseclass;
 	uint8_t subclass;
 };
 
 struct PCIEnumeration {
 	uint16_t count;
-	struct PCIIdentifier identifiers[1024];
+	struct PCIDeviceInfo info[1024];
 };
 
 void pci_enumerate_buses(struct PCIEnumeration *);
-void pci_enumerate_bus(struct PCIEnumeration *, uint8_t bus);
-void pci_enumerate_device(struct PCIEnumeration *, uint8_t bus, uint8_t device);
-void pci_enumerate_function(struct PCIEnumeration *, uint8_t bus, uint8_t device, uint8_t function);
-uint32_t pci_config_read(uint8_t bus, uint8_t device, uint8_t function, uint8_t offset);
-uint16_t pci_config_read_word(uint8_t bus, uint8_t device, uint8_t function, uint8_t offset);
-uint8_t pci_config_read_byte(uint8_t bus, uint8_t device, uint8_t function, uint8_t offset);
+void pci_enumerate_bus(struct PCIEnumeration *, uint8_t);
+void pci_enumerate_device(struct PCIEnumeration *, uint8_t, uint8_t);
+void pci_enumerate_function(struct PCIEnumeration *, struct PCIIdentifier);
+uint32_t pci_config_read(struct PCIIdentifier, uint8_t);
+uint16_t pci_config_read_word(struct PCIIdentifier, uint8_t);
+uint8_t pci_config_read_byte(struct PCIIdentifier, uint8_t);
 
 #endif
