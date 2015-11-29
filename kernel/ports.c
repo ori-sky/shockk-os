@@ -18,6 +18,10 @@ uint32_t ports_inl(unsigned short port) {
 	return result;
 }
 
+void ports_str_ins(uint16_t *buffer, size_t count) {
+	__asm__ ("rep insw" : : "c" (count), "D" (buffer) : "memory");
+}
+
 void ports_outb(unsigned short port, uint8_t data) {
 	__asm__ ("out %0, %1" : : "a" (data), "d" (port));
 }
