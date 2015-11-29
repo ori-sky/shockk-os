@@ -4,7 +4,7 @@ FLOPPY_IMAGE=floppy.img
 all: floppy
 
 run-qemu: floppy
-	qemu -s -fda $(FLOPPY_IMAGE)
+	qemu -s -hda $(FLOPPY_IMAGE)
 
 floppy: image
 	dd bs=512 count=2820 if=/dev/zero of=$(FLOPPY_IMAGE)
