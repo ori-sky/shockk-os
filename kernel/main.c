@@ -13,6 +13,7 @@
 #include <kernel/screen.h>
 #include <kernel/syscall.h>
 #include <kernel/pci.h>
+#include <kernel/ata.h>
 
 extern void user_enter(void *) __attribute__((noreturn));
 
@@ -45,8 +46,8 @@ void kernel_main(void) {
 		switch(pci_enum->info[i].baseclass) {
 		case 0x1: /* mass storage controller */
 			switch(pci_enum->info[i].subclass) {
-			case 0x1: /* IDE */
-				screen_print("found IDE controller\n");
+			case 0x1: /* ATA */
+				screen_print("found ATA controller\n");
 				break;
 			case 0x6: /* serial ATA */
 				screen_print("found serial ATA controller\n");
@@ -55,6 +56,12 @@ void kernel_main(void) {
 			break;
 		}
 	}
+
+	screen_print("ATA driver loading bootsector\n");
+	volatile uint8_t *sector_ptr = kmalloc(512);
+	ata_read(0, 1, sector_ptr);
+	if(sector_ptr[510] != 0x55 || sector_ptr[511] != 0xAA) { kernel_panic("ATA driver failed to load bootsector"); }
+	else { screen_print("bootsector signature verified, success!\n"); }
 
 	struct GDT *gdt = kmalloc(sizeof(struct GDT));
 	struct TSS *tss = kmalloc(sizeof(struct TSS));

@@ -42,7 +42,9 @@ void isr_main(struct CPUState cpu_state) {
 		screen_print(s1);
 		screen_put('\n');
 		break;
-	case IRQ0:
+	case IRQ0: /* PIT */
+		break;
+	case IRQ14: /* primary ATA channel */
 		break;
 	default:
 		ports_inb(0x60);
