@@ -13,12 +13,14 @@
 #define ATA_PORT_PRIMARY_ALT_STATUS   0x3F6
 #define ATA_PORT_PRIMARY_CONTROL      0x3F6
 
-#define ATA_STATUS_ERROR      (1 << 0)
-#define ATA_STATUS_DATA_READY (1 << 3)
-#define ATA_STATUS_SERVICE    (1 << 4)
-#define ATA_STATUS_FAULT      (1 << 5)
-#define ATA_STATUS_READY      (1 << 6)
-#define ATA_STATUS_BUSY       (1 << 7)
+#define ATA_STATUS_ERROR         (1 << 0)
+#define ATA_STATUS_INDEX         (1 << 1)
+#define ATA_STATUS_CORRECTED     (1 << 2)
+#define ATA_STATUS_DATA_REQUEST  (1 << 3)
+#define ATA_STATUS_SEEK_COMPLETE (1 << 4)
+#define ATA_STATUS_FAULT         (1 << 5)
+#define ATA_STATUS_READY         (1 << 6)
+#define ATA_STATUS_BUSY          (1 << 7)
 
 #define ATA_COMMAND_PIO_READ_RETRY 0x20
 
