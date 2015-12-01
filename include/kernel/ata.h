@@ -2,6 +2,7 @@
 #define ATA_H
 
 #define ATA_PORT_PRIMARY_DATA         0x1F0
+#define ATA_PORT_PRIMARY_ERROR        0x1F1
 #define ATA_PORT_PRIMARY_FEATURE      0x1F1
 #define ATA_PORT_PRIMARY_SECTOR_COUNT 0x1F2
 #define ATA_PORT_PRIMARY_LBA_LOW      0x1F3
@@ -22,9 +23,17 @@
 #define ATA_STATUS_READY         (1 << 6)
 #define ATA_STATUS_BUSY          (1 << 7)
 
+#define ATA_DIAGNOSTIC_DEVICE_0_PASS (1 << 0)
+#define ATA_DIAGNOSTIC_DEVICE_1_FAIL (1 << 7)
+
 #define ATA_COMMAND_PIO_READ_RETRY 0x20
 
+#define ATA_CONTROL_DISABLE_INTERRUPTS (1 << 1)
+#define ATA_CONTROL_SOFT_RESET         (1 << 2)
+
 void ata_init(void);
-void ata_read(uint32_t, uint8_t, volatile void *);
+void ata_soft_reset(void);
+void ata_pio_begin(void);
+void ata_pio_read(uint32_t, uint8_t, volatile void *);
 
 #endif

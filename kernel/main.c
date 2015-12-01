@@ -57,13 +57,17 @@ void kernel_main(void) {
 		}
 	}
 
+	ata_init();
 	screen_print("ATA driver loading bootsector\n");
 
-	ata_init();
-	volatile uint8_t *sector_ptr = kmalloc(512);
-	ata_read(0, 1, sector_ptr);
-	if(sector_ptr[510] != 0x55 || sector_ptr[511] != 0xAA) { kernel_panic("ATA driver failed to load bootsector"); }
-	else { screen_print("bootsector signature verified, success!\n"); }
+	volatile uint16_t *sector_ptr = kmalloc(512);
+	ata_pio_read(0, 2, sector_ptr);
+
+	if(sector_ptr[255] != 0xAA55) { kernel_panic("ATA driver failed to load bootsector"); }
+	else { screen_print("bootsector signature verified\n"); }
+
+	if(sector_ptr[256] != *(uint16_t *)0x10000) { kernel_panic("ATA driver failed to load kernel"); }
+	else { screen_print("kernel sector verified\n"); }
 
 	struct GDT *gdt = kmalloc(sizeof(struct GDT));
 	struct TSS *tss = kmalloc(sizeof(struct TSS));
