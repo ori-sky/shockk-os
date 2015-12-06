@@ -27,3 +27,23 @@ int itoa(int value, char *str, int radix) {
 	while(ptr > tmp) { *str++ = *--ptr; }
 	return len;
 }
+
+int uitoa(unsigned int value, char *str, unsigned int radix) {
+	char tmp[16];
+	char *ptr = tmp;
+
+	while(value || ptr == tmp) {
+		unsigned int i = value % radix;
+		value /= radix;
+		if(i < 10) {
+			*ptr++ = i + '0';
+		} else {
+			*ptr++ = i + 'a' - 10;
+		}
+	}
+
+	int len = ptr - tmp;
+
+	while(ptr > tmp) { *str++ = *--ptr; }
+	return len;
+}

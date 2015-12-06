@@ -49,7 +49,7 @@ void ata_pio_read(uint32_t lba, uint8_t count, volatile void *buffer) {
 	ports_outb(ATA_PORT_PRIMARY_LBA_HIGH, (uint8_t)(lba >> 16));
 	ports_outb(ATA_PORT_PRIMARY_COMMAND, ATA_COMMAND_PIO_READ_RETRY);
 
-	size_t i = 0;
+	volatile uint16_t *ptr = buffer;
 	for(;;) {
 		while(ports_inb(ATA_PORT_PRIMARY_ALT_STATUS) & ATA_STATUS_BUSY) {}
 
@@ -57,8 +57,8 @@ void ata_pio_read(uint32_t lba, uint8_t count, volatile void *buffer) {
 		if(status & ATA_STATUS_ERROR) { kernel_panic("ATA: error status"); }
 
 		if(status & ATA_STATUS_DATA_REQUEST) {
-			volatile uint16_t *ptr = buffer;
-			ports_str_ins(ATA_PORT_PRIMARY_DATA, &ptr[256u * i++], 256u);
+			ports_str_ins(ATA_PORT_PRIMARY_DATA, ptr, 256u);
+			ptr += 256u;
 		} else { break; }
 	}
 }

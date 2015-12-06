@@ -26,19 +26,19 @@ void isr_main(struct CPUState cpu_state) {
 		break;
 	case 0xD: /* general protection fault */
 		screen_print("GPF at 0x");
-		itoa((int)cpu_state.iret_eip, s0, 16);
+		uitoa((unsigned int)cpu_state.iret_eip, s0, 16);
 		screen_print(s0);
 		screen_print(" error=0b");
-		itoa((int)cpu_state.error, s1, 2);
+		uitoa((unsigned int)cpu_state.error, s1, 2);
 		screen_print(s1);
 		screen_put('\n');
 		break;
 	case 0xE: /* page fault */
 		screen_print("page fault at 0x");
-		itoa((int)cpu_state.iret_eip, s0, 16);
+		uitoa((unsigned int)cpu_state.iret_eip, s0, 16);
 		screen_print(s0);
 		screen_print(" error=0b");
-		itoa((int)cpu_state.error, s1, 2);
+		uitoa((unsigned int)cpu_state.error, s1, 2);
 		screen_print(s1);
 		screen_put('\n');
 		break;
@@ -50,7 +50,7 @@ void isr_main(struct CPUState cpu_state) {
 		ports_inb(0x60);
 		screen_put('a' + alpha_counter++ % 26);
 		screen_print("0x");
-		itoa((int)cpu_state.interrupt, s0, 16);
+		uitoa((unsigned int)cpu_state.interrupt, s0, 16);
 		screen_print(s0);
 		screen_put('\n');
 		break;

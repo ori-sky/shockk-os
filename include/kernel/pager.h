@@ -2,8 +2,11 @@
 #define PAGER_H
 
 #include <stdint.h>
+#include <kernel/page_allocator.h>
 
-#define PAGER_DIR_ADDRESS 0x1000000
+#define PAGER_LOW_MAP     1 /* number of tables to map 1:1 at lower bound */
+#define PAGER_RESERVE_1 766 /* lower bound of reserve 1 */
+#define PAGER_RESERVE_2 768 /* lower bound of reserve 2 */
 
 struct PageTableEntry {
 	uint8_t present       : 1;
@@ -44,8 +47,12 @@ struct Pager {
 	struct PageDirectory *directory;
 };
 
-void pager_init(struct Pager *, struct PageAllocator *);
-void pager_set_directory(struct PageDirectory *directory);
+struct Pager * pager_init(void);
+void * pager_map(struct Pager *, unsigned int, unsigned int, void *);
+void * pager_alloc(struct Pager *);
+void * pager_reserve(struct Pager *);
+void pager_reload(struct Pager *);
 void pager_enable(void);
+void pager_disable(void);
 
 #endif
