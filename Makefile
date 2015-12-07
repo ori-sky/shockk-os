@@ -63,4 +63,4 @@ kernel.o: $(KERNEL_PATHS)
 
 .PHONY: clean
 clean:
-	rm -fv bootsector.bin $(LOADER_PATHS) loader.bin $(KERNEL_PATHS) kernel.bin $(IMAGE) $(FLOPPY_IMAGE)
+	rm -fv bootsector.bin $(LOADER_PATHS) loader.o loader.bin $(KERNEL_PATHS) kernel.o kernel.bin $(IMAGE) $(FLOPPY_IMAGE)
