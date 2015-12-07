@@ -17,6 +17,9 @@ void isr_main(struct CPUState cpu_state) {
 		}
 	}
 
+	uint32_t cr2;
+	__asm__ __volatile__ ("mov %%cr2, %0" : "=r" (cr2));
+
 	char s0[] = "        ";
 	char s1[] = "                                ";
 
@@ -36,6 +39,9 @@ void isr_main(struct CPUState cpu_state) {
 	case 0xE: /* page fault */
 		screen_print("page fault at 0x");
 		uitoa((unsigned int)cpu_state.iret_eip, s0, 16);
+		screen_print(s0);
+		screen_print(" cr2=");
+		uitoa((unsigned int)cr2, s0, 16);
 		screen_print(s0);
 		screen_print(" error=0b");
 		uitoa((unsigned int)cpu_state.error, s1, 2);
