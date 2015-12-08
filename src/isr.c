@@ -47,6 +47,19 @@ void isr_main(struct CPUState cpu_state) {
 		uitoa((unsigned int)cpu_state.error, s1, 2);
 		screen_print(s1);
 		screen_put('\n');
+		{
+			void **ebp = (void **)cpu_state.ebp;
+			for(unsigned int frame = 0; frame < 8; ++frame) {
+				void * eip = ebp[1];
+				if(eip == NULL) { break; }
+				ebp = ebp[0];
+				screen_print("from 0x");
+				s0[uitoa((unsigned int)eip, s0, 16)] = '\0';
+				screen_print(s0);
+				screen_put('\n');
+			}
+		}
+		kernel_panic("");
 		break;
 	case IRQ0: /* PIT */
 		break;
