@@ -1,16 +1,18 @@
-#include <kernel/panic.h>
 #include <kernel/page_allocator.h>
 
 void page_allocator_init(struct PageAllocator *allocator, void *head, size_t count, size_t reserve) {
 	allocator->head = head;
 	allocator->count = count;
 	allocator->reserve = reserve;
+	/* caller must set up bitmap pointer */
 
 	page_allocator_clear(allocator);
 	page_allocator_alloc_at(allocator, 0);
+}
 
-	if((size_t)allocator >= (size_t)head && (size_t)allocator < (size_t)head + count * PAGE_ALLOCATOR_PAGE_SIZE) {
-		size_t page = ((size_t)allocator - (size_t)head) / PAGE_ALLOCATOR_PAGE_SIZE;
+void page_allocator_alloc_self(struct PageAllocator *allocator) {
+	if((size_t)allocator >= (size_t)allocator->head && (size_t)allocator < (size_t)allocator->head + allocator->count * PAGE_ALLOCATOR_PAGE_SIZE) {
+		size_t page = ((size_t)allocator - (size_t)allocator->head) / PAGE_ALLOCATOR_PAGE_SIZE;
 		page_allocator_alloc_at(allocator, page);
 	}
 }

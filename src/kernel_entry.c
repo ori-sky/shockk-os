@@ -29,18 +29,17 @@ void kernel_entry(struct Pager *pager) {
 
 	__asm__ ("sti");
 
-	struct GDT *gdt = kmalloc(sizeof(struct GDT));
-	struct TSS *tss = kmalloc(sizeof(struct TSS));
+	struct GDT *gdt = pager_reserve(pager);
+	struct TSS *tss = pager_reserve(pager);
 	gdt_init(gdt, tss);
 	tss_init(tss);
 
 	unsigned char *user_stack = pager_alloc(pager);
-	user_enter(&user_stack[1 << 20]);
+	user_enter(&user_stack[PAGE_ALLOCATOR_PAGE_SIZE]);
 }
 
 void user_main(void) __attribute__((noreturn));
 void user_main(void) {
-	for(;;);
 	syscall_put(':');
 	syscall_put('D');
 	syscall_put('\n');

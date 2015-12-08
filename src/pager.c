@@ -12,12 +12,15 @@ static void pager_load_directory(struct PageDirectory *directory) {
 
 struct Pager * pager_init(void) {
 	struct PageAllocator *allocator = (struct PageAllocator *)0x100000;
+	allocator->bitmap = (uint8_t *)0x200000;
 	page_allocator_init(allocator, NULL, 4096, PAGER_LOW_MAP * 1024);
 
 	/* reserve physical NULL to 0x10000 */
 	for(size_t page = 0; page < 0x10; ++page) {
 		page_allocator_alloc_at(allocator, page);
 	}
+
+	page_allocator_alloc_self(allocator);
 
 	/* reserve physical 0x50000 to upper bound of 1:1 mapping */
 	for(size_t page = 0x50; page < PAGER_LOW_MAP * 1024; ++page) {
@@ -32,7 +35,7 @@ struct Pager * pager_init(void) {
 	for(unsigned int table = 0; table < 1024; ++table) {
 		pager->directory->tables[table].present = 0;
 		pager->directory->tables[table].writable = 1;
-		pager->directory->tables[table].unprivileged = 0;
+		pager->directory->tables[table].unprivileged = 1;
 		pager->directory->tables[table].write_through = 0;
 		pager->directory->tables[table].disable_cache = 0;
 		pager->directory->tables[table].accessed = 0;
@@ -73,10 +76,6 @@ static void * pager_alloc_at(struct Pager *pager, unsigned int table, unsigned i
 static void * pager_alloc_in(struct Pager *pager, unsigned int lower, unsigned int upper) {
 	/* lower bound has to be above low 1:1 mapping */
 	if(lower < PAGER_LOW_MAP) { return NULL; }
-
-	char s1[] = "                                ";
-	itoa((int)pager->directory, s1, 16);
-	//if(lower == PAGER_RESERVE_2) { kernel_panic(s1); }
 
 	/* attempt to allocate from existing page table */
 	for(unsigned int table = lower; table < upper; ++table) {

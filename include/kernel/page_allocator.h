@@ -14,6 +14,7 @@ struct PageAllocator {
 };
 
 void page_allocator_init(struct PageAllocator *, void *, size_t, size_t);
+void page_allocator_alloc_self(struct PageAllocator *allocator);
 void page_allocator_clear(struct PageAllocator *);
 void * page_allocator_alloc_at(struct PageAllocator *, size_t);
 void * page_allocator_alloc_in(struct PageAllocator *, size_t, size_t);
