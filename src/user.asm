@@ -1,4 +1,4 @@
-extern user_main
+extern user_entry
 global user_enter
 
 [BITS 32]                                                                       ; 32-bit instructions
@@ -13,5 +13,5 @@ user_enter:
     push eax                                                                    ; push stack pointer
     pushfd                                                                      ; push eflags register
     push 0x1B                                                                   ; push user code segment | ring 3
-    push user_main                                                              ; push function address
+    push user_entry                                                             ; push function address
     iret                                                                        ; enter userspace

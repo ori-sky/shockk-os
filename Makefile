@@ -16,7 +16,7 @@ LOADER_ORIGIN=0x1000
 LOADER_PATHS=$(addprefix src/,$(LOADER_OBJS))
 LOADER_LDFLAGS=-e $(LOADER_ENTRY) -Ttext=$(LOADER_ORIGIN) -nostdlib
 
-KERNEL_OBJS=kernel_entry.o ports.o a20.o memory.o page_allocator.o pager.o pit.o pic.o gdt.o tss.o idt.o isr.s.o isr.o syscall.o screen.o panic.o itoa.o user.s.o pci.o ata.o
+KERNEL_OBJS=kernel_entry.o user_entry.o ports.o a20.o memory.o page_allocator.o pager.o pit.o pic.o gdt.o tss.o idt.o isr.s.o isr.o syscall.o screen.o panic.o itoa.o user.s.o pci.o ata.o
 KERNEL_ENTRY=kernel_entry
 KERNEL_ORIGIN=0xC0000000
 KERNEL_PATHS=$(addprefix src/,$(KERNEL_OBJS))
