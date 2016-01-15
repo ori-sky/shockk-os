@@ -101,11 +101,11 @@ static void * pager_alloc_in(struct Pager *pager, unsigned int lower, unsigned i
 }
 
 void * pager_alloc(struct Pager *pager) {
-	return pager_alloc_in(pager, PAGER_LOW_MAP, PAGER_RESERVE_2);
+	return pager_alloc_in(pager, PAGER_LOW_MAP, PAGER_KERNEL);
 }
 
 void * pager_reserve(struct Pager *pager) {
-	return pager_alloc_in(pager, PAGER_RESERVE_2, 1024);
+	return pager_alloc_in(pager, PAGER_KERNEL, 1024);
 }
 
 void pager_reload(struct Pager *pager) {

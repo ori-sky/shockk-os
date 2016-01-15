@@ -5,8 +5,8 @@
 #include <kernel/page_allocator.h>
 
 #define PAGER_LOW_MAP     1 /* number of tables to map 1:1 at lower bound */
-#define PAGER_RESERVE_1 766 /* lower bound of reserve 1 */
-#define PAGER_RESERVE_2 768 /* lower bound of reserve 2 */
+#define PAGER_RESERVE   766 /* lower bound of reserve 1 */
+#define PAGER_KERNEL    768 /* lower bound of reserve 2 */
 
 struct PageTableEntry {
 	uint8_t present       : 1;
