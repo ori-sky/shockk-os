@@ -1,10 +1,10 @@
 IMAGE=os.img
 FLOPPY_IMAGE=floppy.img
 
-CROSS_TARGET=i386-elf
+CROSS_TARGET=i386-none-elf
 ASM=nasm
-CC=$(CROSS_TARGET)-gcc
-LD=$(CROSS_TARGET)-gcc
+CC=clang -target $(CROSS_TARGET)
+LD=clang -target $(CROSS_TARGET)
 
 CWARNS=-Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual -Wformat=2 -Winit-self -Wmissing-include-dirs -Wredundant-decls -Wshadow -Wstrict-overflow=5 -Wundef -Wdisabled-optimization -Wsign-conversion -Wstack-protector -Wabi -Waggregate-return -Winline -Wpadded -Wswitch-enum
 CFLAGS=-Iinclude -c -ffreestanding -std=c11 -Os -fno-asynchronous-unwind-tables -mno-sse $(CWARNS)
@@ -14,21 +14,23 @@ LOADER_OBJS=loader_entry.o ports.o a20.o panic_dummy.o page_allocator.o pager.o 
 LOADER_ENTRY=loader_entry
 LOADER_ORIGIN=0x1000
 LOADER_PATHS=$(addprefix src/,$(LOADER_OBJS))
-LOADER_LDFLAGS=-e $(LOADER_ENTRY) -Ttext=$(LOADER_ORIGIN) -nostdlib
+LOADER_CFLAGS=-nostdlib
+LOADER_LDFLAGS=-e,$(LOADER_ENTRY),-Ttext,$(LOADER_ORIGIN),--build-id=none
 
 KERNEL_OBJS=kernel_entry.o user_entry.o ports.o a20.o memory.o page_allocator.o pager.o pit.o pic.o gdt.o tss.o idt.o isr.s.o isr.o syscall.o screen.o panic.o itoa.o user.s.o pci.o ata.o
 KERNEL_ENTRY=kernel_entry
 KERNEL_ORIGIN=0xC0000000
 KERNEL_PATHS=$(addprefix src/,$(KERNEL_OBJS))
 KERNEL_ASMFLAGS=
-KERNEL_LDFLAGS=-e $(KERNEL_ENTRY) -Ttext=$(KERNEL_ORIGIN) -nostdlib
+KERNEL_CFLAGS=-nostdlib
+KERNEL_LDFLAGS=-e,$(KERNEL_ENTRY),-Ttext,$(KERNEL_ORIGIN),--build-id=none
 
 .PHONY: all
 all: $(FLOPPY_IMAGE)
 
 .PHONY: run-qemu
 run-qemu: $(FLOPPY_IMAGE)
-	qemu -s -hda $(FLOPPY_IMAGE)
+	qemu-system-i386 -s -hda $(FLOPPY_IMAGE)
 
 $(FLOPPY_IMAGE): $(IMAGE)
 	dd bs=512 count=2820 if=/dev/zero of=$@
@@ -50,13 +52,13 @@ loader.bin: loader.o
 	rm -fv loader.bin.tmp
 
 loader.o: $(LOADER_PATHS)
-	$(LD) $(LOADER_LDFLAGS) $(LDFLAGS) $^ -o $@
+	$(LD) $(LOADER_CFLAGS) -Wl,$(LOADER_LDFLAGS),$(LDFLAGS) $^ -o $@
 
 kernel.bin: kernel.o
 	objcopy -R .note -R .comment -S -O binary $^ $@
 
 kernel.o: $(KERNEL_PATHS)
-	$(LD) $(KERNEL_LDFLAGS) $(LDFLAGS) $^ -o $@
+	$(LD) $(KERNEL_CFLAGS) -Wl,$(KERNEL_LDFLAGS),$(LDFLAGS) $^ -o $@
 
 %.s.o: %.asm
 	$(ASM) -f elf $(ASM_FLAGS) $^ -o $@
