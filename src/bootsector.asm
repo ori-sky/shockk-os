@@ -47,7 +47,7 @@ protected_mode:
     mov gs, ax                                                                  ; set extra data segment #3
     mov esp, 0x70000                                                            ; set stack pointer
                                                                                 ; video RAM begins at 0xA0000
-    jmp 0x8:0x0000                                                             ; far jump to kernel
+    jmp 0x8:0x1000                                                              ; far jump to kernel
 reset_drive:
     xor ah, ah                                                                  ; command = reset drive
     int 0x13                                                                    ; interrupt = disk services
