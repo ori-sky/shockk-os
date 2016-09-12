@@ -12,7 +12,7 @@ set_target_properties(loader.o PROPERTIES
 )
 
 add_custom_target(loader.flat
-	COMMAND objcopy -R .note -R .comment -S -O binary ${CMAKE_CURRENT_BINARY_DIR}/loader.o ${CMAKE_CURRENT_BINARY_DIR}/loader.flat
+	COMMAND objcopy -R .note -R .comment -R .idata -S -O binary ${CMAKE_CURRENT_BINARY_DIR}/loader.o ${CMAKE_CURRENT_BINARY_DIR}/loader.flat
 	DEPENDS loader.o
 )
 
