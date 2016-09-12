@@ -1,7 +1,7 @@
-add_executable(loader.o EXCLUDE_FROM_ALL ${CMAKE_CURRENT_SOURCE_DIR}/loader_entry.c ${CMAKE_SOURCE_DIR}/src/screen.c ${CMAKE_SOURCE_DIR}/src/ports.c)
+add_executable(loader.o EXCLUDE_FROM_ALL loader_entry.c ${CMAKE_SOURCE_DIR}/src/screen.c ${CMAKE_SOURCE_DIR}/src/ports.c)
 
 set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS)
-set(CMAKE_C_FLAGS "-target ${SHK_TARGET} -nostdlib -ffreestanding -fno-asynchronous-unwind-tables -mno-sse -I${CMAKE_SOURCE_DIR}/include")
+set(CMAKE_C_FLAGS "-target ${SHK_TARGET} -nostdlib -ffreestanding -fno-asynchronous-unwind-tables -mno-sse -Os -I${CMAKE_SOURCE_DIR}/include")
 set_target_properties(loader.o PROPERTIES
 	LINK_FLAGS  "-Wl,-e,${SHK_LOADER_ENTRY},-Ttext,${SHK_LOADER_ORIGIN},--build-id=none"
 )
