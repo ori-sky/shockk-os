@@ -1,10 +1,6 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdint.h>
 
 #define SCREEN_ROWS 25
@@ -22,9 +18,5 @@ void screen_write_at(const unsigned short, const char);
 char screen_read_at(const unsigned short);
 void screen_put(const char);
 void screen_print(const char *s);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
