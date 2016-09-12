@@ -4,3 +4,8 @@ set(CMAKE_C_FLAGS "-target ${SHK_TARGET} -nostdlib -ffreestanding -fno-asynchron
 set_target_properties(kernel PROPERTIES
 	LINK_FLAGS  "-Wl,-e,${SHK_KERNEL_ENTRY}"
 )
+
+add_custom_command(TARGET kernel POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:kernel> ${CMAKE_BINARY_DIR}/kernel.elf
+	COMMENT "Copying kernel executable to kernel.elf"
+)
