@@ -2,10 +2,12 @@ cmake_minimum_required(VERSION 3.2)
 
 project(shockk-os)
 
-set(SHK_TARGET        i386-none-elf)
-set(SHK_LOADER_ENTRY  loader_entry)
-set(SHK_LOADER_ORIGIN 0x1000)
-set(SHK_KERNEL_ENTRY  kernel_entry)
+set(CMAKE_C_COMPILER   clang)
+set(CMAKE_CXX_COMPILER clang++)
+set(SHK_TARGET         i386-none-elf)
+set(SHK_LOADER_ENTRY   loader_entry)
+set(SHK_LOADER_ORIGIN  0x1000)
+set(SHK_KERNEL_ENTRY   kernel_entry)
 
 add_subdirectory(src/bootsector)
 add_subdirectory(src/loader)
@@ -17,6 +19,6 @@ add_custom_target(shk ALL
 )
 
 add_custom_target(run
-	COMMAND qemu-system-i386 ${CMAKE_BINARY_DIR}/shk.img
+	COMMAND qemu-system-i386 shk.img
 	DEPENDS shk
 )

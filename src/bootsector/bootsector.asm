@@ -7,7 +7,7 @@ read_loader:
     mov es, ax
     mov bx, 0x1000
     mov ah, 0x2                                                                 ; command = read sectors from drive
-    mov al, 0x8                                                                 ; load loader sector count
+    mov al, 32                                                                  ; load loader sector count
     xor ch, ch                                                                  ; disk cylinder to read from
     mov cl, 2                                                                   ; sector to begin reading from
     xor dh, dh                                                                  ; disk head to read from
