@@ -2,27 +2,14 @@
 [ORG 0x7C00]                                                                    ; bootsector is loaded at 0x7C00
     jmp 0x0:start                                                               ; enforce cs:ip
 start:
-read_infosector:
-    call reset_drive
-    xor ax, ax                                                                  ; load infosector into es:bx
-    mov es, ax
-    mov bx, 0x500
-    mov ah, 0x2                                                                 ; command = read sectors from drive
-    mov al, 1                                                                   ; number of sectors to read
-    xor ch, ch                                                                  ; disk cylinder to read from
-    mov cl, 2                                                                   ; sector to begin reading from
-                                                                                ; bootsector is sector 1 (1-based)
-    xor dh, dh                                                                  ; disk head to read from
-    int 0x13                                                                    ; read infosector (interrupt = disk)
-    jc read_loader                                                              ; carry flag set on error
 read_loader:
     xor ax, ax                                                                  ; load loader into es:bx
     mov es, ax
     mov bx, 0x1000
     mov ah, 0x2                                                                 ; command = read sectors from drive
-    mov al, byte[0x500]                                                         ; load loader sector count
+    mov al, 0x8                                                                 ; load loader sector count
     xor ch, ch                                                                  ; disk cylinder to read from
-    mov cl, 3                                                                   ; sector to begin reading from
+    mov cl, 2                                                                   ; sector to begin reading from
     xor dh, dh                                                                  ; disk head to read from
     int 0x13                                                                    ; read loader
     jnc success                                                                 ; carry flag set on error
