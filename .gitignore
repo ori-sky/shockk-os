@@ -2,6 +2,9 @@
 *~
 .~*
 *.o
+*.flat
 *.bin
+*.elf
 *.img
+*.floppy
 build
