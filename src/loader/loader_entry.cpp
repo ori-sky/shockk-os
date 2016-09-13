@@ -1,5 +1,8 @@
 #include <stdint.h>
+#include <kernel/itoa.h>
 #include <kernel/screen.h>
+#include <kernel/ata.h>
+#include <arch/x86/a20.h>
 
 enum class ELFVersion : uint8_t {
 	None = 0,
@@ -64,11 +67,28 @@ struct ELFHeader {
 	uint16_t   section_header_entry_size;
 	uint16_t   section_header_count;
 	uint16_t   section_header_str_idx;
-};
+} __attribute__((packed));
+
+struct ELF {
+	ELFHeader header;
+} __attribute__((packed));
 
 extern "C" void loader_entry(void) __attribute__((noreturn));
-extern "C" void loader_entry(void) {
-	//screen_init();
-	//screen_print("Hello, world!");
+void loader_entry(void) {
+	a20_enable();
+	ata_init();
+	ELF *elf = (ELF *)0x10000;
+	ata_pio_read(17, 1, elf);
+
+	char v[16];
+	itoa(static_cast<int>(elf->header.version), v, 16);
+	screen_init();
+	screen_put(elf->header.ident.magic[1]);
+	screen_put(elf->header.ident.magic[2]);
+	screen_put(elf->header.ident.magic[3]);
+	screen_put('\n');
+	screen_print("0x");
+	screen_print(v);
+
 	for(;;) { __asm__ ("hlt"); }
 }
