@@ -11,13 +11,16 @@ CFLAGS=-ffreestanding -nostdlib -fno-asynchronous-unwind-tables -mno-sse $(CWARN
 CXXFLAGS=-ffreestanding -nostdlib -fno-asynchronous-unwind-tables -fno-exceptions -mno-sse $(CWARNS) -std=c++11 -Os -Iinclude
 
 LOADER_OBJS=loader_entry.cpp.o ports.cpp.o panic_dummy.cpp.o screen.cpp.o a20.cpp.o ata.cpp.o itoa.cpp.o
+LOADER_PATHS=$(addprefix src/loader/,$(LOADER_OBJS))
 LOADER_ENTRY=loader_entry
 LOADER_ORIGIN=0x1000
-LOADER_PATHS=$(addprefix src/loader/,$(LOADER_OBJS))
 LOADER_LDFLAGS=-e $(LOADER_ENTRY) -Ttext $(LOADER_ORIGIN) --build-id=none
 
 KERNEL_OBJS=kernel_entry.cpp.o
 KERNEL_PATHS=$(addprefix src/kernel/,$(KERNEL_OBJS))
+KERNEL_ENTRY=kernel_entry
+KERNEL_ORIGIN=0xC0000000
+KERNEL_LDFLAGS=-e $(KERNEL_ENTRY) -Ttext $(KERNEL_ORIGIN)
 
 .PHONY: all
 all: $(FLOPPY_IMAGE)
@@ -47,7 +50,7 @@ loader.o: $(LOADER_PATHS)
 	$(LD) $(LOADER_LDFLAGS) $^ -o $@
 
 kernel.elf: $(KERNEL_PATHS)
-	$(LD) $^ -o $@
+	$(LD) $(KERNEL_LDFLAGS) $^ -o $@
 
 %.cpp.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
