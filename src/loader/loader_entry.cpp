@@ -57,21 +57,28 @@ struct ELFHeader {
 	ELFIdent   ident;
 	ELFType    type;
 	ELFMachine machine;
-	ELFVersion version;
+	uint32_t   version;   // we can just use ELFIdent.version which is a uint8_t
 	uint32_t   entry_ptr;
-	uint32_t   program_header_off;
-	uint32_t   section_header_off;
+	uint32_t   ph_offset; // program header offset
+	uint32_t   sh_offset; // section header offset
 	uint32_t   flags;
 	uint16_t   elf_header_size;
-	uint16_t   program_header_entry_size;
-	uint16_t   program_header_count;
-	uint16_t   section_header_entry_size;
-	uint16_t   section_header_count;
-	uint16_t   section_header_str_idx;
+	uint16_t   ph_size;
+	uint16_t   ph_count;
+	uint16_t   sh_size;
+	uint16_t   sh_count;
+	uint16_t   sh_str_idx;
 } __attribute__((packed));
 
-struct ELF {
-	ELFHeader header;
+struct ELFProgramHeader {
+	uint32_t type;
+	uint32_t offset;
+	uint32_t v_addr;
+	uint32_t p_addr;
+	uint32_t file_size;
+	uint32_t mem_size;
+	uint32_t flags;
+	uint32_t align;
 } __attribute__((packed));
 
 #define SCREEN_CASE(X)       case X:  return screen << #X
@@ -168,30 +175,46 @@ public:
 	}
 
 	friend Screen & operator<<(Screen &screen, const ELFIdent &ident) {
-		screen << '\n';
-		screen << "  magic       = " << static_cast<char>(ident.magic[0])
-		                             << static_cast<char>(ident.magic[1])
-		                             << static_cast<char>(ident.magic[2])
-		                             << static_cast<char>(ident.magic[3])
-		                                                  << '\n';
-		screen << "  class       = " << ident.class_      << '\n';
-		screen << "  encoding    = " << ident.encoding    << '\n';
-		screen << "  version     = " << ident.version     << '\n';
-		screen << "  abi         = " << ident.abi         << '\n';
-		screen << "  abi_version = " << ident.abi_version;
+		screen << "ELFIdent::magic       = " << static_cast<char>(ident.magic[0])
+		                                     << static_cast<char>(ident.magic[1])
+		                                     << static_cast<char>(ident.magic[2])
+		                                     << static_cast<char>(ident.magic[3])
+		                                                          << '\n';
+		screen << "ELFIdent::class       = " << ident.class_      << '\n';
+		screen << "ELFIdent::encoding    = " << ident.encoding    << '\n';
+		screen << "ELFIdent::version     = " << ident.version     << '\n';
+		screen << "ELFIdent::abi         = " << ident.abi         << '\n';
+		screen << "ELFIdent::abi_version = " << ident.abi_version << '\n';
 		return screen;
 	}
 
 	friend Screen & operator<<(Screen &screen, const ELFHeader &header) {
-		screen << "ident   = " << header.ident   << '\n';
-		screen << "type    = " << header.type    << '\n';
-		screen << "machine = " << header.machine << '\n';
-		screen << "version = " << header.version << '\n';
+		screen << header.ident;
+		screen << "ELFHeader::type       = " << header.type       << '\n';
+		screen << "ELFHeader::machine    = " << header.machine    << '\n';
+		//screen << "ELFHeader::version    = " << header.version    << '\n';
+		screen << "ELFHeader::entry_ptr  = " << header.entry_ptr  << '\n';
+		screen << "ELFHeader::ph_offset  = " << header.ph_offset  << '\n';
+		screen << "ELFHeader::sh_offset  = " << header.sh_offset  << '\n';
+		screen << "ELFHeader::flags      = " << header.flags      << '\n';
+		screen << "ELFHeader::ph_size    = " << header.ph_size    << '\n';
+		screen << "ELFHeader::ph_count   = " << header.ph_count   << '\n';
+		screen << "ELFHeader::sh_size    = " << header.sh_size    << '\n';
+		screen << "ELFHeader::sh_count   = " << header.sh_count   << '\n';
+		screen << "ELFHeader::sh_str_idx = " << header.sh_str_idx << '\n';
 		return screen;
 	}
 
-	friend Screen & operator<<(Screen &screen, const ELF &elf) {
-		return screen << elf.header;
+	friend Screen & operator<<(Screen &screen, const ELFProgramHeader &ph) {
+		screen << "ELFProgramHeader::type      = " << ph.type      << '\n';
+		screen << "ELFProgramHeader::offset    = " << ph.offset    << '\n';
+		screen << "ELFProgramHeader::v_addr    = " << ph.v_addr    << '\n';
+		screen << "ELFProgramHeader::p_addr    = " << ph.p_addr    << '\n';
+		screen << "ELFProgramHeader::file_size = " << ph.file_size << '\n';
+		screen << "ELFProgramHeader::mem_size  = " << ph.mem_size  << '\n';
+		screen << "ELFProgramHeader::flags     = " << ph.flags     << '\n';
+		screen << "ELFProgramHeader::align     = " << ph.align     << '\n';
+		return screen;
 	}
 };
 
@@ -204,11 +227,18 @@ void loader_entry(void) {
 	pager_enable();
 
 	ata_init();
-	ELF *elf = static_cast<ELF *>(pager_reserve(pager));
-	ata_pio_read(17, 1, elf);
-
 	Screen screen;
-	screen << *elf;
+
+	ELFHeader header;
+	ata_pio_read(17, 1, &header);
+	screen << header;
+
+	uint8_t ph_sector[512 * 2];
+	ata_pio_read(17 + header.ph_offset / 512, 2, ph_sector);
+	ELFProgramHeader *ph = reinterpret_cast<ELFProgramHeader *>(
+		&ph_sector[header.ph_offset % 512]
+	);
+	screen << *ph;
 
 	for(;;) { __asm__ ("hlt"); }
 }
