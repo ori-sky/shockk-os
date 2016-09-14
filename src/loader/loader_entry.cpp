@@ -246,18 +246,25 @@ void loader_entry(void) {
 	pager_enable();
 
 	ata_init();
-	Screen screen;
 
 	ELFHeader header;
 	ata_pio_read(17, 1, &header);
-	//screen << header;
 
 	uint8_t ph_sector[512 * 2];
 	ata_pio_read(17 + header.ph_offset / 512, 2, ph_sector);
 	ELFProgramHeader *ph = reinterpret_cast<ELFProgramHeader *>(
 		&ph_sector[header.ph_offset % 512]
 	);
-	screen << *ph;
+
+	void *entry_ptr = pager_reserve(pager);
+	for(unsigned int i = 1; i < ph->mem_size / PAGE_ALLOCATOR_PAGE_SIZE + 1; ++i) {
+		pager_reserve(pager);
+	}
+
+	ata_pio_read(17 + ph->offset / 512, ph->mem_size / 512 + 1, entry_ptr);
+
+	auto kernel_entry = reinterpret_cast<void(*)(void)>(entry_ptr);
+	kernel_entry();
 
 	for(;;) { __asm__ ("hlt"); }
 }

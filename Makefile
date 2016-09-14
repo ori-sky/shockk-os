@@ -16,7 +16,7 @@ LOADER_ENTRY=loader_entry
 LOADER_ORIGIN=0x1000
 LOADER_LDFLAGS=-e $(LOADER_ENTRY) -Ttext $(LOADER_ORIGIN) --build-id=none
 
-KERNEL_OBJS=kernel_entry.cpp.o
+KERNEL_OBJS=kernel_entry.cpp.o panic_dummy.cpp.o
 KERNEL_PATHS=$(addprefix src/kernel/,$(KERNEL_OBJS))
 KERNEL_ENTRY=kernel_entry
 KERNEL_ORIGIN=0xC0000000
