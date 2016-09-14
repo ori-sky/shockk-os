@@ -1,7 +1,7 @@
 #include <kernel/pager.h>
 
 static void pager_make_table(struct Pager *pager, unsigned int table) {
-	struct PageTable *table_addr = page_allocator_reserve(pager->allocator);
+	struct PageTable *table_addr = static_cast<PageTable *>(page_allocator_reserve(pager->allocator));
 	pager->directory->tables[table].present = 1;
 	pager->directory->tables[table].address = (uint32_t)table_addr >> 12;
 }
@@ -27,9 +27,9 @@ struct Pager * pager_init(void) {
 		page_allocator_alloc_at(allocator, page);
 	}
 
-	struct Pager *pager = page_allocator_reserve(allocator);
+	struct Pager *pager = static_cast<Pager *>(page_allocator_reserve(allocator));
 	pager->allocator = allocator;
-	pager->directory = page_allocator_reserve(allocator);
+	pager->directory = static_cast<PageDirectory *>(page_allocator_reserve(allocator));
 
 	/* initialize directory */
 	for(unsigned int table = 0; table < 1024; ++table) {
@@ -50,7 +50,9 @@ struct Pager * pager_init(void) {
 	}
 
 	/* reserve page for pager itself */
-	return pager_map(pager, (uintptr_t)pager / 4096 / 1024, (uintptr_t)pager / 4096 % 1024, pager);
+	return static_cast<Pager *>(
+		pager_map(pager, (uintptr_t)pager / 4096 / 1024, (uintptr_t)pager / 4096 % 1024, pager)
+	);
 }
 
 void * pager_map(struct Pager *pager, unsigned int table, unsigned int page, void *phys_addr) {

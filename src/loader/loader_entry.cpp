@@ -2,6 +2,7 @@
 #include <kernel/itoa.h>
 #include <kernel/screen.h>
 #include <kernel/ata.h>
+#include <kernel/pager.h>
 #include <arch/x86/a20.h>
 
 enum class ELFVersion : uint8_t {
@@ -197,8 +198,13 @@ public:
 extern "C" void loader_entry(void) __attribute__((noreturn));
 void loader_entry(void) {
 	a20_enable();
+
+	struct Pager *pager = pager_init();
+	pager_reload(pager);
+	pager_enable();
+
 	ata_init();
-	ELF *elf = (ELF *)0x10000;
+	ELF *elf = static_cast<ELF *>(pager_reserve(pager));
 	ata_pio_read(17, 1, elf);
 
 	Screen screen;
