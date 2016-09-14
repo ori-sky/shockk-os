@@ -5,24 +5,24 @@
 #include <kernel/pager.h>
 #include <arch/x86/a20.h>
 
-enum class ELFVersion : uint8_t {
+enum class ELFIdentVersion : uint8_t {
 	None = 0,
 	ELF1 = 1
 };
 
-enum class ELFClass : uint8_t {
+enum class ELFIdentClass : uint8_t {
 	None = 0,
 	x32  = 1,
 	x64  = 2
 };
 
-enum class ELFEncoding : uint8_t {
+enum class ELFIdentEncoding : uint8_t {
 	None         = 0,
 	LittleEndian = 1,
 	BigEndian    = 2
 };
 
-enum class ELFABI : uint8_t {
+enum class ELFIdentABI : uint8_t {
 	SystemV = 0x00,
 	Linux   = 0x03,
 	SHK     = 0x7F
@@ -34,8 +34,6 @@ enum class ELFType : uint16_t {
 	Executable  = 2,
 	Dynamic     = 3,
 	Core        = 4,
-	LowProc     = 0xFF00,
-	HighProc    = 0xFFFF
 };
 
 enum class ELFMachine : uint16_t {
@@ -44,13 +42,13 @@ enum class ELFMachine : uint16_t {
 };
 
 struct ELFIdent {
-	uint8_t     magic[4];
-	ELFClass    class_;
-	ELFEncoding encoding;
-	ELFVersion  version;
-	ELFABI      abi;
-	uint8_t     abi_version;
-	uint8_t     padding[7];
+	uint8_t          magic[4];
+	ELFIdentClass    class_;
+	ELFIdentEncoding encoding;
+	ELFIdentVersion  version;
+	ELFIdentABI      abi;
+	uint8_t          abi_version;
+	uint8_t          padding[7];
 } __attribute__((packed));
 
 struct ELFHeader {
@@ -70,8 +68,18 @@ struct ELFHeader {
 	uint16_t   sh_str_idx;
 } __attribute__((packed));
 
+enum class ELFProgramType : uint32_t {
+	Null    = 0,
+	Load    = 1,
+	Dynamic = 2,
+	Interp  = 3,
+	Note    = 4,
+	Shared  = 5,
+	Header  = 6
+};
+
 struct ELFProgramHeader {
-	uint32_t type;
+	ELFProgramType type;
 	uint32_t offset;
 	uint32_t v_addr;
 	uint32_t p_addr;
@@ -118,58 +126,56 @@ public:
 		return screen;
 	}
 
-	friend Screen & operator<<(Screen &screen, const ELFClass class_) {
+	friend Screen & operator<<(Screen &screen, const ELFIdentClass class_) {
 		switch(class_) {
-			SCREEN_CASE(ELFClass::None);
-			SCREEN_CASE(ELFClass::x32);
-			SCREEN_CASE(ELFClass::x64);
-			SCREEN_DEFAULT(ELFClass, class_);
+			SCREEN_CASE   (ELFIdentClass::None);
+			SCREEN_CASE   (ELFIdentClass::x32);
+			SCREEN_CASE   (ELFIdentClass::x64);
+			SCREEN_DEFAULT(ELFIdentClass, class_);
 		}
 	}
 
-	friend Screen & operator<<(Screen &screen, const ELFEncoding encoding) {
+	friend Screen & operator<<(Screen &screen, const ELFIdentEncoding encoding) {
 		switch(encoding) {
-			SCREEN_CASE(ELFEncoding::None);
-			SCREEN_CASE(ELFEncoding::LittleEndian);
-			SCREEN_CASE(ELFEncoding::BigEndian);
-			SCREEN_DEFAULT(ELFEncoding, encoding);
+			SCREEN_CASE   (ELFIdentEncoding::None);
+			SCREEN_CASE   (ELFIdentEncoding::LittleEndian);
+			SCREEN_CASE   (ELFIdentEncoding::BigEndian);
+			SCREEN_DEFAULT(ELFIdentEncoding, encoding);
 		}
 	}
 
-	friend Screen & operator<<(Screen &screen, const ELFVersion version) {
+	friend Screen & operator<<(Screen &screen, const ELFIdentVersion version) {
 		switch(version) {
-			SCREEN_CASE(ELFVersion::None);
-			SCREEN_CASE(ELFVersion::ELF1);
-			SCREEN_DEFAULT(ELFVersion, version);
+			SCREEN_CASE   (ELFIdentVersion::None);
+			SCREEN_CASE   (ELFIdentVersion::ELF1);
+			SCREEN_DEFAULT(ELFIdentVersion, version);
 		}
 	}
 
-	friend Screen & operator<<(Screen &screen, const ELFABI abi) {
+	friend Screen & operator<<(Screen &screen, const ELFIdentABI abi) {
 		switch(abi) {
-			SCREEN_CASE(ELFABI::SystemV);
-			SCREEN_CASE(ELFABI::Linux);
-			SCREEN_CASE(ELFABI::SHK);
-			SCREEN_DEFAULT(ELFABI, abi);
+			SCREEN_CASE   (ELFIdentABI::SystemV);
+			SCREEN_CASE   (ELFIdentABI::Linux);
+			SCREEN_CASE   (ELFIdentABI::SHK);
+			SCREEN_DEFAULT(ELFIdentABI, abi);
 		}
 	}
 
 	friend Screen & operator<<(Screen &screen, const ELFType type) {
 		switch(type) {
-			SCREEN_CASE(ELFType::None);
-			SCREEN_CASE(ELFType::Relocatable);
-			SCREEN_CASE(ELFType::Executable);
-			SCREEN_CASE(ELFType::Dynamic);
-			SCREEN_CASE(ELFType::Core);
-			SCREEN_CASE(ELFType::LowProc);
-			SCREEN_CASE(ELFType::HighProc);
+			SCREEN_CASE   (ELFType::None);
+			SCREEN_CASE   (ELFType::Relocatable);
+			SCREEN_CASE   (ELFType::Executable);
+			SCREEN_CASE   (ELFType::Dynamic);
+			SCREEN_CASE   (ELFType::Core);
 			SCREEN_DEFAULT(ELFType, type);
 		}
 	}
 
 	friend Screen & operator<<(Screen &screen, const ELFMachine machine) {
 		switch(machine) {
-			SCREEN_CASE(ELFMachine::None);
-			SCREEN_CASE(ELFMachine::Intel386);
+			SCREEN_CASE   (ELFMachine::None);
+			SCREEN_CASE   (ELFMachine::Intel386);
 			SCREEN_DEFAULT(ELFMachine, machine);
 		}
 	}
@@ -205,6 +211,19 @@ public:
 		return screen;
 	}
 
+	friend Screen & operator<<(Screen &screen, const ELFProgramType type) {
+		switch(type) {
+			SCREEN_CASE   (ELFProgramType::Null);
+			SCREEN_CASE   (ELFProgramType::Load);
+			SCREEN_CASE   (ELFProgramType::Dynamic);
+			SCREEN_CASE   (ELFProgramType::Interp);
+			SCREEN_CASE   (ELFProgramType::Note);
+			SCREEN_CASE   (ELFProgramType::Shared);
+			SCREEN_CASE   (ELFProgramType::Header);
+			SCREEN_DEFAULT(ELFProgramType, type);
+		}
+	}
+
 	friend Screen & operator<<(Screen &screen, const ELFProgramHeader &ph) {
 		screen << "ELFProgramHeader::type      = " << ph.type      << '\n';
 		screen << "ELFProgramHeader::offset    = " << ph.offset    << '\n';
@@ -231,7 +250,7 @@ void loader_entry(void) {
 
 	ELFHeader header;
 	ata_pio_read(17, 1, &header);
-	screen << header;
+	//screen << header;
 
 	uint8_t ph_sector[512 * 2];
 	ata_pio_read(17 + header.ph_offset / 512, 2, ph_sector);
