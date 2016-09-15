@@ -49,6 +49,7 @@ struct Pager {
 
 struct Pager * pager_init(void);
 void * pager_map(struct Pager *, unsigned int, unsigned int, void *);
+void * pager_alloc_at(struct Pager *, unsigned int, unsigned int);
 void * pager_alloc(struct Pager *);
 void * pager_reserve(struct Pager *);
 void pager_reload(struct Pager *);

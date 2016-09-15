@@ -250,20 +250,25 @@ void loader_entry(void) {
 	ELFHeader header;
 	ata_pio_read(17, 1, &header);
 
-	uint8_t ph_sector[512 * 2];
-	ata_pio_read(17 + header.ph_offset / 512, 2, ph_sector);
-	ELFProgramHeader *ph = reinterpret_cast<ELFProgramHeader *>(
-		&ph_sector[header.ph_offset % 512]
-	);
+	for(size_t p = 0; p < header.ph_count; ++p) {
+		uint32_t offset = header.ph_offset + p * header.ph_size;
+		uint8_t ph_sector[1024];
+		ata_pio_read(17 + offset / 512, 2, ph_sector);
+		ELFProgramHeader *ph = reinterpret_cast<ELFProgramHeader *>(
+			&ph_sector[offset % 512]
+		);
 
-	void *entry_ptr = pager_reserve(pager);
-	for(unsigned int i = 1; i < ph->mem_size / PAGE_ALLOCATOR_PAGE_SIZE + 1; ++i) {
-		pager_reserve(pager);
+		for(uint32_t addr = ph->v_addr; addr < ph->v_addr + ph->mem_size;
+		                                addr += PAGE_ALLOCATOR_PAGE_SIZE) {
+			pager_alloc_at(pager, addr / 1024 / PAGE_ALLOCATOR_PAGE_SIZE,
+			                      addr / 1024 % PAGE_ALLOCATOR_PAGE_SIZE);
+		}
+
+		void *ptr = (void *)ph->v_addr;
+		ata_pio_read(17 + ph->offset / 512, ph->file_size / 512 + 1, ptr);
 	}
 
-	ata_pio_read(17 + ph->offset / 512, ph->mem_size / 512 + 1, entry_ptr);
-
-	auto kernel_entry = reinterpret_cast<void(*)(void)>(entry_ptr);
+	auto kernel_entry = (void(*)(void))header.entry_ptr;
 	kernel_entry();
 
 	for(;;) { __asm__ ("hlt"); }

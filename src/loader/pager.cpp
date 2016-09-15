@@ -71,7 +71,7 @@ void * pager_map(struct Pager *pager, unsigned int table, unsigned int page, voi
 	return (void *)((table * 1024 + page) * PAGE_ALLOCATOR_PAGE_SIZE);
 }
 
-static void * pager_alloc_at(struct Pager *pager, unsigned int table, unsigned int page) {
+void * pager_alloc_at(struct Pager *pager, unsigned int table, unsigned int page) {
 	return pager_map(pager, table, page, page_allocator_alloc(pager->allocator));
 }
 
