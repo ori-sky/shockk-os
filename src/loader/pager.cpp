@@ -1,6 +1,6 @@
 #include <kernel/pager.h>
 
-struct Pager * Pager::Create(void) {
+Pager * Pager::Create(void) {
 	struct PageAllocator *allocator = (struct PageAllocator *)0x100000;
 	allocator->bitmap = (uint8_t *)0x200000;
 	page_allocator_init(allocator, NULL, 4096, PAGER_LOW_MAP * 1024);
@@ -17,9 +17,9 @@ struct Pager * Pager::Create(void) {
 		page_allocator_alloc_at(allocator, page);
 	}
 
-	struct Pager *pager = static_cast<Pager *>(page_allocator_reserve(allocator));
+	Pager *pager = static_cast<Pager *>(page_allocator_reserve(allocator));
 	pager->allocator = allocator;
-	pager->directory = static_cast<PageDirectory *>(page_allocator_reserve(allocator));
+	pager->directory = static_cast<Directory *>(page_allocator_reserve(allocator));
 
 	/* initialize directory */
 	for(unsigned int table = 0; table < 1024; ++table) {
@@ -45,7 +45,7 @@ struct Pager * Pager::Create(void) {
 	);
 }
 
-void Pager::LoadDirectory(struct PageDirectory *dir) {
+void Pager::LoadDirectory(Directory *dir) {
 	__asm__ ("mov %0, %%cr3" : : "r" (dir));
 }
 
@@ -83,7 +83,7 @@ void * Pager::AllocIn(TableID lower, TableID upper) {
 	for(unsigned int table = lower; table < upper; ++table) {
 		if(this->directory->tables[table].present) {
 			for(unsigned int page = 0; page < 1024; ++page) {
-				struct PageTable *table_addr = (struct PageTable *)(this->directory->tables[table].address << 12);
+				Table *table_addr = (Table *)(this->directory->tables[table].address << 12);
 				if(!table_addr->pages[page].present) {
 					return AllocAt(table, page);
 				}
@@ -107,7 +107,7 @@ void * Pager::AllocAt(TableID table, PageID page) {
 }
 
 void Pager::MakeTable(TableID table) {
-	struct PageTable *table_addr = static_cast<PageTable *>(page_allocator_reserve(this->allocator));
+	Table *table_addr = static_cast<Table *>(page_allocator_reserve(this->allocator));
 	this->directory->tables[table].present = 1;
 	this->directory->tables[table].address = (uint32_t)table_addr >> 12;
 }
@@ -115,7 +115,7 @@ void Pager::MakeTable(TableID table) {
 void * Pager::Map(TableID table, PageID page, void *phys_addr) {
 	if(!this->directory->tables[table].present) { MakeTable(table); }
 
-	struct PageTable *table_addr = (struct PageTable *)(this->directory->tables[table].address << 12);
+	Table *table_addr = (Table *)(this->directory->tables[table].address << 12);
 	table_addr->pages[page].present = 1;
 	table_addr->pages[page].writable = 1;
 	table_addr->pages[page].unprivileged = 1;

@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <kernel/ata.h>
-#include <kernel/Pager.h>
+#include <kernel/pager.h>
 #include <arch/x86/a20.h>
 
 enum class ELFIdentVersion : uint8_t {
