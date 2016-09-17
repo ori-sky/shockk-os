@@ -3,7 +3,7 @@
 Pager * Pager::Create(void) {
 	struct PageAllocator *allocator = (struct PageAllocator *)0x100000;
 	allocator->bitmap = (uint8_t *)0x200000;
-	page_allocator_init(allocator, NULL, 4096, PAGER_LOW_MAP * 1024);
+	page_allocator_init(allocator, NULL, 4096, LOW_MAP * 1024);
 
 	/* reserve physical range NULL to 0x10000 */
 	for(size_t page = 0; page < 0x10; ++page) {
@@ -13,7 +13,7 @@ Pager * Pager::Create(void) {
 	page_allocator_alloc_self(allocator);
 
 	/* reserve physical range 0x50000 to upper bound of 1:1 mapping */
-	for(size_t page = 0x50; page < PAGER_LOW_MAP * 1024; ++page) {
+	for(size_t page = 0x50; page < LOW_MAP * 1024; ++page) {
 		page_allocator_alloc_at(allocator, page);
 	}
 
@@ -33,7 +33,7 @@ Pager * Pager::Create(void) {
 	}
 
 	/* initialize 1:1 mapping */
-	for(unsigned int table = 0; table < PAGER_LOW_MAP; ++table) {
+	for(unsigned int table = 0; table < LOW_MAP; ++table) {
 		for(unsigned int page = 0; page < 1024; ++page) {
 			pager->Map(table, page, (void *)((table * 1024 + page) * PAGE_ALLOCATOR_PAGE_SIZE));
 		}
@@ -68,16 +68,16 @@ void Pager::Disable(void) {
 }
 
 void * Pager::Alloc(void) {
-	return AllocIn(PAGER_LOW_MAP, PAGER_KERNEL);
+	return AllocIn(LOW_MAP, KERNEL_RESERVE);
 }
 
 void * Pager::Reserve(void) {
-	return AllocIn(PAGER_KERNEL, 1024);
+	return AllocIn(KERNEL_RESERVE, 1024);
 }
 
 void * Pager::AllocIn(TableID lower, TableID upper) {
 	/* lower bound has to be above low 1:1 mapping */
-	if(lower < PAGER_LOW_MAP) { return NULL; }
+	if(lower < LOW_MAP) { return NULL; }
 
 	/* attempt to allocate from existing page table */
 	for(unsigned int table = lower; table < upper; ++table) {

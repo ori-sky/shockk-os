@@ -4,9 +4,6 @@
 #include <stdint.h>
 #include <kernel/page_allocator.h>
 
-#define PAGER_LOW_MAP     1 /* number of tables to map 1:1 at lower bound */
-#define PAGER_KERNEL    768 /* lower bound of kernel reserve */
-
 class Pager {
 private:
 	struct TableEntry {
@@ -55,6 +52,9 @@ private:
 	void MakeTable(TableID);
 	void * Map(TableID, PageID, void *);
 public:
+	static constexpr TableID LOW_MAP        = 1;   // upper bound of 1:1 mapping
+	static constexpr TableID KERNEL_RESERVE = 768; // lower bound of kernel
+
 	static Pager * Create();
 
 	void Reload(void);
