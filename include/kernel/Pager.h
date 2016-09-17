@@ -5,8 +5,7 @@
 #include <kernel/page_allocator.h>
 
 #define PAGER_LOW_MAP     1 /* number of tables to map 1:1 at lower bound */
-#define PAGER_RESERVE   766 /* lower bound of reserve 1 */
-#define PAGER_KERNEL    768 /* lower bound of reserve 2 */
+#define PAGER_KERNEL    768 /* lower bound of kernel reserve */
 
 struct PageTableEntry {
 	uint8_t present       : 1;
@@ -22,7 +21,7 @@ struct PageTableEntry {
 } __attribute__((packed));
 
 struct PageTable {
-	struct PageTableEntry pages[1024];
+	PageTableEntry pages[1024];
 } __attribute__((packed));
 
 struct PageDirectoryEntry {
@@ -39,21 +38,31 @@ struct PageDirectoryEntry {
 } __attribute__((packed));
 
 struct PageDirectory {
-	struct PageDirectoryEntry tables[1024];
+	PageDirectoryEntry tables[1024];
 } __attribute__((packed));
 
-struct Pager {
-	struct PageAllocator *allocator;
-	struct PageDirectory *directory;
-};
+class Pager {
+public:
+	using TableID = size_t;
+	using PageID = size_t;
+private:
+	PageAllocator *allocator;
+	PageDirectory *directory;
 
-struct Pager * pager_init(void);
-void * pager_map(struct Pager *, unsigned int, unsigned int, void *);
-void * pager_alloc_at(struct Pager *, unsigned int, unsigned int);
-void * pager_alloc(struct Pager *);
-void * pager_reserve(struct Pager *);
-void pager_reload(struct Pager *);
-void pager_enable(void);
-void pager_disable(void);
+	Pager(void);
+	void MakeTable(TableID);
+	void * Map(TableID, PageID, void *);
+public:
+	static Pager * Create();
+	static void LoadDirectory(PageDirectory *);
+
+	void Reload(void);
+	void Enable(void);
+	void Disable(void);
+	void * Alloc(void);
+	void * Reserve(void);
+	void * AllocIn(TableID, TableID);
+	void * AllocAt(TableID, PageID);
+};
 
 #endif

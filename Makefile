@@ -10,7 +10,7 @@ CWARNS=-Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual -Wformat=2 -Winit-self 
 CFLAGS=-ffreestanding -nostdlib -fno-asynchronous-unwind-tables -mno-sse $(CWARNS) -std=c11 -Os -Iinclude
 CXXFLAGS=-ffreestanding -nostdlib -fno-asynchronous-unwind-tables -fno-exceptions -mno-sse $(CWARNS) -std=c++11 -Os -Iinclude
 
-LOADER_OBJS=loader_entry.cpp.o ports.cpp.o panic_dummy.cpp.o screen.cpp.o a20.cpp.o page_allocator.cpp.o pager.cpp.o ata.cpp.o itoa.cpp.o
+LOADER_OBJS=loader_entry.cpp.o ports.cpp.o panic_dummy.cpp.o screen.cpp.o a20.cpp.o page_allocator.cpp.o Pager.cpp.o ata.cpp.o itoa.cpp.o
 LOADER_PATHS=$(addprefix src/loader/,$(LOADER_OBJS))
 LOADER_ENTRY=loader_entry
 LOADER_ORIGIN=0x1000
