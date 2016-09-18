@@ -3,9 +3,8 @@
 
 #include <stddef.h>
 
-void * kmalloc(size_t);
-void * memset(void *, int, size_t);
-void * memcpy(void *, const void *, size_t);
-void * memmove(void *, const void *, size_t);
+void * kmemset(void *, int, size_t);
+void * kmemcpy(void *, const void *, size_t);
+void * kmemmove(void *, const void *, size_t);
 
 #endif

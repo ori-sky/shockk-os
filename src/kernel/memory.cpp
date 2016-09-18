@@ -1,20 +1,12 @@
 #include <kernel/memory.h>
 
-static unsigned char *head = (unsigned char *)0x100000; /* 1M */
-
-void * kmalloc(size_t size) {
-	void *ptr = head;
-	head += size;
-	return ptr;
-}
-
-void * memset(void *dst, int c, size_t count) {
+void * kmemset(void *dst, int c, size_t count) {
 	unsigned char *ptr = (unsigned char *)dst;
 	while(count--) { *ptr++ = (unsigned char)c; }
 	return dst;
 }
 
-void * memcpy(void *dst, const void *src, size_t count) {
+void * kmemcpy(void *dst, const void *src, size_t count) {
 	if(dst == src) { return dst; }
 
 	unsigned char *p_dst = (unsigned char *)dst;
@@ -27,7 +19,7 @@ void * memcpy(void *dst, const void *src, size_t count) {
 	return dst;
 }
 
-void * memmove(void *dst, const void *src, size_t count) {
+void * kmemmove(void *dst, const void *src, size_t count) {
 	if(dst == src) { return dst; }
 
 	unsigned char *p_dst = (unsigned char *)dst;
