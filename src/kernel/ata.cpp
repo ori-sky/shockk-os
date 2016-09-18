@@ -40,6 +40,8 @@ void ata_pio_begin(void) {
 }
 
 void ata_pio_read(uint32_t lba, uint8_t count, volatile void *buffer) {
+	if(count == 0) { return; }
+
 	ata_pio_begin();
 
 	ports_outb(ATA_PORT_PRIMARY_DRIVE_SELECT, (uint8_t)(lba >> 24) | (1 << 6)); /* set bit 6 for LBA mode */

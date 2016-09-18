@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <kernel/ata.h>
 #include <kernel/pager.h>
+#include <kernel/itoa.h>
+#include <kernel/panic.h>
 #include <arch/x86/a20.h>
 
 enum class ELFIdentVersion : uint8_t {
@@ -110,16 +112,25 @@ void loader_entry(void) {
 
 		for(uint32_t addr = ph->v_addr; addr < ph->v_addr + ph->mem_size;
 		                                addr += PAGE_ALLOCATOR_PAGE_SIZE) {
-			pager->AllocAt(addr / 1024 / PAGE_ALLOCATOR_PAGE_SIZE,
-			               addr / 1024 % PAGE_ALLOCATOR_PAGE_SIZE);
+			Pager::TableID table = addr / PAGE_ALLOCATOR_PAGE_SIZE / 1024;
+			Pager::PageID  page  = addr / PAGE_ALLOCATOR_PAGE_SIZE % 1024;
+			if(!pager->IsPresent(table, page)) {
+				pager->AllocAt(table, page);
+			}
 		}
 
-		void *ptr = (void *)ph->v_addr;
-		ata_pio_read(17 + ph->offset / 512, ph->file_size / 512 + 1, ptr);
+		uint8_t count = ph->file_size / 512 + (ph->file_size % 512 != 0);
+		ata_pio_read(17 + ph->offset / 512, count, (void *)ph->v_addr);
+
+		/* zero-initialize rest of memory image */
+		uint8_t *addr = (uint8_t *)ph->v_addr;
+		for(uint32_t byte = ph->file_size; byte < ph->mem_size; ++byte) {
+			addr[byte] = 0;
+		}
 	}
 
-	auto kernel_entry = (void(*)(void))header.entry_ptr;
-	kernel_entry();
+	auto kernel_entry = (void(*)(Pager *))header.entry_ptr;
+	kernel_entry(pager);
 
 	for(;;) { __asm__ ("hlt"); }
 }

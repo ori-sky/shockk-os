@@ -10,13 +10,13 @@ CWARNS=-Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual -Wformat=2 -Winit-self 
 CFLAGS=-ffreestanding -nostdlib -fno-asynchronous-unwind-tables -mno-sse $(CWARNS) -std=c11 -Os -Iinclude
 CXXFLAGS=-ffreestanding -nostdlib -fno-asynchronous-unwind-tables -fno-exceptions -mno-sse $(CWARNS) -std=c++11 -Os -Iinclude
 
-LOADER_OBJS=loader_entry.cpp.o ports.cpp.o panic_dummy.cpp.o screen.cpp.o a20.cpp.o page_allocator.cpp.o pager.cpp.o ata.cpp.o itoa.cpp.o
+LOADER_OBJS=loader_entry.cpp.o panic_dummy.cpp.o ../kernel/ports.cpp.o ../kernel/a20.cpp.o ../kernel/page_allocator.cpp.o ../kernel/pager.cpp.o ../kernel/ata.cpp.o
 LOADER_PATHS=$(addprefix src/loader/,$(LOADER_OBJS))
 LOADER_ENTRY=loader_entry
 LOADER_ORIGIN=0x1000
 LOADER_LDFLAGS=-e $(LOADER_ENTRY) -Ttext $(LOADER_ORIGIN) --build-id=none
 
-KERNEL_OBJS=kernel_entry.cpp.o panic_dummy.cpp.o
+KERNEL_OBJS=kernel_entry.cpp.o panic.cpp.o ports.cpp.o screen.cpp.o pit.cpp.o pic.cpp.o
 KERNEL_PATHS=$(addprefix src/kernel/,$(KERNEL_OBJS))
 KERNEL_ENTRY=kernel_entry
 KERNEL_ORIGIN=0xC0000000

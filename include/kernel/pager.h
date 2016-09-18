@@ -60,6 +60,7 @@ public:
 	void Reload(void);
 	void Enable(void);
 	void Disable(void);
+	bool IsPresent(TableID, PageID);
 	void * Alloc(void);
 	void * Reserve(void);
 	void * AllocIn(TableID, TableID);

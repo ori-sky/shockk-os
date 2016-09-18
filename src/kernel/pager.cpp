@@ -67,6 +67,12 @@ void Pager::Disable(void) {
 	__asm__ ("mov %0, %%cr0" : : "r" (cr0));
 }
 
+bool Pager::IsPresent(TableID table, PageID page) {
+	if(!this->directory->tables[table].present) { return false; }
+	Table *table_addr = (Table *)(this->directory->tables[table].address << 12);
+	return table_addr->pages[page].present == 1;
+}
+
 void * Pager::Alloc(void) {
 	return AllocIn(LOW_MAP, KERNEL_RESERVE);
 }
