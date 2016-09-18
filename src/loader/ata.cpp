@@ -3,10 +3,10 @@
 #include <kernel/ata.h>
 
 void ata_init(void) {
+	uint8_t status = ports_inb(ATA_PORT_PRIMARY_STATUS);
 	/* check for floating bus (no drives) */
-	if(ports_inb(ATA_PORT_PRIMARY_STATUS) == 0xFF) { kernel_panic("ATA: floating bus detected"); }
-
-	ata_soft_reset();
+	if(status == 0xFF) { kernel_panic("ATA: floating bus detected"); }
+	if((status & ATA_STATUS_READY) == 0) { ata_soft_reset(); }
 }
 
 void ata_soft_reset(void) {
