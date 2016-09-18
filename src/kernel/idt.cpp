@@ -1,10 +1,10 @@
 #include <stdbool.h>
 #include <kernel/idt.h>
 
-extern void isr_stub_0(void);
-extern void isr_stub_1(void);
-extern void isr_stub_32(void);
-extern void isr_stub_128(void);
+extern "C" void isr_stub_0(void);
+extern "C" void isr_stub_1(void);
+extern "C" void isr_stub_32(void);
+extern "C" void isr_stub_128(void);
 
 void idt_set_entry(struct IDTEntry *entry, void (*handler)(void), bool restricted) {
 	uint32_t base_address = (uint32_t)handler;
@@ -12,8 +12,8 @@ void idt_set_entry(struct IDTEntry *entry, void (*handler)(void), bool restricte
 	entry->base_address_high = (base_address >> 16) & 0xFFFF;
 	entry->selector = 0x8;
 	entry->reserved = 0;
-	entry->type = 0xE; /* 80386 32-bit interrupt gate */
-	entry->storage_segment = 0; /* 0 for interrupt gates */
+	entry->type = 0xE;          // 80386 32-bit interrupt gate
+	entry->storage_segment = 0; // 0 for interrupt gates
 	entry->privilege = restricted ? 0 : 3;
 	entry->present = 1;
 }

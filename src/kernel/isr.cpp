@@ -3,11 +3,12 @@
 #include <kernel/irq.h>
 #include <kernel/cpu.h>
 #include <kernel/screen.h>
+#include <kernel/panic.h>
 #include <kernel/itoa.h>
 
 static unsigned int alpha_counter;
 
-void isr_main(struct CPUState cpu_state) {
+extern "C" void isr_main(struct CPUState cpu_state) {
 	if(cpu_state.interrupt == IRQ7) { return; }
 	if(cpu_state.interrupt >= IRQ0) {
 		ports_outb(PIC_PORT_MASTER, 0x20);
@@ -52,7 +53,7 @@ void isr_main(struct CPUState cpu_state) {
 			for(unsigned int frame = 0; frame < 8; ++frame) {
 				void * eip = ebp[1];
 				if(eip == NULL) { break; }
-				ebp = ebp[0];
+				ebp = (void **)ebp[0];
 				screen_print("from 0x");
 				s0[uitoa((unsigned int)eip, s0, 16)] = '\0';
 				screen_print(s0);

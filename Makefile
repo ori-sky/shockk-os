@@ -16,7 +16,7 @@ LOADER_ENTRY=loader_entry
 LOADER_ORIGIN=0x1000
 LOADER_LDFLAGS=-e $(LOADER_ENTRY) -Ttext $(LOADER_ORIGIN) --build-id=none
 
-KERNEL_OBJS=kernel_entry.cpp.o panic.cpp.o ports.cpp.o screen.cpp.o pit.cpp.o pic.cpp.o
+KERNEL_OBJS=kernel_entry.cpp.o panic.cpp.o ports.cpp.o itoa.cpp.o screen.cpp.o page_allocator.cpp.o pager.cpp.o pit.cpp.o pic.cpp.o idt.cpp.o isr.asm.o isr.cpp.o syscall.cpp.o
 KERNEL_PATHS=$(addprefix src/kernel/,$(KERNEL_OBJS))
 KERNEL_ENTRY=kernel_entry
 KERNEL_ORIGIN=0xC0000000
@@ -55,7 +55,7 @@ kernel.elf: $(KERNEL_PATHS)
 %.cpp.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
-%.s.o: %.asm
+%.asm.o: %.asm
 	$(ASM) -f elf $(ASM_FLAGS) $^ -o $@
 
 .PHONY: clean
