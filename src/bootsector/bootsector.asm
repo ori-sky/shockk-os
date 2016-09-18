@@ -33,7 +33,9 @@ protected_mode:
     mov fs, ax                                                                  ; set extra data segment #2
     mov gs, ax                                                                  ; set extra data segment #3
     mov esp, 0x70000                                                            ; set stack pointer
-                                                                                ; video RAM begins at 0xA0000
+    mov byte[0xb7fff], 'S'                                                      ; write signature to video memory
+    mov byte[0xb8002], 'H'                                                      ; in case anything goes wrong
+    mov byte[0xb8004], 'K'                                                      ; during kernel startup
     jmp 0x8:0x1000                                                              ; far jump to kernel
 reset_drive:
     xor ah, ah                                                                  ; command = reset drive
