@@ -29,7 +29,7 @@ void kernel_entry(Pager *pager) {
 	GDT *gdt = (GDT *)pager->Reserve();
 	TSS *tss = (TSS *)pager->Reserve();
 	gdt_init(gdt, tss);
-	tss_init(tss);
+	tss_init(tss, pager);
 
 	unsigned char *user_stack = (unsigned char *)pager->Alloc();
 	user_enter(&user_stack[PAGE_ALLOCATOR_PAGE_SIZE]);

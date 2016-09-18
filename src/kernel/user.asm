@@ -8,7 +8,7 @@ user_enter:
     mov es, ax                                                                  ; set extra data segment #1
     mov fs, ax                                                                  ; set extra data segment #2
     mov gs, ax                                                                  ; set extra data segment #3
-    pop eax                                                                     ; save input stack pointer
+    mov eax, [esp + 4]                                                          ; save input stack pointer
     push 0x23                                                                   ; push user data segment | ring 3
     push eax                                                                    ; push stack pointer
     pushfd                                                                      ; push eflags register

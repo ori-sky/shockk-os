@@ -2,6 +2,7 @@
 #define TSS_H
 
 #include <stdint.h>
+#include <kernel/pager.h>
 
 struct TSS {
 	uint32_t previous_tss; /* reference to previous TSS used for hardware task switching */
@@ -33,6 +34,6 @@ struct TSS {
 	uint32_t iomap_base;
 } __attribute__((packed));
 
-void tss_init(struct TSS *);
+void tss_init(struct TSS *, Pager *);
 
 #endif
