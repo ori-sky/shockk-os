@@ -2,9 +2,9 @@ IMAGE=shk.img
 FLOPPY_IMAGE=shk.floppy
 
 ASM=nasm
-CC=i386-elf-gcc
-CXX=i386-elf-g++
-LD=i386-elf-ld
+CC=i386-shk-gcc
+CXX=i386-shk-g++
+LD=i386-shk-ld
 
 CWARNS=-Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual -Wformat=2 -Winit-self -Wmissing-include-dirs -Wredundant-decls -Wshadow -Wstrict-overflow=5 -Wundef -Wdisabled-optimization -Wsign-conversion -Wstack-protector -Wabi -Waggregate-return -Winline -Wpadded -Wswitch-enum
 CFLAGS=-ffreestanding -nostdlib -fno-asynchronous-unwind-tables -mno-sse $(CWARNS) -std=c11 -Os -Iinclude
