@@ -132,5 +132,5 @@ void loader_entry(void) {
 	auto kernel_entry = (void(*)(Pager *))header.entry_ptr;
 	kernel_entry(pager);
 
-	for(;;) { __asm__ ("hlt"); }
+	for(;;) { __asm__ ("hlt"); } // unreachable
 }

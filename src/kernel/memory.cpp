@@ -9,7 +9,7 @@ void * kmalloc(size_t size) {
 }
 
 void * memset(void *dst, int c, size_t count) {
-	unsigned char *ptr = dst;
+	unsigned char *ptr = (unsigned char *)dst;
 	while(count--) { *ptr++ = (unsigned char)c; }
 	return dst;
 }
@@ -17,8 +17,8 @@ void * memset(void *dst, int c, size_t count) {
 void * memcpy(void *dst, const void *src, size_t count) {
 	if(dst == src) { return dst; }
 
-	unsigned char *p_dst = dst;
-	const unsigned char *p_src = src;
+	unsigned char *p_dst = (unsigned char *)dst;
+	const unsigned char *p_src = (const unsigned char *)src;
 
 	while(count--) {
 		*p_dst++ = *p_src++;
@@ -30,12 +30,12 @@ void * memcpy(void *dst, const void *src, size_t count) {
 void * memmove(void *dst, const void *src, size_t count) {
 	if(dst == src) { return dst; }
 
-	unsigned char *p_dst = dst;
-	const unsigned char *p_src = src;
+	unsigned char *p_dst = (unsigned char *)dst;
+	const unsigned char *p_src = (const unsigned char *)src;
 
 	if(dst < src) {
-		p_dst = dst;
-		p_src = src;
+		p_dst = (unsigned char *)dst;
+		p_src = (const unsigned char *)src;
 		while(count--) {
 			*p_dst++ = *p_src++;
 		}
