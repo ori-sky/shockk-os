@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <kernel/ext2.h>
 #include <kernel/ata.h>
 #include <kernel/pager.h>
 #include <kernel/itoa.h>
@@ -88,16 +89,24 @@ struct ELFProgramHeader {
 	uint32_t align;
 } __attribute__((packed));
 
-extern "C" void loader_entry(void) __attribute__((noreturn));
-void loader_entry(void) {
+extern "C" void loader_entry(uint32_t, uint32_t) __attribute__((noreturn));
+void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
+	uint32_t *ptr = (uint32_t *)mb_addr;
+
+	char sz[12];
+	uitoa(ptr[3], sz, 16);
+	kernel_panic(sz);
+
 	struct Pager *pager = Pager::Create();
 	pager->Reload();
 	pager->Enable();
 
 	ata_init();
+	read_inode(2);
 
 	ELFHeader header;
 	ata_pio_read(17, 1, &header);
+	kernel_panic("blah");
 
 	for(size_t p = 0; p < header.ph_count; ++p) {
 		uint32_t offset = header.ph_offset + p * header.ph_size;

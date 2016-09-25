@@ -7,15 +7,15 @@ CHECKSUM equ -(MAGIC + FLAGS)                                                   
 section .multiboot
 
 align 4
-	dd MAGIC
-	dd FLAGS
-	dd CHECKSUM
+    dd MAGIC
+    dd FLAGS
+    dd CHECKSUM
 
 section .bss
 
 align 4
 stack_bottom:
-	resb 16384                                                                  ; reserve 16K stack space
+    resb 16384                                                                  ; reserve 16K stack space
 stack_top:
 
 section .text
@@ -28,20 +28,22 @@ _start:
     lgdt [gdt_desc]                                                             ; load global descriptor table
     jmp 0x8:.gdt_loaded                                                         ; far jump to code selector
 .gdt_loaded:
+    mov esp, 0x70000                                                            ; set stack pointer
+    push ebx                                                                    ; push multiboot args
+    push eax
     mov ax, 0x10                                                                ; segment selector is 0x10
     mov ds, ax                                                                  ; set data segment
     mov ss, ax                                                                  ; set stack segment
     mov es, ax                                                                  ; set extra data segment #1
     mov fs, ax                                                                  ; set extra data segment #2
     mov gs, ax                                                                  ; set extra data segment #3
-    mov esp, 0x70000                                                            ; set stack pointer
     mov byte[0xb8000], 'S'                                                      ; write signature to video memory
     mov byte[0xb8002], 'H'                                                      ; in case anything goes wrong
     mov byte[0xb8004], 'K'                                                      ; during kernel startup
-	call loader_entry
+    call loader_entry
 .hang:                                                                          ; infinite hlt loop
-	hlt
-	jmp .hang
+    hlt
+    jmp .hang
 .end:
 
 gdt:
