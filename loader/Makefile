@@ -1,8 +1,7 @@
-#SRCS=multiboot.asm entry.cpp panic_dummy.cpp ../kernel/ports.cpp ../kernel/page_allocator.cpp ../kernel/pager.cpp ../kernel/ata.cpp
-OBJS=multiboot.s.o loader_entry.cpp.o
+OBJS=multiboot.s.o loader_entry.cpp.o panic_dummy.cpp.o ../kernel/ports.cpp.o ../kernel/page_allocator.cpp.o ../kernel/pager.cpp.o ../kernel/ata.cpp.o
 
 ASMFLAGS=-f elf32
-CXXFLAGS=-ffreestanding -fno-exceptions -fno-rtti -fno-asynchronous-unwind-tables -mno-sse -std=c++11 $(CXXWARNS)
+CXXFLAGS=-ffreestanding -fno-exceptions -fno-rtti -fno-asynchronous-unwind-tables -mno-sse -std=c++11 -I$(INCLUDE_PATHS) $(CXXWARNS)
 LDFLAGS=-ffreestanding -nostdlib -T link.ld -lgcc
 
 $(LOADER_ELF): $(OBJS)

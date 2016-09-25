@@ -1,8 +1,8 @@
 #include <stdint.h>
-//#include <kernel/ata.h>
-//#include <kernel/pager.h>
-//#include <kernel/itoa.h>
-//#include <kernel/panic.h>
+#include <kernel/ata.h>
+#include <kernel/pager.h>
+#include <kernel/itoa.h>
+#include <kernel/panic.h>
 
 enum class ELFIdentVersion : uint8_t {
 	None = 0,
@@ -90,7 +90,6 @@ struct ELFProgramHeader {
 
 extern "C" void loader_entry(void) __attribute__((noreturn));
 void loader_entry(void) {
-/*
 	struct Pager *pager = Pager::Create();
 	pager->Reload();
 	pager->Enable();
@@ -129,6 +128,6 @@ void loader_entry(void) {
 
 	auto kernel_entry = (void(*)(Pager *))header.entry_ptr;
 	kernel_entry(pager);
-*/
+
 	for(;;) { __asm__ ("hlt"); } // unreachable
 }
