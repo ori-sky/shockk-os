@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <kernel/ext2.h>
 #include <kernel/ata.h>
+#include <kernel/mbr.h>
 #include <kernel/pager.h>
 #include <kernel/itoa.h>
 #include <kernel/panic.h>
@@ -89,20 +90,27 @@ struct ELFProgramHeader {
 	uint32_t align;
 } __attribute__((packed));
 
-extern "C" void loader_entry(uint32_t, uint32_t) __attribute__((noreturn));
+extern "C"
+void loader_entry(uint32_t mb_magic, uint32_t mb_addr) __attribute__((noreturn));
 void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
-	uint32_t *ptr = (uint32_t *)mb_addr;
+	if(mb_magic != 0x2BADB002) {
+		kernel_panic("invalid multiboot signature (should be 0x2BADB002)");
+	}
 
-	char sz[12];
-	uitoa(ptr[3], sz, 16);
-	kernel_panic(sz);
+	uint8_t *mb = (uint8_t *)mb_addr;
+	uint8_t part_id = mb[14];
 
 	struct Pager *pager = Pager::Create();
 	pager->Reload();
 	pager->Enable();
 
 	ata_init();
-	read_inode(2);
+	MBR mbr = mbr_read();
+	uint32_t part_lba = mbr.entries[part_id].starting_lba;
+
+	char sz[12] = {'0', 'x', 0};
+	uitoa(part_lba, &sz[2], 16);
+	kernel_panic(sz);
 
 	ELFHeader header;
 	ata_pio_read(17, 1, &header);
