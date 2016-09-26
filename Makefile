@@ -29,7 +29,7 @@ image: all
 	install -v -o root -g root -m 644 -D $(LOADER_ELF) $(MNTDIR)/boot/loader
 	install -v -o root -g root -m 644 -D $(KERNEL_ELF) $(MNTDIR)/boot/kernel
 	install -v -o root -g root -m 644 -D $(BOOTDIR)/grub.cfg $(MNTDIR)/boot/grub/grub.cfg
-	grub-install --root-directory=$(MNTDIR) --no-floppy --modules="normal part_msdos ext2 multiboot configfile" /dev/loop0
+	grub-install --target=i386-pc --root-directory=$(MNTDIR) --no-floppy --modules="normal part_msdos ext2 multiboot configfile" /dev/loop0
 	umount $(MNTDIR)
 	rmdir -v $(MNTDIR)
 	losetup -d /dev/loop1
