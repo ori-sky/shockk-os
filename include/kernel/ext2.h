@@ -66,6 +66,7 @@ public:
 		uint8_t  unused[14];
 	} __attribute__((packed));
 private:
+	uint32_t lba;
 	Superblock superblock;
 public:
 	Ext2(uint32_t lba);

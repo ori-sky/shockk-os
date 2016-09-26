@@ -4,7 +4,7 @@
 #include <kernel/itoa.h>
 #include <kernel/panic.h>
 
-Ext2::Ext2(uint32_t lba) {
+Ext2::Ext2(uint32_t lba) : lba(lba) {
 	ata_pio_read(lba + 1024 / 512, 2, &this->superblock);
 	if(this->superblock.base.signature != 0xef53) {
 		kernel_panic("invalid ext2 superblock signature");
@@ -24,7 +24,7 @@ Ext2::GroupDesc Ext2::GetGroupDesc(uint32_t group_id) {
 	uint32_t offset = this->GetBlockOffset(block_id) + group_id * sizeof(GroupDesc);
 
 	char buffer[512];
-	ata_pio_read(offset / 512, 1, &buffer);
+	ata_pio_read(this->lba + offset / 512, 1, &buffer);
 
 	GroupDesc gd;
 	char *ptr = reinterpret_cast<char *>(&gd);
