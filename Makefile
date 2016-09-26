@@ -12,7 +12,7 @@ export LOADER_ELF=$(CURDIR)/loader.elf
 export KERNEL_ELF=$(CURDIR)/kernel.elf
 
 export INCLUDE_PATHS=$(CURDIR)/include
-export CXXWARNS=-Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual -Wformat=2 -Winit-self -Wmissing-include-dirs -Wredundant-decls -Wshadow -Wstrict-overflow=5 -Wundef -Wdisabled-optimization -Wsign-conversion -Wstack-protector -Wabi -Winline -Wpadded -Wswitch-enum
+export CXXWARNS=-Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual -Wformat=2 -Winit-self -Wmissing-include-dirs -Wredundant-decls -Wstrict-overflow=5 -Wundef -Wdisabled-optimization -Wsign-conversion -Wstack-protector -Wabi -Winline -Wpadded -Wswitch-enum
 
 .PHONY: all
 all: $(LOADER_ELF) $(KERNEL_ELF)
