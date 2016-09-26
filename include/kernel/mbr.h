@@ -19,6 +19,7 @@ struct MBREntry {
 struct MBR {
 	uint8_t padding[0x1BE];
 	MBREntry entries[4];
+	uint16_t boot_signature;
 } __attribute__((packed));
 
 MBR mbr_read(void);
