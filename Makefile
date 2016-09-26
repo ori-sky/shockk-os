@@ -1,6 +1,3 @@
-export LOADER_ELF=$(CURDIR)/loader.elf
-export KERNEL_ELF=$(CURDIR)/kernel.elf
-
 IMAGE=$(CURDIR)/shk.img
 MNTDIR=$(CURDIR)/mnt
 BOOTDIR=$(CURDIR)/boot
@@ -9,12 +6,20 @@ export ASM=nasm
 export CC=i386-elf-gcc
 export CXX=i386-elf-g++
 export LD=i386-elf-gcc
+export QEMU=qemu-system-i386
+
+export LOADER_ELF=$(CURDIR)/loader.elf
+export KERNEL_ELF=$(CURDIR)/kernel.elf
 
 export INCLUDE_PATHS=$(CURDIR)/include
 export CXXWARNS=-Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual -Wformat=2 -Winit-self -Wmissing-include-dirs -Wredundant-decls -Wshadow -Wstrict-overflow=5 -Wundef -Wdisabled-optimization -Wsign-conversion -Wstack-protector -Wabi -Waggregate-return -Winline -Wpadded -Wswitch-enum
 
 .PHONY: all
 all: $(LOADER_ELF) $(KERNEL_ELF)
+
+.PHONY: qemu
+qemu:
+	$(QEMU) $(IMAGE)
 
 .PHONY: image
 image: all
