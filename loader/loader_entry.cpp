@@ -88,8 +88,13 @@ struct ELFProgramHeader {
 	uint32_t align;
 } __attribute__((packed));
 
-extern "C" void loader_entry(void) __attribute__((noreturn));
-void loader_entry(void) {
+extern "C"
+void loader_entry(uint32_t mb_magic, uint32_t mb_addr) __attribute__((noreturn));
+void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
+	if(mb_magic != 0x2BADB002) {
+		kernel_panic("invalid multiboot signature (should be 0x2BADB002)");
+	}
+
 	struct Pager *pager = Pager::Create();
 	pager->Reload();
 	pager->Enable();
