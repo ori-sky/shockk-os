@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <kernel/ata.h>
+#include <kernel/mbr.h>
 #include <kernel/pager.h>
 #include <kernel/itoa.h>
 #include <kernel/panic.h>
@@ -100,6 +101,7 @@ void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
 	pager->Enable();
 
 	ata_init();
+	MBR mbr = mbr_read();
 
 	ELFHeader header;
 	ata_pio_read(17, 1, &header);
