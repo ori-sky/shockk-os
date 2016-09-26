@@ -34,6 +34,7 @@ image: all
 	rmdir -v $(MNTDIR)
 	losetup -d /dev/loop1
 	losetup -d /dev/loop0
+	chown $$SUDO_UID:$$SUDO_GID $(IMAGE)
 
 .PHONY: $(LOADER_ELF)
 $(LOADER_ELF):
