@@ -96,12 +96,20 @@ void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
 		kernel_panic("invalid multiboot signature (should be 0x2BADB002)");
 	}
 
+	uint8_t *mb = (uint8_t *)mb_addr;
+	uint8_t part_id = mb[14];
+
 	struct Pager *pager = Pager::Create();
 	pager->Reload();
 	pager->Enable();
 
 	ata_init();
 	MBR mbr = mbr_read();
+	uint32_t part_lba = mbr.entries[part_id].starting_lba;
+
+	char sz[12] = {'0', 'x', 0};
+	uitoa(part_lba, &sz[2], 16);
+	kernel_panic(sz);
 
 	ELFHeader header;
 	ata_pio_read(17, 1, &header);
