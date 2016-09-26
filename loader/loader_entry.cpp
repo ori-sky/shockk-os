@@ -106,11 +106,8 @@ void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
 
 	ata_init();
 	MBR mbr = mbr_read();
-	uint32_t part_lba = mbr.entries[part_id].starting_lba;
-
-	char sz[12] = {'0', 'x', 0};
-	uitoa(part_lba, &sz[2], 16);
-	kernel_panic(sz);
+	Ext2 fs(mbr.entries[part_id].starting_lba);
+	fs.GetInode(2);
 
 	ELFHeader header;
 	ata_pio_read(17, 1, &header);
