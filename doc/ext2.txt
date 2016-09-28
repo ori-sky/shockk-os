@@ -1,0 +1,4 @@
+Each directory inode block pointer, points to a block containing variable-sized
+directory entries. These entries appear to include "." and ".." where 0x2e is
+the hex code of the '.' character. For the root directory, both "." and ".."
+refer to the same inode as the root directory.
