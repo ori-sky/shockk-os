@@ -111,7 +111,6 @@ void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
 
 	ELFHeader header;
 	ata_pio_read(17, 1, &header);
-	kernel_panic("blah");
 
 	for(size_t p = 0; p < header.ph_count; ++p) {
 		uint32_t offset = header.ph_offset + p * header.ph_size;
