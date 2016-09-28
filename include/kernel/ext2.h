@@ -66,6 +66,28 @@ public:
 		uint8_t  unused[14];
 	} __attribute__((packed));
 	struct Inode {
+		uint16_t type        :  4;
+		uint16_t permissions : 12;
+		uint16_t uid;
+		uint32_t size_low;
+		uint32_t last_access_time;
+		uint32_t creation_time;
+		uint32_t last_modify_time;
+		uint32_t deletion_time;
+		uint32_t gid;
+		uint16_t hard_link_count;
+		uint32_t disk_sector_count;
+		uint32_t flags;
+		uint8_t  os_specific_1[4];
+		uint32_t block_ptr[12];
+		uint32_t block_ptr_singly;
+		uint32_t block_ptr_doubly;
+		uint32_t block_ptr_triply;
+		uint32_t generation;
+		uint32_t acl;
+		uint32_t size_high;
+		uint32_t fragment_block_addr;
+		uint8_t  os_specific_2[12];
 	} __attribute__((packed));
 private:
 	uint32_t lba;
