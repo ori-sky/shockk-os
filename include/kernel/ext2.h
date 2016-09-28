@@ -65,6 +65,8 @@ public:
 		uint16_t directory_count;
 		uint8_t  unused[14];
 	} __attribute__((packed));
+	struct Inode {
+	} __attribute__((packed));
 private:
 	uint32_t lba;
 	Superblock superblock;
