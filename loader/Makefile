@@ -5,13 +5,13 @@ CXXFLAGS=-ffreestanding -fno-exceptions -fno-rtti -fno-asynchronous-unwind-table
 LDFLAGS=-ffreestanding -nostdlib -T link.ld -lgcc
 
 $(LOADER_ELF): $(OBJS)
-	$(LD) $(LDFLAGS) $^ -o $@
+	$(TARGET_LD) $(LDFLAGS) $^ -o $@
 
 %.cpp.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $^ -o $@
+	$(TARGET_CXX) $(CXXFLAGS) -c $^ -o $@
 
 %.s.o: %.asm
-	$(ASM) $(ASMFLAGS) $^ -o $@
+	$(TARGET_ASM) $(ASMFLAGS) $^ -o $@
 
 .PHONY: clean
 clean:
