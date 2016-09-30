@@ -23,19 +23,14 @@ Ext2::GroupDesc Ext2::GetGroupDesc(uint32_t group_id) {
 	uint32_t block_id = this->superblock.base.superblock_id + 1;
 	uint32_t offset = this->GetBlockOffset(block_id) + group_id * sizeof(GroupDesc);
 
-	char buffer[512];
-	ata_pio_read(this->lba + offset / 512, 1, &buffer);
+	char buffer[1024];
+	ata_pio_read(this->lba + offset / 512, 2, &buffer);
 
-	GroupDesc gd;
-	char *ptr = reinterpret_cast<char *>(&gd);
-	for(size_t i = 0; i < sizeof(GroupDesc); ++i) {
-		ptr[i] = buffer[i];
-	}
-
-	return gd;
+	GroupDesc *gd = reinterpret_cast<GroupDesc *>(&buffer[offset % 512]);
+	return *gd;
 }
 
-Ext2::Inode Ext2::GetInode(uint32_t inode_id) {
+Maybe<Ext2::Inode> Ext2::GetInode(uint32_t inode_id) {
 	uint32_t group_id = (inode_id - 1) / this->superblock.base.group_inode_count;
 	GroupDesc gd = this->GetGroupDesc(group_id);
 
@@ -45,11 +40,41 @@ Ext2::Inode Ext2::GetInode(uint32_t inode_id) {
 	char buffer[1024];
 	ata_pio_read(this->lba + inode_addr / 512, 2, &buffer);
 
-	Inode inode;
-	char *ptr = reinterpret_cast<char *>(&inode);
-	for(size_t i = 0; i < sizeof(Inode); ++i) {
-		ptr[i] = buffer[i + inode_addr % 512];
-	}
+	Inode *inode = reinterpret_cast<Inode *>(&buffer[inode_addr % 512]);
+	return Maybe<Inode>(*inode);
+}
 
-	return inode;
+Maybe<Ext2::Inode> Ext2::GetInode(Inode &pwd, const char *name) {
+	auto mDirent = this->GetDirectoryEntry(pwd.block_ptr[0], name);
+	if(mDirent.IsNothing()) {
+		return Maybe<Inode>();
+	} else {
+		return this->GetInode(mDirent.FromJust().inode_id);
+	}
+}
+
+Maybe<Ext2::DirectoryEntry> Ext2::GetDirectoryEntry(uint32_t block_id, const char *name) {
+	uint32_t block_size = this->GetBlockSize();
+	uint32_t block_addr = this->GetBlockOffset(block_id);
+
+	char buffer[1024];
+	ata_pio_read(this->lba + block_addr / 512, 2, &buffer);
+
+	DirectoryEntry *dirent;
+	for(size_t offset = 0; offset < block_size; offset += dirent->size) {
+		dirent = reinterpret_cast<DirectoryEntry *>(&buffer[offset]);
+		if(dirent->inode_id == 0) { break; }
+
+		bool match = true;
+		for(size_t n = 0; n < dirent->len; ++n) {
+			if(buffer[offset + sizeof(DirectoryEntry) + n] != name[n]) {
+				match = false;
+				break;
+			}
+		}
+		if(match) {
+			return Maybe<DirectoryEntry>(*dirent);
+		}
+	}
+	return Maybe<DirectoryEntry>();
 }

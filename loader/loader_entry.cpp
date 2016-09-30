@@ -108,10 +108,20 @@ void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
 	MBR mbr = mbr_read();
 	Ext2 fs(mbr.entries[part_id].starting_lba);
 
-	Ext2::Inode root = fs.GetInode(2);
+	auto mRoot = fs.GetInode(2);
+	if(mRoot.IsNothing()) { kernel_panic("failed to get / inode"); }
+	auto root = mRoot.FromJust();
+
+	auto mBoot = fs.GetInode(root, "boot");
+	if(mBoot.IsNothing()) { kernel_panic("failed to get /boot inode"); }
+	auto boot = mBoot.FromJust();
+
+	auto mKernel = fs.GetInode(boot, "kernel");
+	if(mKernel.IsNothing()) { kernel_panic("failed to get /boot/kernel inode"); }
+	auto kernel = mKernel.FromJust();
 
 	char sz[12] = {'0', 'x', 0};
-	uitoa(root.block_ptr[0], &sz[2], 16);
+	uitoa(kernel.block_ptr[0], &sz[2], 16);
 	kernel_panic(sz);
 
 	ELFHeader header;

@@ -2,6 +2,7 @@
 #define EXT2_H
 
 #include <stdint.h>
+#include <kernel/maybe.h>
 
 class Ext2 {
 public:
@@ -89,6 +90,12 @@ public:
 		uint32_t fragment_block_addr;
 		uint8_t  os_specific_2[12];
 	} __attribute__((packed));
+	struct DirectoryEntry {
+		uint32_t inode_id;
+		uint16_t size;
+		uint8_t len;
+		uint8_t type;
+	} __attribute__((packed));
 private:
 	uint32_t lba;
 	Superblock superblock;
@@ -97,9 +104,9 @@ public:
 	uint32_t GetBlockSize(void);
 	uint32_t GetBlockOffset(uint32_t block_id);
 	GroupDesc GetGroupDesc(uint32_t group_id);
-	Inode GetInode(uint32_t inode_id);
+	Maybe<Inode> GetInode(uint32_t inode_id);
+	Maybe<Inode> GetInode(Inode &pwd, const char *path);
+	Maybe<DirectoryEntry> GetDirectoryEntry(uint32_t block_id, const char *name);
 };
-
-void read_inode(uint32_t inode);
 
 #endif
