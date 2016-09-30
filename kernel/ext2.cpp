@@ -49,6 +49,7 @@ Maybe<Ext2::Inode> Ext2::GetInode(uint32_t inode_id) {
 }
 
 Maybe<Ext2::Inode> Ext2::GetInode(Inode &pwd, const char *name) {
+	// XXX: this assumes all dir entries will fit in a single block, which is bad
 	auto mDirent = this->GetDirectoryEntry(pwd.block_ptr[0], name);
 	if(mDirent.IsNothing()) {
 		return Maybe<Inode>();
