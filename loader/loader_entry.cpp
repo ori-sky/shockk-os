@@ -106,7 +106,7 @@ void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
 
 	ata_init();
 	MBR mbr = mbr_read();
-	Ext2 fs(mbr.entries[part_id].starting_lba);
+	Ext2 fs(pager, mbr.entries[part_id].starting_lba);
 
 	const char *paths[] = {"boot", "kernel"};
 	auto mKernel = fs.GetInode(2, paths);

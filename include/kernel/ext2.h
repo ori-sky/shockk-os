@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <kernel/maybe.h>
+#include <kernel/pager.h>
 
 class Ext2 {
 public:
@@ -97,15 +98,18 @@ public:
 		uint8_t len;
 		uint8_t type;
 	} __attribute__((packed));
+	static constexpr uint16_t SUPERBLOCK_SIGNATURE = 0xef53;
 	static constexpr uint32_t ROOT_INODE = 2;
 private:
+	Pager *pager;
 	uint32_t lba;
 	Superblock superblock;
 public:
-	Ext2(uint32_t lba);
+	Ext2(Pager *pager, uint32_t lba);
 	uint32_t GetBlockSize(void);
 	uint32_t GetBlockAddr(uint32_t block_id);
 	uint32_t GetInodeAddr(uint32_t inode_id);
+	uint32_t GetGroupDescAddr(uint32_t group_id);
 	GroupDesc GetGroupDesc(uint32_t group_id);
 	Maybe<Inode> GetInode(uint32_t inode_id);
 	Maybe<Inode> GetInode(Inode &pwd, const char *path);

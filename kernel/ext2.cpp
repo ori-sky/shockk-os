@@ -4,9 +4,9 @@
 #include <kernel/itoa.h>
 #include <kernel/panic.h>
 
-Ext2::Ext2(uint32_t lba) : lba(lba) {
+Ext2::Ext2(Pager *pager, uint32_t lba) : pager(pager), lba(lba) {
 	ata_pio_read(lba + 1024 / 512, 2, &this->superblock);
-	if(this->superblock.base.signature != 0xef53) {
+	if(this->superblock.base.signature != SUPERBLOCK_SIGNATURE) {
 		kernel_panic("invalid ext2 superblock signature");
 	}
 }
@@ -27,9 +27,13 @@ uint32_t Ext2::GetInodeAddr(uint32_t inode_id) {
 	return gd.inode_table_addr * this->GetBlockSize() + index * sizeof(Inode);
 }
 
-Ext2::GroupDesc Ext2::GetGroupDesc(uint32_t group_id) {
+uint32_t Ext2::GetGroupDescAddr(uint32_t group_id) {
 	uint32_t block_id = this->superblock.base.superblock_id + 1;
-	uint32_t offset = this->GetBlockAddr(block_id) + group_id * sizeof(GroupDesc);
+	return this->GetBlockAddr(block_id) + group_id * sizeof(GroupDesc);
+}
+
+Ext2::GroupDesc Ext2::GetGroupDesc(uint32_t group_id) {
+	uint32_t offset = GetGroupDescAddr(group_id);
 
 	char buffer[1024];
 	ata_pio_read(this->lba + offset / 512, 2, &buffer);
