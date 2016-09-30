@@ -58,6 +58,21 @@ Maybe<Ext2::Inode> Ext2::GetInode(Inode &pwd, const char *name) {
 	}
 }
 
+Maybe<Ext2::Inode> Ext2::GetInode(size_t count, const char *paths[]) {
+	auto mRoot = this->GetInode(ROOT_INODE);
+	if(mRoot.IsNothing()) { return Maybe<Inode>(); }
+
+	Inode ref = mRoot.FromJust();
+
+	for(size_t i = 0; i < count; ++i) {
+		auto mRef = this->GetInode(ref, paths[i]);
+		if(mRef.IsNothing()) { return Maybe<Inode>(); }
+		ref = mRef.FromJust();
+	}
+
+	return ref;
+}
+
 Maybe<Ext2::DirectoryEntry> Ext2::GetDirectoryEntry(uint32_t block_id, const char *name) {
 	uint32_t block_size = this->GetBlockSize();
 	uint32_t block_addr = this->GetBlockAddr(block_id);

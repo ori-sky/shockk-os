@@ -2,6 +2,7 @@
 #define EXT2_H
 
 #include <stdint.h>
+#include <stddef.h>
 #include <kernel/maybe.h>
 
 class Ext2 {
@@ -96,6 +97,7 @@ public:
 		uint8_t len;
 		uint8_t type;
 	} __attribute__((packed));
+	static constexpr uint32_t ROOT_INODE = 2;
 private:
 	uint32_t lba;
 	Superblock superblock;
@@ -107,6 +109,7 @@ public:
 	GroupDesc GetGroupDesc(uint32_t group_id);
 	Maybe<Inode> GetInode(uint32_t inode_id);
 	Maybe<Inode> GetInode(Inode &pwd, const char *path);
+	Maybe<Inode> GetInode(size_t count, const char *paths[]);
 	Maybe<DirectoryEntry> GetDirectoryEntry(uint32_t block_id, const char *name);
 };
 
