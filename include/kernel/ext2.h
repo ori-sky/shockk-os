@@ -74,7 +74,7 @@ public:
 		uint32_t creation_time;
 		uint32_t last_modify_time;
 		uint32_t deletion_time;
-		uint32_t gid;
+		uint16_t gid;
 		uint16_t hard_link_count;
 		uint32_t disk_sector_count;
 		uint32_t flags;
@@ -97,7 +97,7 @@ public:
 	uint32_t GetBlockSize(void);
 	uint32_t GetBlockOffset(uint32_t block_id);
 	GroupDesc GetGroupDesc(uint32_t group_id);
-	void GetInode(uint32_t inode_id);
+	Inode GetInode(uint32_t inode_id);
 };
 
 void read_inode(uint32_t inode);

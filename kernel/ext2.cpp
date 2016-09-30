@@ -35,16 +35,21 @@ Ext2::GroupDesc Ext2::GetGroupDesc(uint32_t group_id) {
 	return gd;
 }
 
-void Ext2::GetInode(uint32_t inode_id) {
+Ext2::Inode Ext2::GetInode(uint32_t inode_id) {
 	uint32_t group_id = (inode_id - 1) / this->superblock.base.group_inode_count;
 	GroupDesc gd = this->GetGroupDesc(group_id);
 
 	uint32_t index = (inode_id - 1) % this->superblock.base.group_inode_count;
+	uint32_t inode_addr = gd.inode_table_addr * this->GetBlockSize() + index * sizeof(Inode);
 
-	// size of inode == 128 bytes?
-	uint32_t inode_addr = gd.inode_table_addr * this->GetBlockSize() + index * 128;
+	char buffer[1024];
+	ata_pio_read(this->lba + inode_addr / 512, 2, &buffer);
 
-	char sz[12] = {'0', 'x', 0};
-	uitoa(inode_addr, &sz[2], 16);
-	kernel_panic(sz);
+	Inode inode;
+	char *ptr = reinterpret_cast<char *>(&inode);
+	for(size_t i = 0; i < sizeof(Inode); ++i) {
+		ptr[i] = buffer[i + inode_addr % 512];
+	}
+
+	return inode;
 }
