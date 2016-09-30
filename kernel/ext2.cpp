@@ -61,6 +61,7 @@ Maybe<Ext2::DirectoryEntry> Ext2::GetDirectoryEntry(uint32_t block_id, const cha
 	uint32_t block_size = this->GetBlockSize();
 	uint32_t block_addr = this->GetBlockAddr(block_id);
 
+	// XXX: this assumes a block is 1024 bytes, which is very bad if it's not
 	char buffer[1024];
 	ata_pio_read(this->lba + block_addr / 512, 2, &buffer);
 
