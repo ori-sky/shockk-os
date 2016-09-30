@@ -22,7 +22,6 @@ uint32_t Ext2::GetBlockAddr(uint32_t block_id) {
 uint32_t Ext2::GetInodeAddr(uint32_t inode_id) {
 	uint32_t group_id = (inode_id - 1) / this->superblock.base.group_inode_count;
 	GroupDesc gd = this->GetGroupDesc(group_id);
-
 	uint32_t index = (inode_id - 1) % this->superblock.base.group_inode_count;
 	return gd.inode_table_addr * this->GetBlockSize() + index * sizeof(Inode);
 }
@@ -33,23 +32,17 @@ uint32_t Ext2::GetGroupDescAddr(uint32_t group_id) {
 }
 
 Ext2::GroupDesc Ext2::GetGroupDesc(uint32_t group_id) {
-	uint32_t offset = GetGroupDescAddr(group_id);
-
-	char buffer[1024];
-	ata_pio_read(this->lba + offset / 512, 2, &buffer);
-
-	GroupDesc *gd = reinterpret_cast<GroupDesc *>(&buffer[offset % 512]);
-	return *gd;
+	uint32_t offset = this->GetGroupDescAddr(group_id);
+	GroupDesc gd;
+	ata_pio_read_bytes(this->lba * 512 + offset, &gd);
+	return gd;
 }
 
 Maybe<Ext2::Inode> Ext2::GetInode(uint32_t inode_id) {
 	uint32_t inode_addr = this->GetInodeAddr(inode_id);
-
-	char buffer[1024];
-	ata_pio_read(this->lba + inode_addr / 512, 2, &buffer);
-
-	Inode *inode = reinterpret_cast<Inode *>(&buffer[inode_addr % 512]);
-	return Maybe<Inode>(*inode);
+	Inode inode;
+	ata_pio_read_bytes(this->lba * 512 + inode_addr, &inode);
+	return Maybe<Inode>(inode);
 }
 
 Maybe<Ext2::Inode> Ext2::GetInode(Inode &pwd, const char *name) {

@@ -34,6 +34,13 @@
 void ata_init(void);
 void ata_soft_reset(void);
 void ata_pio_begin(void);
-void ata_pio_read(uint32_t, uint8_t, volatile void *);
+void ata_pio_read(uint32_t lba, uint8_t count, volatile void *buffer);
+
+template<typename T> void ata_pio_read_bytes(uint32_t addr, T *ptr) {
+	const uint8_t count = sizeof(T) / 512u + ((sizeof(T) % 512u) != 0) + 1;
+	char buffer[count * 512u];
+	ata_pio_read(addr / 512u, count, buffer);
+	*ptr = *reinterpret_cast<T *>(&buffer[addr % 512u]);
+}
 
 #endif
