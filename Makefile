@@ -51,7 +51,7 @@ image: clean-image
 	losetup /dev/loop1 $(IMAGE) -o 1048576 # first partition at 1MB
 	mkfs.ext2 /dev/loop1
 	mkdir -pv $(MNTDIR)
-	mount /dev/loop1 $(MNTDIR)
+	mount -t ext2 /dev/loop1 $(MNTDIR)
 	install -v -o root -g root -m 644 -D $(LOADER_ELF) $(MNTDIR)/boot/loader
 	install -v -o root -g root -m 644 -D $(KERNEL_ELF) $(MNTDIR)/boot/kernel
 	install -v -o root -g root -m 644 -D $(BOOTDIR)/grub.cfg $(MNTDIR)/boot/grub/grub.cfg
