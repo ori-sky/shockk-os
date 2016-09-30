@@ -15,13 +15,21 @@ uint32_t Ext2::GetBlockSize(void) {
 	return 1024u << this->superblock.base.block_shift;
 }
 
-uint32_t Ext2::GetBlockOffset(uint32_t block_id) {
+uint32_t Ext2::GetBlockAddr(uint32_t block_id) {
 	return block_id * this->GetBlockSize();
+}
+
+uint32_t Ext2::GetInodeAddr(uint32_t inode_id) {
+	uint32_t group_id = (inode_id - 1) / this->superblock.base.group_inode_count;
+	GroupDesc gd = this->GetGroupDesc(group_id);
+
+	uint32_t index = (inode_id - 1) % this->superblock.base.group_inode_count;
+	return gd.inode_table_addr * this->GetBlockSize() + index * sizeof(Inode);
 }
 
 Ext2::GroupDesc Ext2::GetGroupDesc(uint32_t group_id) {
 	uint32_t block_id = this->superblock.base.superblock_id + 1;
-	uint32_t offset = this->GetBlockOffset(block_id) + group_id * sizeof(GroupDesc);
+	uint32_t offset = this->GetBlockAddr(block_id) + group_id * sizeof(GroupDesc);
 
 	char buffer[1024];
 	ata_pio_read(this->lba + offset / 512, 2, &buffer);
@@ -31,11 +39,7 @@ Ext2::GroupDesc Ext2::GetGroupDesc(uint32_t group_id) {
 }
 
 Maybe<Ext2::Inode> Ext2::GetInode(uint32_t inode_id) {
-	uint32_t group_id = (inode_id - 1) / this->superblock.base.group_inode_count;
-	GroupDesc gd = this->GetGroupDesc(group_id);
-
-	uint32_t index = (inode_id - 1) % this->superblock.base.group_inode_count;
-	uint32_t inode_addr = gd.inode_table_addr * this->GetBlockSize() + index * sizeof(Inode);
+	uint32_t inode_addr = this->GetInodeAddr(inode_id);
 
 	char buffer[1024];
 	ata_pio_read(this->lba + inode_addr / 512, 2, &buffer);
@@ -55,7 +59,7 @@ Maybe<Ext2::Inode> Ext2::GetInode(Inode &pwd, const char *name) {
 
 Maybe<Ext2::DirectoryEntry> Ext2::GetDirectoryEntry(uint32_t block_id, const char *name) {
 	uint32_t block_size = this->GetBlockSize();
-	uint32_t block_addr = this->GetBlockOffset(block_id);
+	uint32_t block_addr = this->GetBlockAddr(block_id);
 
 	char buffer[1024];
 	ata_pio_read(this->lba + block_addr / 512, 2, &buffer);

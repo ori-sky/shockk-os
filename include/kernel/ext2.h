@@ -102,7 +102,8 @@ private:
 public:
 	Ext2(uint32_t lba);
 	uint32_t GetBlockSize(void);
-	uint32_t GetBlockOffset(uint32_t block_id);
+	uint32_t GetBlockAddr(uint32_t block_id);
+	uint32_t GetInodeAddr(uint32_t inode_id);
 	GroupDesc GetGroupDesc(uint32_t group_id);
 	Maybe<Inode> GetInode(uint32_t inode_id);
 	Maybe<Inode> GetInode(Inode &pwd, const char *path);
