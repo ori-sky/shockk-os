@@ -113,12 +113,12 @@ void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
 	if(mKernel.IsNothing()) { kernel_panic("failed to get /boot/kernel inode"); }
 	auto kernel = mKernel.FromJust();
 
-	char sz[12] = {'0', 'x', 0};
-	uitoa(kernel.block_ptr[0], &sz[2], 16);
-	kernel_panic(sz);
-
 	ELFHeader header;
-	ata_pio_read(17, 1, &header);
+	fs.ReadInode(kernel, 0, &header);
+
+	char sz[12] = {'0', 'x', 0};
+	uitoa(header.ph_count, &sz[2], 16);
+	kernel_panic(sz);
 
 	for(size_t p = 0; p < header.ph_count; ++p) {
 		uint32_t offset = header.ph_offset + p * header.ph_size;

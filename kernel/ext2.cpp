@@ -1,7 +1,5 @@
-#include <stddef.h>
 #include <kernel/ext2.h>
 #include <kernel/ata.h>
-#include <kernel/itoa.h>
 #include <kernel/panic.h>
 
 Ext2::Ext2(Pager *pager, uint32_t lba) : pager(pager), lba(lba) {
@@ -95,4 +93,21 @@ Maybe<Ext2::DirectoryEntry> Ext2::GetDirectoryEntry(uint32_t block_id, const cha
 		}
 	}
 	return Maybe<DirectoryEntry>();
+}
+
+void Ext2::ReadInode(Inode inode, uint32_t offset, size_t count, char *ptr) {
+	uint32_t block_size = this->GetBlockSize();
+	size_t block_ptr_begin = offset / block_size;
+	// XXX: this doesn't seem quite correct
+	size_t block_ptr_end = block_ptr_begin + ((offset % block_size) != 0) + 1;
+
+	char buffer[1024]; // XXX: assuming block size is 1024 again
+	for(size_t i = block_ptr_begin; i < block_ptr_end; ++i) {
+		uint32_t block_ptr = this->GetBlockAddr(inode.block_ptr[i]);
+		ata_pio_read(this->lba + block_ptr / 512, block_size / 512, &buffer);
+		// XXX: this loop doesn't seem quite correct
+		for(size_t n = 0; n < count && offset % block_size < block_size; ++n) {
+			ptr[n] = buffer[offset % block_size + n];
+		}
+	}
 }

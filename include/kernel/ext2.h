@@ -115,6 +115,10 @@ public:
 	Maybe<Inode> GetInode(Inode &pwd, const char *path);
 	Maybe<Inode> GetInode(size_t count, const char *paths[]);
 	Maybe<DirectoryEntry> GetDirectoryEntry(uint32_t block_id, const char *name);
+	void ReadInode(Inode inode, uint32_t offset, size_t count, char *ptr);
+	template<typename T> void ReadInode(Inode inode, uint32_t offset, T *ptr) {
+		return ReadInode(inode, offset, sizeof(T), reinterpret_cast<char *>(ptr));
+	}
 };
 
 #endif
