@@ -116,18 +116,17 @@ void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
 	ELFHeader header;
 	fs.ReadInode(kernel, 0, &header);
 
-	char sz[12] = {'0', 'x', 0};
-	uitoa(header.ph_count, &sz[2], 16);
-	kernel_panic(sz);
-
 	for(size_t p = 0; p < header.ph_count; ++p) {
 		uint32_t offset = header.ph_offset + p * header.ph_size;
-		uint8_t ph_sector[1024];
-		ata_pio_read(17 + offset / 512, 2, ph_sector);
-		ELFProgramHeader *ph = reinterpret_cast<ELFProgramHeader *>(
-			&ph_sector[offset % 512]
-		);
 
+		ELFProgramHeader ph;
+		fs.ReadInode(kernel, offset, &ph);
+
+		char sz[12] = {'0', 'x', 0};
+		uitoa((unsigned)ph.type, &sz[2], 16);
+		kernel_panic(sz);
+
+/*
 		for(uint32_t addr = ph->v_addr; addr < ph->v_addr + ph->mem_size;
 		                                addr += PAGE_ALLOCATOR_PAGE_SIZE) {
 			Pager::TableID table = addr / PAGE_ALLOCATOR_PAGE_SIZE / 1024;
@@ -145,6 +144,7 @@ void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
 		for(uint32_t byte = ph->file_size; byte < ph->mem_size; ++byte) {
 			addr[byte] = 0;
 		}
+*/
 	}
 
 	auto kernel_entry = (void(*)(Pager *))header.entry_ptr;
