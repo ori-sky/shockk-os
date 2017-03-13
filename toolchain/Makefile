@@ -1,14 +1,30 @@
+NASM_VERSION=2.12.02
 BINUTILS_VERSION=2.27
 GCC_VERSION=6.2.0
 
 .PHONY: all
-all: gcc
+all: nasm gcc
+
+.PHONY: nasm
+nasm: $(TOOLCHAIN_PREFIX)/bin/nasm
 
 .PHONY: binutils
 binutils: $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-ar
 
 .PHONY: gcc
 gcc: $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-gcc
+
+$(TOOLCHAIN_PREFIX)/bin/nasm: nasm-$(NASM_VERSION)
+	mkdir -pv build-nasm-$(NASM_VERSION)
+	cd build-nasm-$(NASM_VERSION) && ../$</configure --prefix="$(TOOLCHAIN_PREFIX)"
+	$(MAKE) -C build-nasm-$(NASM_VERSION)
+	$(MAKE) -C build-nasm-$(NASM_VERSION) install
+
+nasm-$(NASM_VERSION): nasm-$(NASM_VERSION).tar.gz
+	tar -xf $<
+
+nasm-$(NASM_VERSION).tar.gz:
+	wget http://www.nasm.us/pub/nasm/releasebuilds/$(NASM_VERSION)/nasm-$(NASM_VERSION).tar.gz
 
 $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-ar: binutils-$(BINUTILS_VERSION)
 	mkdir -pv build-binutils-$(BINUTILS_VERSION)
@@ -17,22 +33,25 @@ $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-ar: binutils-$(BINUTILS_VERSION)
 	$(MAKE) -C build-binutils-$(BINUTILS_VERSION) install
 
 binutils-$(BINUTILS_VERSION): binutils-$(BINUTILS_VERSION).tar.gz
-	tar -xvf $<
+	tar -xf $<
 
 binutils-$(BINUTILS_VERSION).tar.gz:
 	wget ftp://ftp.gnu.org/gnu/binutils/binutils-$(BINUTILS_VERSION).tar.gz
 
-$(TOOLCHAIN_PREFIX)/bin/$(TARGET)-gcc: gcc-$(GCC_VERSION) $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-ar
+$(TOOLCHAIN_PREFIX)/bin/$(TARGET)-gcc: gcc-$(GCC_VERSION)/gmp $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-ar
 	mkdir -pv build-gcc-$(GCC_VERSION)
-	cd build-gcc-$(GCC_VERSION) && ../$</configure --target=$(TARGET) --prefix="$(TOOLCHAIN_PREFIX)" --disable-nls --enable-languages=c,c++ --without-headers
+	cd build-gcc-$(GCC_VERSION) && ../gcc-$(GCC_VERSION)/configure --target=$(TARGET) --prefix="$(TOOLCHAIN_PREFIX)" --disable-nls --enable-languages=c,c++ --without-headers
 	$(MAKE) -C build-gcc-$(GCC_VERSION) all-gcc
 	$(MAKE) -C build-gcc-$(GCC_VERSION) all-target-libgcc
 	$(MAKE) -C build-gcc-$(GCC_VERSION) install-gcc
 	$(MAKE) -C build-gcc-$(GCC_VERSION) install-target-libgcc
 
-gcc-$(GCC_VERSION): gcc-$(GCC_VERSION).tar.gz
-	tar xvf $<
+gcc-$(GCC_VERSION)/gmp: gcc-$(GCC_VERSION)
 	cd gcc-$(GCC_VERSION) && sh contrib/download_prerequisites
+	touch $@
+
+gcc-$(GCC_VERSION): gcc-$(GCC_VERSION).tar.gz
+	tar -xf $<
 
 gcc-$(GCC_VERSION).tar.gz:
 	wget ftp://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/gcc-$(GCC_VERSION).tar.gz

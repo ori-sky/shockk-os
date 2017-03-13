@@ -1,7 +1,7 @@
 export TOOLCHAIN_PREFIX=$(CURDIR)/toolchain/prefix
 export TARGET=i386-elf
 
-export TARGET_ASM=nasm
+export TARGET_ASM=$(TOOLCHAIN_PREFIX)/bin/nasm
 export TARGET_CC =$(TOOLCHAIN_PREFIX)/bin/$(TARGET)-gcc
 export TARGET_CXX=$(TOOLCHAIN_PREFIX)/bin/$(TARGET)-g++
 export TARGET_LD =$(TOOLCHAIN_PREFIX)/bin/$(TARGET)-gcc
