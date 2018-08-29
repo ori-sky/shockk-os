@@ -1,5 +1,6 @@
 #!/bin/sh
 fdisk shk.img << EOF
+o
 n
 p
 1
