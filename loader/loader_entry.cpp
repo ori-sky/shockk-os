@@ -220,6 +220,9 @@ public:
 extern "C"
 void loader_entry(uint32_t mb_magic, uint32_t mb_addr) __attribute__((noreturn));
 void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
+	Screen screen;
+	screen << "SHK\n";
+
 	if(mb_magic != 0x2BADB002) {
 		kernel_panic("invalid multiboot signature (should be 0x2BADB002)");
 	}
@@ -242,8 +245,6 @@ void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
 
 	ELFHeader header;
 	fs.ReadInode(kernel, 0, &header);
-
-	Screen screen;
 
 	for(size_t p = 0; p < header.ph_count; ++p) {
 		uint32_t offset = header.ph_offset + p * header.ph_size;

@@ -1,5 +1,5 @@
 [BITS 16]                                                                       ; 16 bits
-[ORG 0x8000]                                                                    ; bootsector loads stage1 into 0x8000
+[ORG 0x500]                                                                    ; bootsector loads stage1 into 0x8000
 start:
   mov [drive_ref], dl                                                           ; save drive reference
   mov [inode_offset], ecx                                                       ; save inode offset
@@ -32,10 +32,14 @@ start:
     xor edx, edx                                                                ; inner counter = 0
     .inner_loop:
       pushad
-      mov eax, edx                                                              ; eax = block index
+      mov ebx, edx                                                              ; copy block index to ebx
       shl edx, 10                                                               ; offset *= block size (1024 XXX)
       add edx, [gs:0xc+eax]                                                     ; offset += p_paddr
       shr edx, 4                                                                ; selector = offset / 16
+      mov ecx, [gs:0x4+eax]                                                     ; ecx = p_offset
+      shr ecx, 10                                                               ; ecx /= block size (1024 XXX)
+      mov eax, ebx                                                              ; copy block index to eax for call
+      add eax, ecx                                                              ; eax = block index + p_offset block id
       call get_block_id                                                         ; eax = block id
       mov word [packet_segment], dx
       call load_block                                                           ; load block into destination selector
@@ -58,8 +62,6 @@ start:
   .loop_end:
 .protect:
   mov ebx, [gs:0x18]                                                            ; save stage2 entry point to ebx
-  cmp ebx, 0x100010
-  jnz panic
   cli                                                                           ; disable interrupts
   xor ax, ax
   mov ds, ax                                                                    ; set data segment to null selector
@@ -134,19 +136,9 @@ load_block:                                                                     
   mov dword [packet_start_block], eax                                           ; start reading at offset as LBA block
   mov word [packet_count], 2                                                    ; block is 1024 bytes (XXX) so 2 sectors
   mov ax, [packet_segment]                                                      ; return segment selector
-    pushad
-    mov al, 'D'
-    call putc
-    popad
   call load_lba
 .end:
   ret
-
-load_singly_block:
-
-load_doubly_block:
-
-load_triply_block:
 
 get_block_id:                                                                   ; in eax = block index
                                                                                 ; out eax = block id
@@ -176,9 +168,7 @@ get_block_id:                                                                   
 .triply:
   sub eax, 256*256                                                              ; eax = triply indirect index
   cmp eax, 256*256*256                                                          ; if block index is not triply indirect
-  jnc .invalid                                                                  ; loader.elf got too big for ext2!
-.invalid:
-  jmp panic
+  jnc panic                                                                     ; loader.elf got too big for ext2!
 .end:
   pop gs
   pop ecx
@@ -236,7 +226,7 @@ gdt_data:                                                                       
     db 0                                                                        ; bits 24-31 of base address
 gdt_end:
 gdt_desc:
-    dw gdt_end - gdt                                                            ; gdt size in bytes
+    dw gdt_end - gdt - 1                                                        ; gdt size in bytes
     dd gdt                                                                      ; gdt memory address
 
   times 510-($-$$) db 0                                                         ; fill rest of sector with zeroes

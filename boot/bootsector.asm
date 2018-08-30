@@ -36,11 +36,11 @@ start:
   call lookup_inode                                                             ; ax:ecx = /boot/loader.elf
 .stage1:
   mov dword [packet_start_block], 1                                             ; start reading at offset as LBA block
-  mov word [packet_segment], 0x800                                              ; load block at 0x800:0x0 (0x0:0x8000)
+  mov word [packet_segment], 0x50                                               ; load block at 0x50:0x0 (0x0:0x500)
   mov word [packet_count], 1                                                    ; stage1 is one sector
   call load_lba
   mov dl, [drive_ref]                                                           ; restore drive reference
-  jmp 0x0:0x8000                                                                ; jump to stage1
+  jmp 0x0:0x500                                                                 ; jump to stage1
                                                                                 ; pass ax:ecx = /boot/loader.elf
                                                                                 ; pass es = superblock selector
 

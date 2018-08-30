@@ -77,7 +77,8 @@ gdt_data:                                                                       
     db 0                                                                        ; bits 24-31 of base address
 gdt_end:
 gdt_desc:
-    dw gdt_end - gdt                                                            ; gdt size in bytes
+    dw gdt_end - gdt - 1                                                        ; gdt size in bytes
     dd gdt                                                                      ; gdt memory address
+
     times 510-($-$$) db 0                                                       ; fill rest of sector with zeroes
     db 0x55, 0xAA                                                               ; bootsector signature
