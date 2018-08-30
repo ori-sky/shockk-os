@@ -18,7 +18,7 @@ void kernel_entry(Pager *pager) {
 	screen_put('H');
 	screen_put('K');
 	screen_put('\n');
-	//screen_print("SHK\n");
+	screen_print("SHK\n");
 
 	kernel_panic("in kernel mode (1)");
 

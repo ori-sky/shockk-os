@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <arch/x86/a20.h>
 #include <kernel/ext2.h>
 #include <kernel/ata.h>
 #include <kernel/mbr.h>
@@ -231,6 +232,7 @@ void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
 		multiboot = true;
 		break;
 	case 0xBAADC0DE:
+		a20_enable();
 		break;
 	}
 
