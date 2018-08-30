@@ -47,6 +47,7 @@ image: $(BOOTSECTOR_BIN) $(LOADER_ELF) $(KERNEL_ELF)
 	mkfs.ext2 -F $(IMAGE)
 	dd bs=512 count=2 if=$(BOOTSECTOR_BIN) of=$(IMAGE) conv=notrunc
 	e2cp -v $(LOADER_ELF) $(IMAGE):/boot/loader.elf
+	e2cp -v $(KERNEL_ELF) $(IMAGE):/boot/kernel.elf
 #	mkdiskimage syslinux.img 80 2 18
 #	syslinux --offset 9216 syslinux.img
 #	mcopy -i syslinux.img@@9K ::ldlinux.sys ldlinux.sys

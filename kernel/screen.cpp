@@ -15,7 +15,7 @@ static void screen_scroll(void) {
 void screen_init(void) {
 	for(unsigned short cell = 0; cell < SCREEN_CELLS; ++cell) {
 		screen_write_at(cell, ' ');
-		SCREEN_BUFFER[(cell << 1) + 1] = ' ';
+		SCREEN_BUFFER[(cell << 1) + 1] = 0x20;
 	}
 	screen_cursor_to(0);
 }

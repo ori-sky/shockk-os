@@ -14,6 +14,12 @@ extern "C" void user_enter(void *) __attribute__((noreturn));
 extern "C" void kernel_entry(Pager *) __attribute__((noreturn));
 void kernel_entry(Pager *pager) {
 	screen_init();
+	screen_put('S');
+	screen_put('H');
+	screen_put('K');
+	screen_put('\n');
+	//screen_print("SHK\n");
+
 	kernel_panic("in kernel mode (1)");
 
 	pit_set(1 << 15); // programmable timer

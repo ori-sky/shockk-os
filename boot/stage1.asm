@@ -79,6 +79,7 @@ start:
   mov fs, ax
   mov gs, ax
   mov esp, 0x70000                                                              ; set stack pointer
+  mov eax, 0xBAADC0DE                                                           ; SHK bootloader signature
   jmp ebx                                                                       ; jump to stage2 entry point
 [BITS 16]
 

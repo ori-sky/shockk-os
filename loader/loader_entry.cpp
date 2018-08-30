@@ -223,24 +223,37 @@ void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
 	Screen screen;
 	screen << "SHK\n";
 
-	if(mb_magic != 0x2BADB002) {
-		kernel_panic("invalid multiboot signature (should be 0x2BADB002)");
+	bool multiboot = false;
+	switch(mb_magic) {
+	default:
+		kernel_panic("invalid boot signature (should be 0x2BADB002 or 0xBAADC0DE)");
+	case 0x2BADB002:
+		multiboot = true;
+		break;
+	case 0xBAADC0DE:
+		break;
 	}
-
-	uint8_t *mb = (uint8_t *)mb_addr;
-	uint8_t part_id = mb[14];
 
 	struct Pager *pager = Pager::Create();
 	pager->Reload();
 	pager->Enable();
 
 	ata_init();
-	MBR mbr = mbr_read();
-	Ext2 fs(pager, mbr.entries[part_id].starting_lba);
 
-	const char *paths[] = {"boot", "kernel"};
+	uint32_t starting_lba = 0;
+	if(multiboot) {
+		uint8_t *mb = (uint8_t *)mb_addr;
+		uint8_t part_id = mb[14];
+
+		MBR mbr = mbr_read();
+		starting_lba = mbr.entries[part_id].starting_lba;
+	}
+
+	Ext2 fs(pager, starting_lba);
+
+	const char *paths[] = {"boot", "kernel.elf"};
 	auto mKernel = fs.GetInode(2, paths);
-	if(mKernel.IsNothing()) { kernel_panic("failed to get /boot/kernel inode"); }
+	if(mKernel.IsNothing()) { kernel_panic("failed to get /boot/kernel.elf inode"); }
 	auto kernel = mKernel.FromJust();
 
 	ELFHeader header;
