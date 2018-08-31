@@ -199,10 +199,11 @@ public:
 	}
 
 	friend Screen & operator<<(Screen &screen, const ELFHeader &header) {
-		screen << "ident   = " << header.ident   << '\n';
-		screen << "type    = " << header.type    << '\n';
-		screen << "machine = " << header.machine << '\n';
-		screen << "version = " << header.version << '\n';
+		screen << "ident     = " << header.ident     << '\n';
+		screen << "type      = " << header.type      << '\n';
+		screen << "machine   = " << header.machine   << '\n';
+		screen << "version   = " << header.version   << '\n';
+		screen << "entry_ptr = " << header.entry_ptr << '\n';
 		return screen;
 	}
 
@@ -260,12 +261,13 @@ void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
 
 	ELFHeader header;
 	fs.ReadInode(kernel, 0, &header);
+	screen << header;
 
 	for(size_t p = 0; p < header.ph_count; ++p) {
 		uint32_t offset = header.ph_offset + p * header.ph_size;
 		ELFProgramHeader ph;
 		fs.ReadInode(kernel, offset, &ph);
-		//screen << ph;
+		screen << ph;
 
 		for(uint32_t addr = ph.v_addr; addr < ph.v_addr + ph.mem_size;
 		                               addr += PAGE_ALLOCATOR_PAGE_SIZE) {
@@ -286,7 +288,6 @@ void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
 	}
 
 	auto kernel_entry = (void(*)(Pager *))header.entry_ptr;
-	//screen << (uint32_t)kernel_entry;
 	kernel_entry(pager);
 
 	for(;;) { __asm__ ("hlt"); } // unreachable
