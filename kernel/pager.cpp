@@ -114,15 +114,19 @@ void * Pager::AllocAt(TableID table, PageID page) {
 
 void Pager::MakeTable(TableID table) {
 	Table *table_addr = static_cast<Table *>(page_allocator_reserve(this->allocator));
-	this->directory->tables[table].present = 1;
 	this->directory->tables[table].address = (uint32_t)table_addr >> 12;
+
+	// we set the present flag last to avoid page table caching issues
+	this->directory->tables[table].present = 1;
+
+	// initialize all pages to present=0
+	Unmap(table);
 }
 
 void * Pager::Map(TableID table, PageID page, void *phys_addr) {
 	if(!this->directory->tables[table].present) { MakeTable(table); }
 
 	Table *table_addr = (Table *)(this->directory->tables[table].address << 12);
-	table_addr->pages[page].present = 1;
 	table_addr->pages[page].writable = 1;
 	table_addr->pages[page].unprivileged = 1;
 	table_addr->pages[page].write_through = 0;
@@ -131,6 +135,10 @@ void * Pager::Map(TableID table, PageID page, void *phys_addr) {
 	table_addr->pages[page].dirty = 0;
 	table_addr->pages[page].reserved = 0;
 	table_addr->pages[page].address = (uint32_t)phys_addr >> 12;
+
+	// we set the present flag last to avoid page caching issues
+	table_addr->pages[page].present = 1;
+
 	return (void *)((table * 1024 + page) * PAGE_ALLOCATOR_PAGE_SIZE);
 }
 
