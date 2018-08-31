@@ -6,7 +6,7 @@ Pager * Pager::Create(void) {
 	page_allocator_init(allocator, NULL, 4096, LOW_MAP * 1024);
 
 	/* reserve physical range NULL to 0x10000 */
-	for(size_t page = 0; page < 0x10; ++page) {
+	for(size_t page = 0; page < 0x20; ++page) {
 		page_allocator_alloc_at(allocator, page);
 	}
 
