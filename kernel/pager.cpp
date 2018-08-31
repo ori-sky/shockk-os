@@ -133,3 +133,13 @@ void * Pager::Map(TableID table, PageID page, void *phys_addr) {
 	table_addr->pages[page].address = (uint32_t)phys_addr >> 12;
 	return (void *)((table * 1024 + page) * PAGE_ALLOCATOR_PAGE_SIZE);
 }
+
+void Pager::Unmap(TableID table) {
+	if(!this->directory->tables[table].present) { MakeTable(table); }
+
+	Table *table_addr = (Table *)(this->directory->tables[table].address << 12);
+
+	for(PageID page = 0; page < 1024; ++page) {
+		table_addr->pages[page].present = 0;
+	}
+}

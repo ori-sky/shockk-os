@@ -51,6 +51,7 @@ private:
 	Pager(void);
 	void MakeTable(TableID);
 	void * Map(TableID, PageID, void *);
+	void Unmap(TableID);
 public:
 	static constexpr TableID LOW_MAP        = 1;   // upper bound of 1:1 mapping
 	static constexpr TableID KERNEL_RESERVE = 768; // lower bound of kernel
