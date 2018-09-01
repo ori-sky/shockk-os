@@ -1,6 +1,6 @@
 NASM_VERSION=2.12.02
-BINUTILS_VERSION=2.27
-GCC_VERSION=6.2.0
+BINUTILS_VERSION=2.31
+GCC_VERSION=8.2.0
 
 .PHONY: all
 all: nasm gcc
@@ -21,7 +21,7 @@ $(TOOLCHAIN_PREFIX)/bin/nasm: nasm-$(NASM_VERSION)
 	$(MAKE) -C build-nasm-$(NASM_VERSION) install
 
 nasm-$(NASM_VERSION): nasm-$(NASM_VERSION).tar.gz
-	tar -xf $<
+	tar -xfv $<
 
 nasm-$(NASM_VERSION).tar.gz:
 	wget http://www.nasm.us/pub/nasm/releasebuilds/$(NASM_VERSION)/nasm-$(NASM_VERSION).tar.gz
@@ -33,7 +33,7 @@ $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-ar: binutils-$(BINUTILS_VERSION)
 	$(MAKE) -C build-binutils-$(BINUTILS_VERSION) install
 
 binutils-$(BINUTILS_VERSION): binutils-$(BINUTILS_VERSION).tar.gz
-	tar -xf $<
+	tar -xfv $<
 
 binutils-$(BINUTILS_VERSION).tar.gz:
 	wget ftp://ftp.gnu.org/gnu/binutils/binutils-$(BINUTILS_VERSION).tar.gz
@@ -51,7 +51,7 @@ gcc-$(GCC_VERSION)/gmp: gcc-$(GCC_VERSION)
 	touch $@
 
 gcc-$(GCC_VERSION): gcc-$(GCC_VERSION).tar.gz
-	tar -xf $<
+	tar -xfv $<
 
 gcc-$(GCC_VERSION).tar.gz:
 	wget ftp://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/gcc-$(GCC_VERSION).tar.gz
@@ -65,5 +65,6 @@ clean:
 .PHONY: distclean
 distclean:
 	rm -rfv "$(TOOLCHAIN_PREFIX)"
+	rm -rfv "build-nasm-$(NASM_VERSION)"
 	rm -rfv "build-binutils-$(BINUTILS_VERSION)"
 	rm -rfv "build-gcc-$(GCC_VERSION)"
