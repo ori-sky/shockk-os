@@ -10,3 +10,4 @@
 build
 toolchain/*
 !toolchain/Makefile
+!toolchain/*.patch
