@@ -28,23 +28,23 @@ uint32_t Ext2::GetGroupDescAddr(uint32_t group_id) {
 	uint32_t block_id = this->superblock.base.superblock_id + 1;
 	return this->GetBlockAddr(block_id) + group_id * sizeof(GroupDesc);
 }
-#include <kernel/itoa.h>
-uint32_t Ext2::GetInodeBlockAddr(Inode inode, uint32_t block_ptr_id) {
+
+uint32_t Ext2::GetInodeBlockAddr(Inode inode, uint32_t block_index) {
 	uint32_t block_size = this->GetBlockSize();
 	uint32_t block_num_ptrs = block_size / sizeof(uint32_t);
-	uint32_t block_addr;
+	uint32_t block_id;
 
-	if(block_ptr_id < 12) {
-		block_addr = this->GetBlockAddr(inode.block_ptr[block_ptr_id]);
-	} else if(block_ptr_id < 12 + block_num_ptrs) {
-		uint32_t singly_addr = this->GetBlockAddr(inode.block_ptr_singly);
-		uint32_t singly_offset = (block_ptr_id - 12) * sizeof(uint32_t);
-		ata_pio_read_bytes(this->lba * 512 + singly_addr + singly_offset, &block_addr);
+	if(block_index < 12) {
+		block_id = inode.block_ptr[block_index];
+	} else if(block_index - 12 < block_num_ptrs) {
+		uint32_t addr = this->GetBlockAddr(inode.block_ptr_singly);
+		uint32_t offset = (block_index - 12) * sizeof(uint32_t);
+		ata_pio_read_bytes(this->lba * 512 + addr + offset, &block_id);
 	} else {
 		kernel_panic("doubly indirect ptrs not implemented yet");
 	}
 
-	return block_addr;
+	return this->GetBlockAddr(block_id);
 }
 
 Ext2::GroupDesc Ext2::GetGroupDesc(uint32_t group_id) {
@@ -113,7 +113,6 @@ Maybe<Ext2::DirectoryEntry> Ext2::GetDirectoryEntry(uint32_t block_id, const cha
 	return Maybe<DirectoryEntry>();
 }
 
-#include <kernel/screen.h>
 void Ext2::ReadInode(Inode inode, uint32_t offset, size_t count, char *ptr) {
 	uint32_t block_size = this->GetBlockSize();
 	size_t offset_end = offset + count;
@@ -125,6 +124,7 @@ void Ext2::ReadInode(Inode inode, uint32_t offset, size_t count, char *ptr) {
 
 	for(size_t b = block_ptr_begin; b < block_ptr_end; ++b) {
 		uint32_t block_ptr = this->GetInodeBlockAddr(inode, b);
+
 		char buffer[1024]; // XXX: assuming block size is 1024 again
 		ata_pio_read(this->lba + block_ptr / 512, block_size / 512, &buffer);
 		while(off < block_size && n < count) {
