@@ -2,7 +2,7 @@ OBJS=bootsector.s.o stage1.s.o
 
 ASMFLAGS=-f bin
 
-$(BOOTSECTOR_BIN): $(OBJS)
+$(SHKBOOT_BIN): $(OBJS)
 	cat $^ > $@
 
 %.s.o: %.asm
@@ -10,4 +10,4 @@ $(BOOTSECTOR_BIN): $(OBJS)
 
 .PHONY: clean
 clean:
-	rm -fv $(OBJS) $(BOOTSECTOR_BIN)
+	rm -fv $(OBJS) $(SHKBOOT_BIN)
