@@ -44,6 +44,7 @@ diff -ruN binutils-2.31/ld/configure.tgt binutils-2.31/ld/configure.tgt
  			;;
 +i[3-7]86-*-shk*)	targ_emul=elf_i386_shk
 +			targ_extra_emuls=elf_i386
++			;;
  ia16-*-elf*)		targ_emul=elf_i386 targ_extra_emuls=i386msdos ;;
  ia64-*-elf*)		targ_emul=elf64_ia64 ;;
  ia64-*-freebsd* | ia64-*-kfreebsd*-gnu)
