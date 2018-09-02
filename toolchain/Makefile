@@ -58,40 +58,40 @@ $(TOOLCHAIN_PREFIX)/bin/nasm: nasm-$(NASM_VERSION)
 	$(MAKE) -C build-nasm-$(NASM_VERSION) install
 
 $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-ar: binutils-$(BINUTILS_VERSION)
-	mkdir -pv build-binutils-$(BINUTILS_VERSION)
-	cd build-binutils-$(BINUTILS_VERSION) && ../$</configure --target=$(TARGET) --prefix="$(TOOLCHAIN_PREFIX)" --with-sysroot --disable-nls --disable-werror
-	$(MAKE) -C build-binutils-$(BINUTILS_VERSION)
-	$(MAKE) -C build-binutils-$(BINUTILS_VERSION) install
+	mkdir -pv build-binutils-$(BINUTILS_VERSION)-bare
+	cd build-binutils-$(BINUTILS_VERSION)-bare && ../$</configure --target=$(TARGET) --prefix="$(TOOLCHAIN_PREFIX)" --with-sysroot --disable-nls --disable-werror
+	$(MAKE) -C build-binutils-$(BINUTILS_VERSION)-bare
+	$(MAKE) -C build-binutils-$(BINUTILS_VERSION)-bare install
 
 gcc-$(GCC_VERSION)/gmp: gcc-$(GCC_VERSION)
 	cd gcc-$(GCC_VERSION) && sh contrib/download_prerequisites
 	touch $@
 
 $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-gcc: gcc-$(GCC_VERSION)/gmp $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-ar
-	mkdir -pv build-gcc-$(GCC_VERSION)
-	cd build-gcc-$(GCC_VERSION) && ../gcc-$(GCC_VERSION)/configure --target=$(TARGET) --prefix="$(TOOLCHAIN_PREFIX)" --disable-nls --enable-languages=c,c++ --without-headers
-	$(MAKE) -C build-gcc-$(GCC_VERSION) all-gcc
-	$(MAKE) -C build-gcc-$(GCC_VERSION) all-target-libgcc
-	$(MAKE) -C build-gcc-$(GCC_VERSION) install-gcc
-	$(MAKE) -C build-gcc-$(GCC_VERSION) install-target-libgcc
+	mkdir -pv build-gcc-$(GCC_VERSION)-bare
+	cd build-gcc-$(GCC_VERSION)-bare && ../gcc-$(GCC_VERSION)/configure --target=$(TARGET) --prefix="$(TOOLCHAIN_PREFIX)" --disable-nls --enable-languages=c,c++ --without-headers
+	$(MAKE) -C build-gcc-$(GCC_VERSION)-bare all-gcc
+	$(MAKE) -C build-gcc-$(GCC_VERSION)-bare all-target-libgcc
+	$(MAKE) -C build-gcc-$(GCC_VERSION)-bare install-gcc
+	$(MAKE) -C build-gcc-$(GCC_VERSION)-bare install-target-libgcc
 
 $(TOOLCHAIN_SYSROOT)/$(TARGET)/lib/libc.a: newlib-$(NEWLIB_VERSION) $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-ar $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-gcc
-	mkdir -pv build-newlib-$(NEWLIB_VERSION)
-	export PATH="$(TOOLCHAIN_PREFIX)/bin:$$PATH"; cd build-newlib-$(NEWLIB_VERSION) && ../newlib-$(NEWLIB_VERSION)/configure --target=$(TARGET) --prefix=/
-	export PATH="$(TOOLCHAIN_PREFIX)/bin:$$PATH"; $(MAKE) -C build-newlib-$(NEWLIB_VERSION) all
-	export PATH="$(TOOLCHAIN_PREFIX)/bin:$$PATH"; $(MAKE) -C build-newlib-$(NEWLIB_VERSION) DESTDIR=$(TOOLCHAIN_SYSROOT) install
+	mkdir -pv build-newlib-$(NEWLIB_VERSION)-bare
+	export PATH="$(TOOLCHAIN_PREFIX)/bin:$$PATH"; cd build-newlib-$(NEWLIB_VERSION)-bare && ../newlib-$(NEWLIB_VERSION)/configure --target=$(TARGET) --prefix=/
+	export PATH="$(TOOLCHAIN_PREFIX)/bin:$$PATH"; $(MAKE) -C build-newlib-$(NEWLIB_VERSION)-bare all
+	export PATH="$(TOOLCHAIN_PREFIX)/bin:$$PATH"; $(MAKE) -C build-newlib-$(NEWLIB_VERSION)-bare DESTDIR=$(TOOLCHAIN_SYSROOT) install
 
 .PHONY: clean
 clean:
 	rm -rfv "$(TOOLCHAIN_PREFIX)"
-	$(MAKE) -C build-binutils-$(BINUTILS_VERSION) clean
-	$(MAKE) -C build-gcc-$(GCC_VERSION) clean
-	$(MAKE) -C build-newlib-$(NEWLIB_VERSION) clean
+	$(MAKE) -C build-binutils-$(BINUTILS_VERSION)-bare clean
+	$(MAKE) -C build-gcc-$(GCC_VERSION)-bare clean
+	$(MAKE) -C build-newlib-$(NEWLIB_VERSION)-bare clean
 
 .PHONY: distclean
 distclean:
 	rm -rfv "$(TOOLCHAIN_PREFIX)"
 	rm -rfv "build-nasm-$(NASM_VERSION)"
-	rm -rfv "build-binutils-$(BINUTILS_VERSION)"
-	rm -rfv "build-gcc-$(GCC_VERSION)"
-	rm -rfv "build-newlib-$(NEWLIB_VERSION)"
+	rm -rfv "build-binutils-$(BINUTILS_VERSION)-bare"
+	rm -rfv "build-gcc-$(GCC_VERSION)-bare"
+	rm -rfv "build-newlib-$(NEWLIB_VERSION)-bare"
