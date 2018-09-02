@@ -4,9 +4,9 @@ export TOOLCHAIN_SYSROOT=$(CURDIR)/toolchain/sysroot
 export TARGET=i386-shk
 
 export TARGET_ASM=$(TOOLCHAIN_HOSTED)/bin/nasm
-export TARGET_CC =$(TOOLCHAIN_BARE)/bin/$(TARGET)-gcc
-export TARGET_CXX=$(TOOLCHAIN_BARE)/bin/$(TARGET)-g++
-export TARGET_LD =$(TOOLCHAIN_BARE)/bin/$(TARGET)-gcc
+export TARGET_CC =$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-gcc
+export TARGET_CXX=$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-g++
+export TARGET_LD =$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-gcc
 export QEMU=qemu-system-i386
 
 export SHKBOOT_BIN=$(CURDIR)/shkboot.bin
@@ -14,7 +14,7 @@ export LOADER_ELF=$(CURDIR)/loader.elf
 export KERNEL_ELF=$(CURDIR)/kernel.elf
 
 export INCLUDE_PATHS=$(CURDIR)/include
-export CXXWARNS=-Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual -Wformat=2 -Winit-self -Wmissing-include-dirs -Wredundant-decls -Wstrict-overflow=5 -Wundef -Wdisabled-optimization -Wsign-conversion -Wstack-protector -Wabi -Winline -Wpadded -Wswitch-enum
+export CXXWARNS=-Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual -Wformat=2 -Winit-self -Wmissing-include-dirs -Wredundant-decls -Wstrict-overflow=5 -Wundef -Wdisabled-optimization -Wsign-conversion -Wstack-protector -Winline -Wpadded -Wswitch-enum
 
 IMAGE=$(CURDIR)/shk.img
 MNTDIR=$(CURDIR)/mnt
