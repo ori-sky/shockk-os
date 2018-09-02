@@ -40,15 +40,15 @@ nasm-$(NASM_VERSION): nasm-$(NASM_VERSION).tar.gz
 
 binutils-$(BINUTILS_VERSION): binutils-$(BINUTILS_VERSION).tar.gz
 	tar -xvf $<
-	patch < shk-binutils-$(BINUTILS_VERSION).patch
+	patch -p0 < shk-binutils-$(BINUTILS_VERSION).patch
 
 gcc-$(GCC_VERSION): gcc-$(GCC_VERSION).tar.gz
 	tar -xvf $<
-	patch < shk-gcc-$(GCC_VERSION).patch
+	patch -p0 < shk-gcc-$(GCC_VERSION).patch
 
 newlib-$(NEWLIB_VERSION): newlib-$(NEWLIB_VERSION).tar.gz
 	tar -xvf $<
-	patch < shk-newlib-$(NEWLIB_VERSION).patch
+	patch -p0 < shk-newlib-$(NEWLIB_VERSION).patch
 
 # builds
 
