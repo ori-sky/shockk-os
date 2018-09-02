@@ -1,4 +1,5 @@
 export TOOLCHAIN_PREFIX=$(CURDIR)/toolchain/prefix
+export TOOLCHAIN_SYSROOT=$(CURDIR)/toolchain/sysroot
 export TARGET=i386-shk
 
 export TARGET_ASM=$(TOOLCHAIN_PREFIX)/bin/nasm

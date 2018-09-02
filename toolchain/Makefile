@@ -15,9 +15,8 @@ binutils: $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-ar
 .PHONY: gcc
 gcc: $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-gcc
 
-# XXX: write the build commands for newlib
 .PHONY: newlib
-newlib: newlib-$(NEWLIB_VERSION)
+newlib: $(TOOLCHAIN_SYSROOT)/$(TARGET)/lib/libc.a
 
 # downloads
 
@@ -64,6 +63,10 @@ $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-ar: binutils-$(BINUTILS_VERSION)
 	$(MAKE) -C build-binutils-$(BINUTILS_VERSION)
 	$(MAKE) -C build-binutils-$(BINUTILS_VERSION) install
 
+gcc-$(GCC_VERSION)/gmp: gcc-$(GCC_VERSION)
+	cd gcc-$(GCC_VERSION) && sh contrib/download_prerequisites
+	touch $@
+
 $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-gcc: gcc-$(GCC_VERSION)/gmp $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-ar
 	mkdir -pv build-gcc-$(GCC_VERSION)
 	cd build-gcc-$(GCC_VERSION) && ../gcc-$(GCC_VERSION)/configure --target=$(TARGET) --prefix="$(TOOLCHAIN_PREFIX)" --disable-nls --enable-languages=c,c++ --without-headers
@@ -72,15 +75,18 @@ $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-gcc: gcc-$(GCC_VERSION)/gmp $(TOOLCHAIN_PREFIX
 	$(MAKE) -C build-gcc-$(GCC_VERSION) install-gcc
 	$(MAKE) -C build-gcc-$(GCC_VERSION) install-target-libgcc
 
-gcc-$(GCC_VERSION)/gmp: gcc-$(GCC_VERSION)
-	cd gcc-$(GCC_VERSION) && sh contrib/download_prerequisites
-	touch $@
+$(TOOLCHAIN_SYSROOT)/$(TARGET)/lib/libc.a: newlib-$(NEWLIB_VERSION) $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-ar $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-gcc
+	mkdir -pv build-newlib-$(NEWLIB_VERSION)
+	export PATH="$(TOOLCHAIN_PREFIX)/bin:$$PATH"; cd build-newlib-$(NEWLIB_VERSION) && ../newlib-$(NEWLIB_VERSION)/configure --target=$(TARGET) --prefix=/
+	export PATH="$(TOOLCHAIN_PREFIX)/bin:$$PATH"; $(MAKE) -C build-newlib-$(NEWLIB_VERSION) all
+	export PATH="$(TOOLCHAIN_PREFIX)/bin:$$PATH"; $(MAKE) -C build-newlib-$(NEWLIB_VERSION) DESTDIR=$(TOOLCHAIN_SYSROOT) install
 
 .PHONY: clean
 clean:
 	rm -rfv "$(TOOLCHAIN_PREFIX)"
 	$(MAKE) -C build-binutils-$(BINUTILS_VERSION) clean
 	$(MAKE) -C build-gcc-$(GCC_VERSION) clean
+	$(MAKE) -C build-newlib-$(NEWLIB_VERSION) clean
 
 .PHONY: distclean
 distclean:
@@ -88,3 +94,4 @@ distclean:
 	rm -rfv "build-nasm-$(NASM_VERSION)"
 	rm -rfv "build-binutils-$(BINUTILS_VERSION)"
 	rm -rfv "build-gcc-$(GCC_VERSION)"
+	rm -rfv "build-newlib-$(NEWLIB_VERSION)"
