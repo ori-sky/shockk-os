@@ -1,11 +1,12 @@
-export TOOLCHAIN_PREFIX=$(CURDIR)/toolchain/prefix
+export TOOLCHAIN_BARE=$(CURDIR)/toolchain/bare
+export TOOLCHAIN_HOSTED=$(CURDIR)/toolchain/hosted
 export TOOLCHAIN_SYSROOT=$(CURDIR)/toolchain/sysroot
 export TARGET=i386-shk
 
-export TARGET_ASM=$(TOOLCHAIN_PREFIX)/bin/nasm
-export TARGET_CC =$(TOOLCHAIN_PREFIX)/bin/$(TARGET)-gcc
-export TARGET_CXX=$(TOOLCHAIN_PREFIX)/bin/$(TARGET)-g++
-export TARGET_LD =$(TOOLCHAIN_PREFIX)/bin/$(TARGET)-gcc
+export TARGET_ASM=$(TOOLCHAIN_HOSTED)/bin/nasm
+export TARGET_CC =$(TOOLCHAIN_BARE)/bin/$(TARGET)-gcc
+export TARGET_CXX=$(TOOLCHAIN_BARE)/bin/$(TARGET)-g++
+export TARGET_LD =$(TOOLCHAIN_BARE)/bin/$(TARGET)-gcc
 export QEMU=qemu-system-i386
 
 export SHKBOOT_BIN=$(CURDIR)/shkboot.bin
