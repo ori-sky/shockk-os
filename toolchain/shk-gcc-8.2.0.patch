@@ -1,6 +1,6 @@
-diff -ruN gcc-8.2.0/config.sub shk-gcc-8.2.0/config.sub
+diff -ruN gcc-8.2.0/config.sub gcc-8.2.0/config.sub
 --- gcc-8.2.0/config.sub	2018-01-03 04:25:18.000000000 +0000
-+++ shk-gcc-8.2.0/config.sub	2018-09-01 18:08:57.387851800 +0100
++++ gcc-8.2.0/config.sub	2018-09-01 18:08:57.387851800 +0100
 @@ -1395,7 +1395,7 @@
  	      | -hpux* | -unos* | -osf* | -luna* | -dgux* | -auroraux* | -solaris* \
  	      | -sym* | -kopensolaris* | -plan9* \
@@ -10,9 +10,9 @@ diff -ruN gcc-8.2.0/config.sub shk-gcc-8.2.0/config.sub
  	      | -nindy* | -vxsim* | -vxworks* | -ebmon* | -hms* | -mvs* \
  	      | -clix* | -riscos* | -uniplus* | -iris* | -rtu* | -xenix* \
  	      | -hiux* | -386bsd* | -knetbsd* | -mirbsd* | -netbsd* \
-diff -ruN gcc-8.2.0/fixincludes/mkfixinc.sh shk-gcc-8.2.0/fixincludes/mkfixinc.sh
+diff -ruN gcc-8.2.0/fixincludes/mkfixinc.sh gcc-8.2.0/fixincludes/mkfixinc.sh
 --- gcc-8.2.0/fixincludes/mkfixinc.sh	2016-06-21 22:57:20.000000000 +0100
-+++ shk-gcc-8.2.0/fixincludes/mkfixinc.sh	2018-09-01 18:33:35.820616400 +0100
++++ gcc-8.2.0/fixincludes/mkfixinc.sh	2018-09-01 18:33:35.820616400 +0100
 @@ -11,6 +11,7 @@
  
  # Check for special fix rules for particular targets
@@ -21,9 +21,9 @@ diff -ruN gcc-8.2.0/fixincludes/mkfixinc.sh shk-gcc-8.2.0/fixincludes/mkfixinc.s
      i?86-*-cygwin* | \
      i?86-*-mingw32* | \
      x86_64-*-mingw32* | \
-diff -ruN gcc-8.2.0/gcc/config/shk.h shk-gcc-8.2.0/gcc/config/shk.h
+diff -ruN gcc-8.2.0/gcc/config/shk.h gcc-8.2.0/gcc/config/shk.h
 --- gcc-8.2.0/gcc/config/shk.h	1970-01-01 00:00:00.000000000 +0000
-+++ shk-gcc-8.2.0/gcc/config/shk.h	2018-09-01 18:27:39.701234900 +0100
++++ gcc-8.2.0/gcc/config/shk.h	2018-09-01 18:27:39.701234900 +0100
 @@ -0,0 +1,24 @@
 +#undef TARGET_SHK
 +#define TARGET_SHK 1
@@ -49,9 +49,9 @@ diff -ruN gcc-8.2.0/gcc/config/shk.h shk-gcc-8.2.0/gcc/config/shk.h
 +		builtin_assert("system=unix");  \
 +		builtin_assert("system=posix"); \
 +	} while(0);
-diff -ruN gcc-8.2.0/gcc/config.gcc shk-gcc-8.2.0/gcc/config.gcc
+diff -ruN gcc-8.2.0/gcc/config.gcc gcc-8.2.0/gcc/config.gcc
 --- gcc-8.2.0/gcc/config.gcc	2018-06-25 20:34:01.000000000 +0100
-+++ shk-gcc-8.2.0/gcc/config.gcc	2018-09-01 18:13:38.213128800 +0100
++++ gcc-8.2.0/gcc/config.gcc	2018-09-01 18:13:38.213128800 +0100
 @@ -646,6 +646,11 @@
  
  # Common parts for widely ported systems.
@@ -74,9 +74,9 @@ diff -ruN gcc-8.2.0/gcc/config.gcc shk-gcc-8.2.0/gcc/config.gcc
  aarch64*-*-elf | aarch64*-*-fuchsia* | aarch64*-*-rtems*)
  	tm_file="${tm_file} dbxelf.h elfos.h newlib-stdint.h"
  	tm_file="${tm_file} aarch64/aarch64-elf.h aarch64/aarch64-elf-raw.h"
-diff -ruN gcc-8.2.0/libgcc/config.host shk-gcc-8.2.0/libgcc/config.host
+diff -ruN gcc-8.2.0/libgcc/config.host gcc-8.2.0/libgcc/config.host
 --- gcc-8.2.0/libgcc/config.host	2018-04-06 21:04:17.000000000 +0100
-+++ shk-gcc-8.2.0/libgcc/config.host	2018-09-01 18:32:40.907838600 +0100
++++ gcc-8.2.0/libgcc/config.host	2018-09-01 18:32:40.907838600 +0100
 @@ -333,6 +333,10 @@
  esac
  
@@ -88,9 +88,9 @@ diff -ruN gcc-8.2.0/libgcc/config.host shk-gcc-8.2.0/libgcc/config.host
  aarch64*-*-elf | aarch64*-*-rtems*)
  	extra_parts="$extra_parts crtbegin.o crtend.o crti.o crtn.o"
  	extra_parts="$extra_parts crtfastmath.o"
-diff -ruN gcc-8.2.0/libstdc++-v3/configure shk-gcc-8.2.0/libstdc++-v3/configure
+diff -ruN gcc-8.2.0/libstdc++-v3/configure gcc-8.2.0/libstdc++-v3/configure
 --- gcc-8.2.0/libstdc++-v3/configure	2018-07-04 12:45:51.000000000 +0100
-+++ shk-gcc-8.2.0/libstdc++-v3/configure	2018-09-01 18:30:56.979741300 +0100
++++ gcc-8.2.0/libstdc++-v3/configure	2018-09-01 18:30:56.979741300 +0100
 @@ -78304,6 +78304,5983 @@
      $as_echo "#define HAVE_TANHF 1" >>confdefs.h
  
@@ -6075,9 +6075,9 @@ diff -ruN gcc-8.2.0/libstdc++-v3/configure shk-gcc-8.2.0/libstdc++-v3/configure
    *)
      as_fn_error "No support for this host/target combination." "$LINENO" 5
     ;;
-diff -ruN gcc-8.2.0/libstdc++-v3/crossconfig.m4 shk-gcc-8.2.0/libstdc++-v3/crossconfig.m4
+diff -ruN gcc-8.2.0/libstdc++-v3/crossconfig.m4 gcc-8.2.0/libstdc++-v3/crossconfig.m4
 --- gcc-8.2.0/libstdc++-v3/crossconfig.m4	2018-07-04 12:45:51.000000000 +0100
-+++ shk-gcc-8.2.0/libstdc++-v3/crossconfig.m4	2018-09-01 18:29:15.392745500 +0100
++++ gcc-8.2.0/libstdc++-v3/crossconfig.m4	2018-09-01 18:29:15.392745500 +0100
 @@ -291,6 +291,12 @@
      AC_DEFINE(HAVE_TANF)
      AC_DEFINE(HAVE_TANHF)
