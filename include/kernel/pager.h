@@ -66,6 +66,12 @@ public:
 	void * Reserve(void);
 	void * AllocIn(TableID, TableID);
 	void * AllocAt(TableID, PageID);
+
+	void * AllocAt(void *addr) {
+		TableID table = uint32_t(addr) / PAGE_ALLOCATOR_PAGE_SIZE / 1024;
+		PageID  page  = uint32_t(addr) / PAGE_ALLOCATOR_PAGE_SIZE % 1024;
+		return AllocAt(table, page);
+	}
 };
 
 #endif
