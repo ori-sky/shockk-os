@@ -114,17 +114,21 @@ $(TOOLCHAIN_SYSROOT)/usr/lib/libc.a: build-newlib-$(NEWLIB_VERSION)-bare newlib-
 
 # hosted binutils build
 
-$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-ar: binutils-$(BINUTILS_VERSION) $(TOOLCHAIN_SYSROOT)/usr/lib/libc.a
+build-binutils-$(BINUTILS_VERSION):
 	mkdir -pv build-binutils-$(BINUTILS_VERSION)
 	cd build-binutils-$(BINUTILS_VERSION) && ../$</configure --target=$(TARGET) --prefix="$(TOOLCHAIN_HOSTED)" --with-sysroot=$(TOOLCHAIN_SYSROOT) --disable-werror
+
+$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-ar: binutils-$(BINUTILS_VERSION) $(TOOLCHAIN_SYSROOT)/usr/lib/libc.a
 	$(MAKE) -C build-binutils-$(BINUTILS_VERSION)
 	$(MAKE) -C build-binutils-$(BINUTILS_VERSION) install
 
 # hosted gcc build
 
-$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-gcc: gcc-$(GCC_VERSION)/gmp $(TOOLCHAIN_HOSTED)/bin/$(TARGET)-ar $(TOOLCHAIN_SYSROOT)/usr/lib/libc.a
+build-gcc-$(GCC_VERSION): gcc-$(GCC_VERSION)/gmp
 	mkdir -pv build-gcc-$(GCC_VERSION)
 	cd build-gcc-$(GCC_VERSION) && ../gcc-$(GCC_VERSION)/configure --target=$(TARGET) --prefix="$(TOOLCHAIN_HOSTED)" --with-sysroot=$(TOOLCHAIN_SYSROOT) --enable-languages=c,c++
+
+$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-gcc: build-gcc-$(GCC_VERSION) $(TOOLCHAIN_HOSTED)/bin/$(TARGET)-ar $(TOOLCHAIN_SYSROOT)/usr/lib/libc.a
 	$(MAKE) -C build-gcc-$(GCC_VERSION) all-gcc
 	$(MAKE) -C build-gcc-$(GCC_VERSION) all-target-libgcc
 	$(MAKE) -C build-gcc-$(GCC_VERSION) install-gcc
