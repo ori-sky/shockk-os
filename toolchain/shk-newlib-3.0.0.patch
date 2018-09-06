@@ -6623,19 +6623,6 @@ diff -ruN newlib-3.0.0/newlib/libc/sys/shk/configure.in newlib-3.0.0/newlib/libc
 +NEWLIB_CONFIGURE(../../..)
 +AC_CONFIG_FILES([Makefile])
 +AC_OUTPUT
-diff -ruN newlib-3.0.0/newlib/libc/sys/shk/crt0.c newlib-3.0.0/newlib/libc/sys/shk/crt0.c
---- newlib-3.0.0/newlib/libc/sys/shk/crt0.c	1970-01-01 00:00:00.000000000 +0000
-+++ newlib-3.0.0/newlib/libc/sys/shk/crt0.c	2018-09-01 21:28:48.561220900 +0100
-@@ -0,0 +1,9 @@
-+#include <fcntl.h>
-+
-+extern void exit(int code);
-+extern int main();
-+
-+void _start() {
-+	int ex = main();
-+	exit(ex);
-+}
 diff -ruN newlib-3.0.0/newlib/libc/sys/shk/Makefile.am newlib-3.0.0/newlib/libc/sys/shk/Makefile.am
 --- newlib-3.0.0/newlib/libc/sys/shk/Makefile.am	1970-01-01 00:00:00.000000000 +0000
 +++ newlib-3.0.0/newlib/libc/sys/shk/Makefile.am	2018-09-01 21:36:43.470659100 +0100
@@ -7146,33 +7133,3 @@ diff -ruN newlib-3.0.0/newlib/libc/sys/shk/Makefile.in newlib-3.0.0/newlib/libc/
 +# Tell versions [3.59,3.63) of GNU make to not export all variables.
 +# Otherwise a system limit (for SysV at least) may be exceeded.
 +.NOEXPORT:
-diff -ruN newlib-3.0.0/newlib/libc/sys/shk/syscalls.c newlib-3.0.0/newlib/libc/sys/shk/syscalls.c
---- newlib-3.0.0/newlib/libc/sys/shk/syscalls.c	1970-01-01 00:00:00.000000000 +0000
-+++ newlib-3.0.0/newlib/libc/sys/shk/syscalls.c	2018-09-01 21:33:44.949088700 +0100
-@@ -0,0 +1,26 @@
-+#include <sys/stat.h>
-+#include <sys/types.h>
-+#include <sys/fcntl.h>
-+#include <sys/times.h>
-+#include <sys/errno.h>
-+#include <sys/time.h>
-+#include <stdio.h>
-+
-+void _exit();
-+int close(int file);
-+char **environ;
-+int execve(char *name, char **argv, char **env);
-+int fork();
-+int fstat(int file, struct stat *st);
-+int getpid();
-+int isatty(int file);
-+int kill(int pid, int sig);
-+int link(char *old, char *new);
-+int lseek(int file, int ptr, int dir);
-+int open(const char *name, int flags, ...);
-+int read(int file, char *ptr, int len);
-+clock_t times(struct tms *buf);
-+int unlink(char *name);
-+int wait(int *status);
-+int write(int file, char *ptr, int len);
-+int gettimeofday(struct timeval * __restrict__ p, void *z);

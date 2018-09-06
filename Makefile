@@ -3,6 +3,8 @@ export TOOLCHAIN_HOSTED=$(CURDIR)/toolchain/hosted
 export TOOLCHAIN_SYSROOT=$(CURDIR)/toolchain/sysroot
 export TARGET=i386-shk
 
+export SHK_LIBC_SOURCE_DIR=$(CURDIR)/libc
+
 export TARGET_ASM=$(TOOLCHAIN_HOSTED)/bin/nasm
 export TARGET_CC =$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-gcc
 export TARGET_CXX=$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-g++
