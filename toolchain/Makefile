@@ -120,7 +120,7 @@ $(TOOLCHAIN_SYSROOT)/usr/lib/libc.a: build-newlib-$(NEWLIB_VERSION)-bare newlib-
 	export PATH="$(TOOLCHAIN_BARE)/bin:$$PATH"; $(MAKE) -C $< DESTDIR=$(TOOLCHAIN_SYSROOT) install
 	rm -rfv "$(TOOLCHAIN_SYSROOT)/usr/include" "$(TOOLCHAIN_SYSROOT)/usr/lib"
 	mv -v "$(TOOLCHAIN_SYSROOT)/usr/$(TARGET)/include" "$(TOOLCHAIN_SYSROOT)/usr/$(TARGET)/lib" "$(TOOLCHAIN_SYSROOT)/usr"
-	rmdir -v $(TOOLCHAIN_SYSROOT)/usr/$(TARGET)
+	rmdir $(TOOLCHAIN_SYSROOT)/usr/$(TARGET)
 
 # hosted binutils build
 
