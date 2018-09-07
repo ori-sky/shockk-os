@@ -202,15 +202,15 @@ void kernel_entry(Pager *pager) {
 
 	auto user_entry = (void(*)())header.entry_ptr;
 
-	// user stack of 4 pages
+	constexpr size_t USER_STACK_PAGES = 64;
 	unsigned char *user_stack = (unsigned char *)pager->Alloc();
-	pager->AllocAt(&user_stack[PAGE_ALLOCATOR_PAGE_SIZE]);
-	pager->AllocAt(&user_stack[PAGE_ALLOCATOR_PAGE_SIZE*2]);
-	pager->AllocAt(&user_stack[PAGE_ALLOCATOR_PAGE_SIZE*3]);
+	for(size_t n = 1; n < USER_STACK_PAGES; ++n) {
+		pager->AllocAt(&user_stack[PAGE_ALLOCATOR_PAGE_SIZE*n]);
+	}
 
 	screen << "user stack = " << (uint32_t)user_stack << '\n';
 
-	user_enter(user_entry, &user_stack[PAGE_ALLOCATOR_PAGE_SIZE*4]);
+	user_enter(user_entry, &user_stack[PAGE_ALLOCATOR_PAGE_SIZE * USER_STACK_PAGES / 2]);
 
 	for(;;) { __asm__ ("hlt"); } // unreachable
 }
