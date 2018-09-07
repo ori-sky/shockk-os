@@ -4,6 +4,7 @@ export TOOLCHAIN_SYSROOT=$(CURDIR)/toolchain/sysroot
 export TARGET=i386-shk
 
 export SHK_LIBC_SOURCE_DIR=$(CURDIR)/libc
+export SHK_INCLUDE_DIR=$(CURDIR)/include
 
 export TARGET_ASM=$(TOOLCHAIN_HOSTED)/bin/nasm
 export TARGET_CC =$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-gcc

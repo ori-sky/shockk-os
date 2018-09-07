@@ -31,16 +31,16 @@ newlib: $(TOOLCHAIN_SYSROOT)/usr/lib/libc.a
 # downloads
 
 nasm-$(NASM_VERSION).tar.gz:
-	wget http://www.nasm.us/pub/nasm/releasebuilds/$(NASM_VERSION)/nasm-$(NASM_VERSION).tar.gz
+	wget http://www.nasm.us/pub/nasm/releasebuilds/$(NASM_VERSION)/$@
 
 binutils-$(BINUTILS_VERSION).tar.gz:
-	wget ftp://ftp.gnu.org/gnu/binutils/binutils-$(BINUTILS_VERSION).tar.gz
+	wget ftp://ftp.gnu.org/gnu/binutils/$@
 
 gcc-$(GCC_VERSION).tar.gz:
-	wget ftp://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/gcc-$(GCC_VERSION).tar.gz
+	wget ftp://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/$@
 
 newlib-$(NEWLIB_VERSION).tar.gz:
-	wget ftp://sourceware.org/pub/newlib/newlib-$(NEWLIB_VERSION).tar.gz
+	wget ftp://sourceware.org/pub/newlib/$@
 
 # patches
 
@@ -61,78 +61,88 @@ newlib-$(NEWLIB_VERSION): newlib-$(NEWLIB_VERSION).tar.gz
 
 # newlib syscalls.c and crt0.c from shk
 
-newlib-$(NEWLIB_VERSION)/newlib/libc/sys/shk/syscalls.c: $(SHK_LIBC_SOURCE_DIR)/syscalls.c
-	cp -v $^ $@
+newlib-$(NEWLIB_VERSION)/newlib/libc/sys/shk/kernel/syscall.h: $(SHK_INCLUDE_DIR)/kernel/syscall.h newlib-$(NEWLIB_VERSION)
+	mkdir -pv $(dir $@)
+	cp -v $< $@
 
-newlib-$(NEWLIB_VERSION)/newlib/libc/sys/shk/crt0.c: $(SHK_LIBC_SOURCE_DIR)/crt0.c
-	cp -v $^ $@
+newlib-$(NEWLIB_VERSION)/newlib/libc/sys/shk/syscalls.c: $(SHK_LIBC_SOURCE_DIR)/syscalls.c newlib-$(NEWLIB_VERSION)/newlib/libc/sys/shk/kernel/syscall.h newlib-$(NEWLIB_VERSION)
+	cp -v $< $@
+
+newlib-$(NEWLIB_VERSION)/newlib/libc/sys/shk/crt0.c: $(SHK_LIBC_SOURCE_DIR)/crt0.c newlib-$(NEWLIB_VERSION)
+	cp -v $< $@
 
 # gcc prerequisites
 
 gcc-$(GCC_VERSION)/gmp: gcc-$(GCC_VERSION)
-	cd gcc-$(GCC_VERSION) && sh contrib/download_prerequisites
+	cd $< && sh contrib/download_prerequisites
 	touch $@
 
 # nasm build
 
-$(TOOLCHAIN_HOSTED)/bin/nasm: nasm-$(NASM_VERSION)
-	mkdir -pv build-nasm-$(NASM_VERSION)
-	cd build-nasm-$(NASM_VERSION) && ../$</configure --prefix="$(TOOLCHAIN_HOSTED)"
-	$(MAKE) -C build-nasm-$(NASM_VERSION)
-	$(MAKE) -C build-nasm-$(NASM_VERSION) install
+build-nasm-$(NASM_VERSION): nasm-$(NASM_VERSION)
+	mkdir -pv $@
+	cd $@ && ../$</configure --prefix="$(TOOLCHAIN_HOSTED)"
+
+$(TOOLCHAIN_HOSTED)/bin/nasm: build-nasm-$(NASM_VERSION)
+	$(MAKE) -C $<
+	$(MAKE) -C $< install
 
 # bare binutils build
 
-$(TOOLCHAIN_BARE)/bin/$(TARGET)-ar: binutils-$(BINUTILS_VERSION)
-	mkdir -pv build-binutils-$(BINUTILS_VERSION)-bare
-	cd build-binutils-$(BINUTILS_VERSION)-bare && ../$</configure --target=$(TARGET) --prefix="$(TOOLCHAIN_BARE)" --with-sysroot --disable-nls --disable-werror
-	$(MAKE) -C build-binutils-$(BINUTILS_VERSION)-bare
-	$(MAKE) -C build-binutils-$(BINUTILS_VERSION)-bare install
+build-binutils-$(BINUTILS_VERSION)-bare: binutils-$(BINUTILS_VERSION)
+	mkdir -pv $@
+	cd $@ && ../$</configure --target=$(TARGET) --prefix="$(TOOLCHAIN_BARE)" --with-sysroot --disable-nls --disable-werror
+
+$(TOOLCHAIN_BARE)/bin/$(TARGET)-ar: build-binutils-$(BINUTILS_VERSION)-bare
+	$(MAKE) -C $<
+	$(MAKE) -C $< install
 
 # bare gcc build
 
-$(TOOLCHAIN_BARE)/bin/$(TARGET)-gcc: gcc-$(GCC_VERSION)/gmp $(TOOLCHAIN_BARE)/bin/$(TARGET)-ar
-	mkdir -pv build-gcc-$(GCC_VERSION)-bare
-	cd build-gcc-$(GCC_VERSION)-bare && ../gcc-$(GCC_VERSION)/configure --target=$(TARGET) --prefix="$(TOOLCHAIN_BARE)" --disable-nls --enable-languages=c,c++ --without-headers
-	$(MAKE) -C build-gcc-$(GCC_VERSION)-bare all-gcc
-	$(MAKE) -C build-gcc-$(GCC_VERSION)-bare all-target-libgcc
-	$(MAKE) -C build-gcc-$(GCC_VERSION)-bare install-gcc
-	$(MAKE) -C build-gcc-$(GCC_VERSION)-bare install-target-libgcc
+build-gcc-$(GCC_VERSION)-bare: gcc-$(GCC_VERSION) gcc-$(GCC_VERSION)/gmp $(TOOLCHAIN_BARE)/bin/$(TARGET)-ar
+	mkdir -pv $@
+	cd $@ && ../$</configure --target=$(TARGET) --prefix="$(TOOLCHAIN_BARE)" --disable-nls --enable-languages=c,c++ --without-headers
+
+$(TOOLCHAIN_BARE)/bin/$(TARGET)-gcc: build-gcc-$(GCC_VERSION)-bare
+	$(MAKE) -C $< all-gcc
+	$(MAKE) -C $< all-target-libgcc
+	$(MAKE) -C $< install-gcc
+	$(MAKE) -C $< install-target-libgcc
 
 # bare newlib build
 
-build-newlib-$(NEWLIB_VERSION)-bare: $(TOOLCHAIN_BARE)/bin/$(TARGET)-ar $(TOOLCHAIN_BARE)/bin/$(TARGET)-gcc
-	mkdir -pv build-newlib-$(NEWLIB_VERSION)-bare
-	export PATH="$(TOOLCHAIN_BARE)/bin:$$PATH"; cd build-newlib-$(NEWLIB_VERSION)-bare && ../newlib-$(NEWLIB_VERSION)/configure --target=$(TARGET) --prefix=/usr
+build-newlib-$(NEWLIB_VERSION)-bare: newlib-$(NEWLIB_VERSION) $(TOOLCHAIN_BARE)/bin/$(TARGET)-ar $(TOOLCHAIN_BARE)/bin/$(TARGET)-gcc
+	mkdir -pv $@
+	export PATH="$(TOOLCHAIN_BARE)/bin:$$PATH"; cd $@ && ../$</configure --target=$(TARGET) --prefix=/usr
 
 $(TOOLCHAIN_SYSROOT)/usr/lib/libc.a: build-newlib-$(NEWLIB_VERSION)-bare newlib-$(NEWLIB_VERSION)/newlib/libc/sys/shk/syscalls.c newlib-$(NEWLIB_VERSION)/newlib/libc/sys/shk/crt0.c
-	export PATH="$(TOOLCHAIN_BARE)/bin:$$PATH"; $(MAKE) -C build-newlib-$(NEWLIB_VERSION)-bare all
-	export PATH="$(TOOLCHAIN_BARE)/bin:$$PATH"; $(MAKE) -C build-newlib-$(NEWLIB_VERSION)-bare DESTDIR=$(TOOLCHAIN_SYSROOT) install
+	export PATH="$(TOOLCHAIN_BARE)/bin:$$PATH"; $(MAKE) -C $< all
+	export PATH="$(TOOLCHAIN_BARE)/bin:$$PATH"; $(MAKE) -C $< DESTDIR=$(TOOLCHAIN_SYSROOT) install
 	rm -rfv "$(TOOLCHAIN_SYSROOT)/usr/include" "$(TOOLCHAIN_SYSROOT)/usr/lib"
 	mv -v "$(TOOLCHAIN_SYSROOT)/usr/$(TARGET)/include" "$(TOOLCHAIN_SYSROOT)/usr/$(TARGET)/lib" "$(TOOLCHAIN_SYSROOT)/usr"
 	rmdir -v $(TOOLCHAIN_SYSROOT)/usr/$(TARGET)
 
 # hosted binutils build
 
-build-binutils-$(BINUTILS_VERSION):
-	mkdir -pv build-binutils-$(BINUTILS_VERSION)
-	cd build-binutils-$(BINUTILS_VERSION) && ../$</configure --target=$(TARGET) --prefix="$(TOOLCHAIN_HOSTED)" --with-sysroot=$(TOOLCHAIN_SYSROOT) --disable-werror
+build-binutils-$(BINUTILS_VERSION): binutils-$(BINUTILS_VERSION)
+	mkdir -pv $@
+	cd $@ && ../$</configure --target=$(TARGET) --prefix="$(TOOLCHAIN_HOSTED)" --with-sysroot=$(TOOLCHAIN_SYSROOT) --disable-werror
 
-$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-ar: binutils-$(BINUTILS_VERSION) $(TOOLCHAIN_SYSROOT)/usr/lib/libc.a
-	$(MAKE) -C build-binutils-$(BINUTILS_VERSION)
-	$(MAKE) -C build-binutils-$(BINUTILS_VERSION) install
+$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-ar: build-binutils-$(BINUTILS_VERSION) $(TOOLCHAIN_SYSROOT)/usr/lib/libc.a
+	$(MAKE) -C $<
+	$(MAKE) -C $< install
 
 # hosted gcc build
 
-build-gcc-$(GCC_VERSION): gcc-$(GCC_VERSION)/gmp
-	mkdir -pv build-gcc-$(GCC_VERSION)
-	cd build-gcc-$(GCC_VERSION) && ../gcc-$(GCC_VERSION)/configure --target=$(TARGET) --prefix="$(TOOLCHAIN_HOSTED)" --with-sysroot=$(TOOLCHAIN_SYSROOT) --enable-languages=c,c++
+build-gcc-$(GCC_VERSION): gcc-$(GCC_VERSION) gcc-$(GCC_VERSION)/gmp $(TOOLCHAIN_HOSTED)/bin/$(TARGET)-ar
+	mkdir -pv $@
+	cd $@ && ../$</configure --target=$(TARGET) --prefix="$(TOOLCHAIN_HOSTED)" --with-sysroot=$(TOOLCHAIN_SYSROOT) --enable-languages=c,c++
 
-$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-gcc: build-gcc-$(GCC_VERSION) $(TOOLCHAIN_HOSTED)/bin/$(TARGET)-ar $(TOOLCHAIN_SYSROOT)/usr/lib/libc.a
-	$(MAKE) -C build-gcc-$(GCC_VERSION) all-gcc
-	$(MAKE) -C build-gcc-$(GCC_VERSION) all-target-libgcc
-	$(MAKE) -C build-gcc-$(GCC_VERSION) install-gcc
-	$(MAKE) -C build-gcc-$(GCC_VERSION) install-target-libgcc
+$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-gcc: build-gcc-$(GCC_VERSION) $(TOOLCHAIN_SYSROOT)/usr/lib/libc.a
+	$(MAKE) -C $< all-gcc
+	$(MAKE) -C $< all-target-libgcc
+	$(MAKE) -C $< install-gcc
+	$(MAKE) -C $< install-target-libgcc
 
 .PHONY: clean
 clean:
