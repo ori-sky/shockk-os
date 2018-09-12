@@ -10,11 +10,15 @@ export TARGET_ASM=$(TOOLCHAIN_HOSTED)/bin/nasm
 export TARGET_CC =$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-gcc
 export TARGET_CXX=$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-g++
 export TARGET_LD =$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-gcc
+export TARGET_AR =$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-ar
+
 export QEMU=qemu-system-i386
 
 export SHKBOOT_BIN=$(CURDIR)/shkboot.bin
 export LOADER_ELF=$(CURDIR)/loader.elf
 export KERNEL_ELF=$(CURDIR)/kernel.elf
+export CRT0_O=$(CURDIR)/crt0.o
+export LIBC_A=$(CURDIR)/libc.a
 
 export INCLUDE_PATHS=$(CURDIR)/include
 export CXXWARNS=-Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual -Wformat=2 -Winit-self -Wmissing-include-dirs -Wredundant-decls -Wstrict-overflow=5 -Wundef -Wdisabled-optimization -Wsign-conversion -Wstack-protector -Winline -Wpadded -Wswitch-enum
@@ -41,6 +45,21 @@ $(LOADER_ELF): toolchain
 .PHONY: $(KERNEL_ELF)
 $(KERNEL_ELF): toolchain
 	$(MAKE) -C kernel $@
+
+.PHONY: $(CRT0_O)
+$(CRT0_O): toolchain
+	$(MAKE) -C libc $@
+
+.PHONY: $(LIBC_A)
+$(LIBC_A): toolchain
+	$(MAKE) -C libc $@
+
+.PHONY: libc
+libc: $(CRT0_O) $(LIBC_A)
+
+.PHONY: test
+test:
+	$(MAKE) -C test all
 
 .PHONY: clean-image
 clean-image:

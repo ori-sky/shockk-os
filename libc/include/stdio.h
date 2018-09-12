@@ -13,6 +13,10 @@ typedef struct {
 	void *buffer;
 } FILE;
 
+#define SEEK_CUR 0
+#define SEEK_END 1
+#define SEEK_SET 2
+
 FILE _stdin  = {0, 0, 0};
 FILE _stdout = {1, 0, 0};
 FILE _stderr = {2, 0, 0};
