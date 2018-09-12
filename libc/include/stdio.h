@@ -13,9 +13,9 @@ typedef struct {
 	void *buffer;
 } FILE;
 
-FILE _stdin;
-FILE _stdout;
-FILE _stderr;
+FILE _stdin  = {0, 0, 0};
+FILE _stdout = {1, 0, 0};
+FILE _stderr = {2, 0, 0};
 
 FILE *stdin  = &_stdin;
 FILE *stdout = &_stdout;
@@ -25,6 +25,7 @@ int fprintf(FILE * restrict, const char * restrict, ...);
 int printf(const char * restrict, ...);
 int vfprintf(FILE * restrict, const char * restrict, va_list);
 
+int putc(int, FILE *);
 int putchar(int);
 
 #endif

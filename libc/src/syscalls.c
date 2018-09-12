@@ -1,4 +1,7 @@
+#include <errno.h>
+#include <unistd.h>
 #include <kernel/syscall.h>
+/*
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/fcntl.h>
@@ -8,7 +11,9 @@
 #include <sys/unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+*/
 
+/*
 register void *stack_ptr asm ("sp");
 
 void _exit();
@@ -119,31 +124,6 @@ void * sbrk(ptrdiff_t incr) {
 	}
 }
 
-/*
-caddr_t sbrk(int incr) {
-	char sz[] = "NOT IMPLEMENTED: sbrk\n";
-	write(STDERR_FILENO, sz, sizeof(sz) - 1);
-
-	extern char _end;
-	static char *heap_end;
-	char *prev_heap_end;
-
-	if(heap_end == 0) {
-		heap_end = &_end;
-	}
-	prev_heap_end = heap_end;
-
-	if(heap_end + incr > stack_ptr) {
-		write(1, "Heap and stack collision\n", 25);
-		errno = ENOMEM;
-		return (caddr_t)-1;
-	}
-
-	heap_end += incr;
-	return (caddr_t)prev_heap_end;
-}
-*/
-
 int stat(const char *file, struct stat *st) {
 	char sz[] = "NOT IMPLEMENTED: stat\n";
 	write(STDERR_FILENO, sz, sizeof(sz) - 1);
@@ -174,8 +154,9 @@ int wait(int *status) {
 	errno = ECHILD;
 	return -1;
 }
+*/
 
-_READ_WRITE_RETURN_TYPE write(int file, const void *ptr, size_t len) {
+ssize_t write(int file, const void *ptr, size_t len) {
 	if(file == STDOUT_FILENO || file == STDERR_FILENO) {
 		const char *sz = ptr;
 		for(int n = 0; n < len; ++n) {
@@ -183,7 +164,7 @@ _READ_WRITE_RETURN_TYPE write(int file, const void *ptr, size_t len) {
 		}
 		return len;
 	} else {
-		errno = EIO;
+		errno = EAGAIN;
 		return -1;
 	}
 }
