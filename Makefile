@@ -1,16 +1,15 @@
-export TOOLCHAIN_BARE=$(CURDIR)/toolchain/bare
-export TOOLCHAIN_HOSTED=$(CURDIR)/toolchain/hosted
-export TOOLCHAIN_SYSROOT=$(CURDIR)/toolchain/sysroot
-export TARGET=i386-shk
+export SYSROOT=$(CURDIR)/sysroot
+export TOOLCHAIN_PREFIX=$(CURDIR)/toolchain/prefix
 
-export SHK_LIBC_SOURCE_DIR=$(CURDIR)/libc
 export SHK_INCLUDE_DIR=$(CURDIR)/include
 
-export TARGET_ASM=$(TOOLCHAIN_HOSTED)/bin/nasm
-export TARGET_CC =$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-gcc
-export TARGET_CXX=$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-g++
-export TARGET_LD =$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-gcc
-export TARGET_AR =$(TOOLCHAIN_HOSTED)/bin/$(TARGET)-ar
+export TARGET=i386-shk
+
+export TARGET_ASM=$(TOOLCHAIN_PREFIX)/bin/nasm
+export TARGET_CC =$(TOOLCHAIN_PREFIX)/bin/$(TARGET)-gcc
+export TARGET_CXX=$(TOOLCHAIN_PREFIX)/bin/$(TARGET)-g++
+export TARGET_LD =$(TOOLCHAIN_PREFIX)/bin/$(TARGET)-gcc
+export TARGET_AR =$(TOOLCHAIN_PREFIX)/bin/$(TARGET)-ar
 
 export QEMU=qemu-system-i386
 
@@ -24,14 +23,21 @@ export INCLUDE_PATHS=$(CURDIR)/include
 export CXXWARNS=-Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual -Wformat=2 -Winit-self -Wmissing-include-dirs -Wredundant-decls -Wstrict-overflow=5 -Wundef -Wdisabled-optimization -Wsign-conversion -Wstack-protector -Winline -Wpadded -Wswitch-enum
 
 IMAGE=$(CURDIR)/shk.img
-MNTDIR=$(CURDIR)/mnt
 BOOTDIR=$(CURDIR)/boot
 
 .PHONY: all
 all: image
 
+.PHONY: libc_headers
+libc_headers: $(SYSROOT)/usr/include/stdio.h
+
+$(SYSROOT)/usr/include/stdio.h: $(shell find libc/include -type f)
+	mkdir -pv $(dir $@)
+	rm -rfv $(dir $@)
+	cp -Rv libc/include $(dir $@)
+
 .PHONY: toolchain
-toolchain:
+toolchain: libc_headers
 	$(MAKE) -C toolchain
 
 .PHONY: $(SHKBOOT_BIN)
@@ -50,15 +56,23 @@ $(KERNEL_ELF): toolchain
 $(CRT0_O): toolchain
 	$(MAKE) -C libc $@
 
+$(SYSROOT)/usr/lib/crt0.o: $(CRT0_O)
+	mkdir -pv $(dir $@)
+	cp -v $< $@
+
 .PHONY: $(LIBC_A)
 $(LIBC_A): toolchain
 	$(MAKE) -C libc $@
 
+$(SYSROOT)/usr/lib/libc.a: $(LIBC_A)
+	mkdir -pv $(dir $@)
+	cp -v $< $@
+
 .PHONY: libc
-libc: $(CRT0_O) $(LIBC_A)
+libc: $(SYSROOT)/usr/lib/crt0.o $(SYSROOT)/usr/lib/libc.a
 
 .PHONY: test
-test:
+test: libc
 	$(MAKE) -C test all
 
 .PHONY: clean-image
@@ -82,6 +96,12 @@ clean:
 	$(MAKE) -C boot clean
 	$(MAKE) -C loader clean
 	$(MAKE) -C kernel clean
+	$(MAKE) -C libc clean
+
+.PHONY: distclean
+distclean: clean
+	rm -rfv $(SYSROOT)
+	rm -fv $(IMAGE)
 
 .PHONY: toolchain-clean
 toolchain-clean:

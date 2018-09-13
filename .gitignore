@@ -2,6 +2,7 @@
 *~
 .~*
 *.o
+*.a
 *.flat
 *.bin
 *.elf
@@ -11,3 +12,4 @@ build
 toolchain/*
 !toolchain/Makefile
 !toolchain/*.patch
+sysroot

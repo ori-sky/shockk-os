@@ -3,6 +3,6 @@
 
 #define EAGAIN 1
 
-int errno = 0;
+int errno;
 
 #endif

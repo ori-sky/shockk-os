@@ -1,12 +1,24 @@
 CRT0_OBJ=src/crt0.o
-LIBC_OBJS=src/stdio.o src/string.o
-CFLAGS=-Iinclude
+LIBC_OBJS=src/syscalls.o src/errno.o src/stdio.o src/string.o
+CFLAGS=-Iinclude -I$(SHK_INCLUDE_DIR)
 
-$(CRT0_O): $(CRT0_OBJ)
+HEADERS=$(shell find include -type f)
+
+.PHONY: headers
+headers: $(HEADERS)
+
+$(CRT0_O): $(CRT0_OBJ) headers
 	cp -v $< $@
 
-$(LIBC_A): $(LIBC_OBJS)
-	$(TARGET_AR) rcs $@ $^
+$(LIBC_A): headers $(LIBC_OBJS)
+	$(TARGET_AR) rcs $@ $(filter-out $<,$^)
 
 src/%.o: src/%.c
-	$(TARGET_CC) -c $< -o $@
+	$(TARGET_CC) $(CFLAGS) -c $< -o $@
+
+.PHONY: clean
+clean:
+	rm -fv $(CRT0_OBJ)
+	rm -fv $(LIBC_OBJS)
+	rm -fv $(CRT0_O)
+	rm -fv $(LIBC_A)
