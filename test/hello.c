@@ -16,6 +16,12 @@ int main() {
 	printf("there should be a newline at the end of this\n");
 	puts("and this");
 	fputs("is there?\n", stdout);
-	putchar('$');
+	for(;;) {
+		putchar('$');
+		putchar(' ');
+		char buf[1024];
+		fgets(buf, 2, stdin);
+		puts(buf);
+	}
 	return 0;
 }

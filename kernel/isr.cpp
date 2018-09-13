@@ -6,6 +6,9 @@
 #include <kernel/panic.h>
 #include <kernel/itoa.h>
 
+bool stdin_available = false;
+char stdin_char = '\0';
+
 static unsigned int alpha_counter;
 
 extern "C" void isr_main(struct CPUState cpu_state) {

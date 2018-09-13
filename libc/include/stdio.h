@@ -29,12 +29,14 @@ int fprintf(FILE * restrict, const char * restrict, ...);
 int printf(const char * restrict, ...);
 int vfprintf(FILE * restrict, const char * restrict, va_list);
 
+char * fgets(char * restrict, int, FILE * restrict);
 int fputc(int, FILE *);
 int fputs(const char * restrict, FILE * restrict);
 int putc(int, FILE *);
 int putchar(int);
 int puts(const char *);
 
+size_t fread(void * restrict, size_t, size_t, FILE * restrict);
 size_t fwrite(const void * restrict, size_t, size_t, FILE * restrict);
 
 #endif

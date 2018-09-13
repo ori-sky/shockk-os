@@ -2,9 +2,9 @@
 #include <string.h>
 #include <unistd.h>
 
-FILE _stdin  = {0, 0, 0};
-FILE _stdout = {1, 0, 0};
-FILE _stderr = {2, 0, 0};
+FILE _stdin  = {STDIN_FILENO,  0, 0};
+FILE _stdout = {STDOUT_FILENO, 0, 0};
+FILE _stderr = {STDERR_FILENO, 0, 0};
 
 FILE *stdin  = &_stdin;
 FILE *stdout = &_stdout;
@@ -38,6 +38,17 @@ int vfprintf(FILE * restrict stream, const char * restrict format, va_list arg) 
 	return fputs(format, stream);
 }
 
+char * fgets(char * restrict s, int n, FILE * restrict stream) {
+	size_t i;
+	for(i = 0; i < n - 1; ++i) {
+		size_t ret = fread(&s[i], 1, 1, stream);
+		if(ret < 1) { return NULL; }
+		if(s[i] == '\n') { break; }
+	}
+	s[i] = '\0';
+	return s;
+}
+
 int fputc(int i, FILE *stream) {
 	char c = i;
 	int ret = write(stream->descriptor, &c, 1);
@@ -64,6 +75,16 @@ int puts(const char *s) {
 	int ret2 = putchar('\n');
 	if(ret2 == EOF) { return EOF; }
 	return ret + 1;
+}
+
+size_t fread(void * restrict ptr, size_t size, size_t nmemb, FILE * restrict stream) {
+	char *sz;
+	size_t memb;
+	for(memb = 0, sz = ptr; memb < nmemb; ++memb, sz += size) {
+		int ret = read(stream->descriptor, sz, size);
+		if(ret < 0) { break; }
+	}
+	return memb;
 }
 
 size_t fwrite(const void * restrict ptr, size_t size, size_t nmemb, FILE * restrict stream) {

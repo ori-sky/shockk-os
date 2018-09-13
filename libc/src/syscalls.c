@@ -96,13 +96,6 @@ int open(const char *name, int flags, ...) {
 	return -1;
 }
 
-_READ_WRITE_RETURN_TYPE read(int file, void *ptr, size_t len) {
-	char sz[] = "NOT IMPLEMENTED: read\n";
-	write(STDERR_FILENO, sz, sizeof(sz) - 1);
-
-	return 0;
-}
-
 // reserve 32K for stack
 #define STACK_BUFFER (4096 * 32)
 
@@ -156,13 +149,26 @@ int wait(int *status) {
 }
 */
 
-ssize_t write(int file, const void *ptr, size_t len) {
-	if(file == STDOUT_FILENO || file == STDERR_FILENO) {
-		const char *sz = ptr;
-		for(int n = 0; n < len; ++n) {
-			syscall_put(sz[n]);
+ssize_t read(int filedes, void *buf, size_t nbyte) {
+	if(filedes == STDIN_FILENO) {
+		char *sz = buf;
+		for(size_t i = 0; i < nbyte; ++i) {
+			syscall_get(sz[i]);
 		}
-		return len;
+		return nbyte;
+	} else {
+		errno = EAGAIN;
+		return -1;
+	}
+}
+
+ssize_t write(int filedes, const void *buf, size_t nbyte) {
+	if(filedes == STDOUT_FILENO || filedes == STDERR_FILENO) {
+		const char *sz = buf;
+		for(size_t i = 0; i < nbyte; ++i) {
+			syscall_put(sz[i]);
+		}
+		return nbyte;
 	} else {
 		errno = EAGAIN;
 		return -1;
