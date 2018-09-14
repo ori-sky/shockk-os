@@ -38,6 +38,12 @@ int vfprintf(FILE * restrict stream, const char * restrict format, va_list arg) 
 	return fputs(format, stream);
 }
 
+int fgetc(FILE *stream) {
+	unsigned char c;
+	size_t ret = fread(&c, 1, 1, stream);
+	return ret == 1 ? c : EOF;
+}
+
 char * fgets(char * restrict s, int n, FILE * restrict stream) {
 	size_t i;
 	for(i = 0; i < n - 1; ++i) {
@@ -59,6 +65,14 @@ int fputs(const char * restrict s, FILE * restrict stream) {
 	size_t len = strlen(s);
 	size_t ret = fwrite(s, 1, len, stream);
 	return ret == len ? ret : EOF;
+}
+
+int getc(FILE *stream) {
+	return fgetc(stream);
+}
+
+int getchar(void) {
+	return getc(stdin);
 }
 
 int putc(int i, FILE *stream) {

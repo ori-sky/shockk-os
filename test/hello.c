@@ -16,12 +16,21 @@ int main() {
 	printf("there should be a newline at the end of this\n");
 	puts("and this");
 	fputs("is there?\n", stdout);
+
 	for(;;) {
 		putchar('$');
 		putchar(' ');
+
 		char buf[1024];
-		fgets(buf, 2, stdin);
+		size_t n;
+		for(n = 0; n < 1024 && buf[n - 1] != '\n'; ++n) {
+			buf[n] = getchar();
+			putchar(buf[n]);
+		}
+		buf[n] = '\0';
+
 		puts(buf);
 	}
+
 	return 0;
 }

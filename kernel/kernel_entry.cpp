@@ -8,6 +8,7 @@
 #include <kernel/panic.h>
 #include <kernel/pic.h>
 #include <kernel/pit.h>
+#include <kernel/ports.h>
 #include <kernel/screen.h>
 #include <kernel/syscall.h>
 #include <kernel/tss.h>

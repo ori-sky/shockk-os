@@ -1,3 +1,4 @@
+#include <kernel/kb.h>
 #include <kernel/ports.h>
 #include <kernel/pic.h>
 #include <kernel/irq.h>
@@ -26,6 +27,7 @@ extern "C" void isr_main(struct CPUState cpu_state) {
 
 	char s0[] = "        ";
 	char s1[] = "                                ";
+	uint8_t scancode;
 
 	switch(cpu_state.interrupt) {
 	case 0x0: /* divide by zero */
@@ -66,13 +68,23 @@ extern "C" void isr_main(struct CPUState cpu_state) {
 		kernel_panic("");
 		break;
 	case IRQ0: /* PIT */
+		//screen_print("yield\n");
+		break;
+	case IRQ1: /* keyboard */
+		scancode = ports_inb(0x60); // read scancode from keyboard
+		stdin_available = true;
+		//stdin_char = 'a' + alpha_counter++ % 26;
+		stdin_char = kb_scancode1_char(scancode);
+
+		//screen_print("scancode = 0x");
+		//uitoa((unsigned int)scancode, s0, 16);
+		//screen_print(s0);
+		//screen_put('\n');
 		break;
 	case IRQ14: /* primary ATA channel */
 		break;
 	default:
-		ports_inb(0x60);
-		screen_put('a' + alpha_counter++ % 26);
-		screen_print("0x");
+		screen_print("unhandled interrupt: 0x");
 		uitoa((unsigned int)cpu_state.interrupt, s0, 16);
 		screen_print(s0);
 		screen_put('\n');

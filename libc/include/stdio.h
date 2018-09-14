@@ -29,9 +29,12 @@ int fprintf(FILE * restrict, const char * restrict, ...);
 int printf(const char * restrict, ...);
 int vfprintf(FILE * restrict, const char * restrict, va_list);
 
+int fgetc(FILE *);
 char * fgets(char * restrict, int, FILE * restrict);
 int fputc(int, FILE *);
 int fputs(const char * restrict, FILE * restrict);
+int getc(FILE *);
+int getchar(void);
 int putc(int, FILE *);
 int putchar(int);
 int puts(const char *);
