@@ -15,10 +15,14 @@ int fflush(FILE *stream) {
 	return 0;
 }
 
+static FILE *file5;
+
 FILE * fopen(const char * restrict filename, const char * restrict mode) {
 	int filedes = open(filename, 0);
 	if(filedes == -1) { return NULL; }
-	return NULL; // XXX
+
+	file5->descriptor = filedes;
+	return file5;
 }
 
 int fprintf(FILE * restrict stream, const char * restrict format, ...) {

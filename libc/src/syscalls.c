@@ -145,21 +145,17 @@ int wait(int *status) {
 */
 
 int open(const char *path, int oflag, ...) {
-	fputs("open: not implemented\n", stderr);
-	return -1;
+	int fd;
+	syscall_open(fd, path);
+	return fd;
 }
 
 ssize_t read(int filedes, void *buf, size_t nbyte) {
-	if(filedes == STDIN_FILENO) {
-		char *sz = buf;
-		for(size_t i = 0; i < nbyte; ++i) {
-			syscall_get(sz[i]);
-		}
-		return nbyte;
-	} else {
-		errno = EAGAIN;
-		return -1;
+	char *sz = buf;
+	for(size_t i = 0; i < nbyte; ++i) {
+		syscall_get(sz[i], filedes);
 	}
+	return nbyte;
 }
 
 ssize_t write(int filedes, const void *buf, size_t nbyte) {

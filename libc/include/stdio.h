@@ -4,6 +4,11 @@
 #include <stdarg.h>
 #include <stddef.h>
 
+#ifdef __cplusplus
+#define restrict
+extern "C" {
+#endif
+
 typedef size_t fpos_t;
 
 typedef size_t _fdesc_t;
@@ -42,5 +47,9 @@ int puts(const char *);
 
 size_t fread(void * restrict, size_t, size_t, FILE * restrict);
 size_t fwrite(const void * restrict, size_t, size_t, FILE * restrict);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

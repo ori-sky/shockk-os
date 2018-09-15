@@ -4,12 +4,21 @@
 #include <stdint.h>
 
 enum {
+	SYSCALL_COMMAND_OPEN,
 	SYSCALL_COMMAND_GET,
 	SYSCALL_COMMAND_PUT
 };
 
-#define syscall_get(C) __asm__ __volatile__ ("int $0x80" : "=a" (C) : "a" (SYSCALL_COMMAND_GET))
+// FD = open(PATH)
+#define syscall_open(FD, PATH) __asm__ __volatile \
+	("int $0x80" : "=a" (FD) : "a" (SYSCALL_COMMAND_OPEN), "b" (PATH))
 
-#define syscall_put(C) __asm__ __volatile__ ("int $0x80" : : "a" (SYSCALL_COMMAND_PUT), "b" (C))
+// C = get(FD)
+#define syscall_get(C, FD) __asm__ __volatile__ \
+	("int $0x80" : "=a" (C) : "a" (SYSCALL_COMMAND_GET), "b" (FD))
+
+// put(C)
+#define syscall_put(C) __asm__ __volatile__ \
+	("int $0x80" : : "a" (SYSCALL_COMMAND_PUT), "b" (C))
 
 #endif
