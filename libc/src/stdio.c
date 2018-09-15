@@ -3,25 +3,35 @@
 #include <string.h>
 #include <unistd.h>
 
-FILE _stdin  = {STDIN_FILENO,  0, 0};
-FILE _stdout = {STDOUT_FILENO, 0, 0};
-FILE _stderr = {STDERR_FILENO, 0, 0};
+FILE _stdin  = {FILE_TYPE_FD, STDIN_FILENO,  NULL, 0, 0};
+FILE _stdout = {FILE_TYPE_FD, STDOUT_FILENO, NULL, 0, 0};
+FILE _stderr = {FILE_TYPE_FD, STDERR_FILENO, NULL, 0, 0};
 
 FILE *stdin  = &_stdin;
 FILE *stdout = &_stdout;
 FILE *stderr = &_stderr;
 
+static FILE *memfile;
+static FILE *file5;
+
 int fflush(FILE *stream) {
 	return 0;
 }
 
-static FILE *file5;
+FILE * fmemopen(void * restrict buf, size_t size, const char * restrict mode) {
+	memfile->type = FILE_TYPE_MEM;
+	memfile->buffer = buf;
+	memfile->size = size;
+	memfile->position = 0;
+}
 
 FILE * fopen(const char * restrict filename, const char * restrict mode) {
 	int filedes = open(filename, 0);
 	if(filedes == -1) { return NULL; }
 
+	file5->type = FILE_TYPE_FD;
 	file5->descriptor = filedes;
+	file5->position = 0;
 	return file5;
 }
 
@@ -45,8 +55,23 @@ int printf(const char * restrict format, ...) {
 	return ret;
 }
 
+int sprintf(char * restrict s, const char * restrict format, ...) {
+	va_list arg;
+
+	va_start(arg, format);
+	int ret = vsprintf(s, format, arg);
+	va_end(arg);
+
+	return ret;
+}
+
 int vfprintf(FILE * restrict stream, const char * restrict format, va_list arg) {
 	return fputs(format, stream);
+}
+
+int vsprintf(char * restrict s, const char * restrict format, va_list arg) {
+	FILE *f = fmemopen(s, 0, 0);
+	return vfprintf(f, format, arg);
 }
 
 int fgetc(FILE *stream) {

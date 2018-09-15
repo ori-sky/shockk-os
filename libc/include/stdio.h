@@ -2,6 +2,7 @@
 #define _STDIO_H 1
 
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stddef.h>
 
 #ifdef __cplusplus
@@ -11,11 +12,18 @@ extern "C" {
 
 typedef size_t fpos_t;
 
+enum file_type_t {
+	FILE_TYPE_FD,
+	FILE_TYPE_MEM
+};
+
 typedef size_t _fdesc_t;
 typedef struct {
+	enum file_type_t type;
 	_fdesc_t descriptor;
-	fpos_t position;
 	void *buffer;
+	size_t size;
+	fpos_t position;
 } FILE;
 
 #define EOF (-1)
@@ -29,11 +37,14 @@ FILE *stdout;
 FILE *stderr;
 
 int fflush(FILE *);
+FILE * fmemopen(void * restrict, size_t, const char * restrict);
 FILE * fopen(const char * restrict, const char * restrict);
 
 int fprintf(FILE * restrict, const char * restrict, ...);
 int printf(const char * restrict, ...);
+int sprintf(char * restrict, const char * restrict, ...);
 int vfprintf(FILE * restrict, const char * restrict, va_list);
+int vsprintf(char * restrict, const char * restrict, va_list);
 
 int fgetc(FILE *);
 char * fgets(char * restrict, int, FILE * restrict);
