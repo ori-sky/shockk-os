@@ -1,3 +1,4 @@
+#include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -12,6 +13,12 @@ FILE *stderr = &_stderr;
 
 int fflush(FILE *stream) {
 	return 0;
+}
+
+FILE * fopen(const char * restrict filename, const char * restrict mode) {
+	int filedes = open(filename, 0);
+	if(filedes == -1) { return NULL; }
+	return NULL; // XXX
 }
 
 int fprintf(FILE * restrict stream, const char * restrict format, ...) {

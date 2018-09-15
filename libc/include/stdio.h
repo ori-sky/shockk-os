@@ -24,6 +24,7 @@ FILE *stdout;
 FILE *stderr;
 
 int fflush(FILE *);
+FILE * fopen(const char * restrict, const char * restrict);
 
 int fprintf(FILE * restrict, const char * restrict, ...);
 int printf(const char * restrict, ...);

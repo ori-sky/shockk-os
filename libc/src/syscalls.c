@@ -1,4 +1,6 @@
 #include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <kernel/syscall.h>
 /*
@@ -89,13 +91,6 @@ off_t lseek(int file, off_t ptr, int dir) {
 	return 0;
 }
 
-int open(const char *name, int flags, ...) {
-	char sz[] = "NOT IMPLEMENTED: open\n";
-	write(STDERR_FILENO, sz, sizeof(sz) - 1);
-
-	return -1;
-}
-
 // reserve 32K for stack
 #define STACK_BUFFER (4096 * 32)
 
@@ -148,6 +143,11 @@ int wait(int *status) {
 	return -1;
 }
 */
+
+int open(const char *path, int oflag, ...) {
+	fputs("open: not implemented\n", stderr);
+	return -1;
+}
 
 ssize_t read(int filedes, void *buf, size_t nbyte) {
 	if(filedes == STDIN_FILENO) {

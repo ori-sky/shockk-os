@@ -1,4 +1,4 @@
-ELFS=hello.elf
+ELFS=hello.elf cat.elf
 CFLAGS=-I../libc/include
 
 .PHONY: all
