@@ -15,6 +15,10 @@ int strcmp(const char *s1, const char *s2) {
 	return 0;
 }
 
+char * strerror(int errnum) {
+	return "unknown errnum";
+}
+
 size_t strlen(const char *s) {
 	size_t n;
 	for(n = 0; s[n] != '\0'; ++n) {}
