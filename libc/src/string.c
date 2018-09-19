@@ -24,3 +24,7 @@ size_t strlen(const char *s) {
 	for(n = 0; s[n] != '\0'; ++n) {}
 	return n;
 }
+
+char * strsignal(int signum) {
+	return "unknown signum";
+}

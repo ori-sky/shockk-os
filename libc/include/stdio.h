@@ -26,6 +26,8 @@ typedef struct {
 	fpos_t position;
 } FILE;
 
+#define BUFSIZ 256
+
 #define EOF (-1)
 
 #define SEEK_CUR 0
