@@ -15,6 +15,13 @@ int strcmp(const char *s1, const char *s2) {
 	return 0;
 }
 
+char * strchr(const char *s, int c) {
+	for(size_t i = 0; s[i] != '\0'; ++i) {
+		if(s[i] == c) { return (char *)&s[i]; }
+	}
+	return NULL;
+}
+
 char * strerror(int errnum) {
 	return "unknown errnum";
 }
