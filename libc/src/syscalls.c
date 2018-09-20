@@ -142,6 +142,13 @@ gid_t getgid(void) {
 	return 1;
 }
 
+int getgroups(int gidgetsize, gid_t grouplist[]) {
+	(void)gidgetsize;
+	(void)grouplist;
+	puts("getgroups: not implemented");
+	return -1;
+}
+
 pid_t getpid(void) {
 	puts("getpid: not implemented");
 	return 1;
@@ -172,11 +179,17 @@ ssize_t read(int filedes, void *buf, size_t nbyte) {
 	return nbyte;
 }
 
+int lstat(const char * restrict file, struct stat * restrict st) {
+	(void)file;
+	(void)st;
+	puts("lstat: not implemented");
+	return -1;
+}
+
 int stat(const char * restrict file, struct stat * restrict st) {
 	(void)file;
 	(void)st;
 	puts("stat: not implemented");
-
 	return -1;
 }
 

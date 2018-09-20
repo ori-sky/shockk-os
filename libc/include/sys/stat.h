@@ -48,6 +48,7 @@ struct stat {
 #define S_ISLNK(M)  0
 #define S_ISSOCK(M) 0
 
+int lstat(const char * restrict, struct stat * restrict);
 int stat(const char * restrict, struct stat * restrict);
 
 #endif

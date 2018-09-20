@@ -22,6 +22,7 @@ int isatty(int);
 gid_t getegid(void);
 uid_t geteuid(void);
 gid_t getgid(void);
+int getgroups(int, gid_t[]);
 pid_t getpid(void);
 pid_t getppid(void);
 uid_t getuid(void);
