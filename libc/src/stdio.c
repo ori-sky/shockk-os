@@ -83,7 +83,7 @@ int fgetc(FILE *stream) {
 
 char * fgets(char * restrict s, int n, FILE * restrict stream) {
 	size_t i;
-	for(i = 0; i < n - 1; ++i) {
+	for(i = 0; i < (size_t)n - 1; ++i) {
 		size_t ret = fread(&s[i], 1, 1, stream);
 		if(ret < 1) { return NULL; }
 		if(s[i] == '\n') { break; }
@@ -101,7 +101,7 @@ int fputc(int i, FILE *stream) {
 int fputs(const char * restrict s, FILE * restrict stream) {
 	size_t len = strlen(s);
 	size_t ret = fwrite(s, 1, len, stream);
-	return ret == len ? ret : EOF;
+	return ret == len ? (int)ret : EOF;
 }
 
 int getc(FILE *stream) {
