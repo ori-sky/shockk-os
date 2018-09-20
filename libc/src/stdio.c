@@ -23,6 +23,7 @@ FILE * fmemopen(void * restrict buf, size_t size, const char * restrict mode) {
 	memfile->buffer = buf;
 	memfile->size = size;
 	memfile->position = 0;
+	return memfile;
 }
 
 FILE * fopen(const char * restrict filename, const char * restrict mode) {
