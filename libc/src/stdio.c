@@ -74,6 +74,17 @@ int vfprintf(FILE * restrict stream, const char * restrict format, va_list arg) 
 	return fputs(format, stream);
 }
 
+int vsnprintf(char * restrict s, size_t n, const char * restrict format, va_list arg) {
+	(void)s;
+	(void)n;
+	(void)format;
+	(void)arg;
+	puts("vsnprintf: not implemented");
+	//FILE *f = fmemopen(s, 0, 0);
+	//return vfnprintf(f, format, arg);
+	return -1;
+}
+
 int vsprintf(char * restrict s, const char * restrict format, va_list arg) {
 	FILE *f = fmemopen(s, 0, 0);
 	return vfprintf(f, format, arg);

@@ -46,6 +46,7 @@ int fprintf(FILE * restrict, const char * restrict, ...);
 int printf(const char * restrict, ...);
 int sprintf(char * restrict, const char * restrict, ...);
 int vfprintf(FILE * restrict, const char * restrict, va_list);
+int vsnprintf(char * restrict, size_t, const char * restrict, va_list);
 int vsprintf(char * restrict, const char * restrict, va_list);
 
 int fgetc(FILE *);

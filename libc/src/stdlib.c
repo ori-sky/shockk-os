@@ -1,6 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+long long int strtoll(const char * restrict nptr, char ** restrict endptr, int base) {
+	(void)nptr;
+	(void)endptr;
+	(void)base;
+	puts("strtoll: not implemented");
+	return 0;
+}
+
+unsigned long long int strtoull(const char * restrict nptr, char ** restrict endptr, int base) {
+	(void)nptr;
+	(void)endptr;
+	(void)base;
+	puts("strtoull: not implemented");
+	return 0;
+}
+
 void free(void *ptr) {
 	(void)ptr;
 }
