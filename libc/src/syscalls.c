@@ -136,6 +136,11 @@ int wait(int *status) {
 }
 */
 
+pid_t getppid(void) {
+	puts("getppid: not implemented");
+	return 1;
+}
+
 int open(const char *path, int oflag, ...) {
 	(void)oflag;
 	int fd;

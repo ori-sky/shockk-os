@@ -15,6 +15,7 @@ enum {
 #define STDOUT_FILENO 1
 #define STDERR_FILENO 2
 
+pid_t getppid(void);
 ssize_t read(int, void *, size_t);
 ssize_t write(int, const void *, size_t);
 
