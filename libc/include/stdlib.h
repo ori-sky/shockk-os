@@ -11,6 +11,7 @@ void free(void *);
 void * malloc(size_t);
 
 _Noreturn void exit(int);
+_Noreturn void _Exit(int);
 
 void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
 

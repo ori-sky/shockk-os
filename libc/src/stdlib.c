@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 long long int strtoll(const char * restrict nptr, char ** restrict endptr, int base) {
 	(void)nptr;
@@ -27,10 +28,11 @@ void * malloc(size_t size) {
 }
 
 _Noreturn void exit(int status) {
-	fprintf(stderr, "return code = %d\n", status);
-	fflush(stdout);
-	fflush(stderr);
-	for(;;);
+	_Exit(status);
+}
+
+_Noreturn void _Exit(int status) {
+	_exit(status);
 }
 
 void qsort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *)) {

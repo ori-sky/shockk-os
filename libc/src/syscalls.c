@@ -18,8 +18,6 @@
 /*
 register void *stack_ptr asm ("sp");
 
-void _exit();
-
 int execve(const char *name, char * const argv[], char * const env[]) {
 	char sz[] = "NOT IMPLEMENTED: execve\n";
 	write(STDERR_FILENO, sz, sizeof(sz) - 1);
@@ -119,6 +117,13 @@ int close(int filedes) {
 	(void)filedes;
 	puts("close: not implemented");
 	return -1;
+}
+
+_Noreturn void _exit(int status) {
+	fprintf(stderr, "return code = %d\n", status);
+	fflush(stdout);
+	fflush(stderr);
+	for(;;);
 }
 
 int isatty(int filedes) {
