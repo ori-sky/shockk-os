@@ -8,6 +8,7 @@ typedef int sigset_t;
 
 enum {
 	SIG_DFL,
+	SIG_ERR,
 	SIG_IGN
 };
 
@@ -52,5 +53,7 @@ struct sigaction {
 enum {
 	SIG_SETMASK
 };
+
+void (*signal(int, void (*)(int)))(int);
 
 #endif
