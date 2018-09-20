@@ -22,6 +22,14 @@ char * strchr(const char *s, int c) {
 	return NULL;
 }
 
+size_t strspn(const char *s1, const char *s2) {
+	size_t n;
+	for(n = 0; s1[n] != '\0' && s2[n] != '\0'; ++n) {
+		if(s1[n] != s2[n]) { break; }
+	}
+	return n;
+}
+
 char * strerror(int errnum) {
 	switch(errnum) {
 	default:
