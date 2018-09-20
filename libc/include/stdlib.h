@@ -1,6 +1,7 @@
 #ifndef _STDLIB_H
 #define _STDLIB_H 1
 
+#include <stdbool.h>
 #include <stddef.h>
 
 void free(void *);
