@@ -20,16 +20,6 @@ register void *stack_ptr asm ("sp");
 
 void _exit();
 
-int close(int file) {
-	char sz[] = "NOT IMPLEMENTED: close\n";
-	write(STDERR_FILENO, sz, sizeof(sz) - 1);
-
-	return -1;
-}
-
-char *__env[1] = {0};
-char **environ = __env;
-
 int execve(const char *name, char * const argv[], char * const env[]) {
 	char sz[] = "NOT IMPLEMENTED: execve\n";
 	write(STDERR_FILENO, sz, sizeof(sz) - 1);
@@ -52,20 +42,6 @@ int fstat(int file, struct stat *st) {
 
 	st->st_mode = S_IFCHR;
 	return 0;
-}
-
-int getpid() {
-	char sz[] = "NOT IMPLEMENTED: getpid\n";
-	write(STDERR_FILENO, sz, sizeof(sz) - 1);
-
-	return 1;
-}
-
-int isatty(int file) {
-	char sz[] = "NOT IMPLEMENTED: isatty\n";
-	write(STDERR_FILENO, sz, sizeof(sz) - 1);
-
-	return 1;
 }
 
 int kill(int pid, int sig) {
@@ -136,8 +112,48 @@ int wait(int *status) {
 }
 */
 
+char *__env[1] = {0};
+char **environ = __env;
+
+int close(int filedes) {
+	(void)filedes;
+	puts("close: not implemented");
+	return -1;
+}
+
+int isatty(int filedes) {
+	(void)filedes;
+	puts("isatty: not implemented");
+	return 1;
+}
+
+gid_t getegid(void) {
+	puts("getegid: not implemented");
+	return 1;
+}
+
+uid_t geteuid(void) {
+	puts("geteuid: not implemented");
+	return 1;
+}
+
+gid_t getgid(void) {
+	puts("getgid: not implemented");
+	return 1;
+}
+
+pid_t getpid(void) {
+	puts("getpid: not implemented");
+	return 1;
+}
+
 pid_t getppid(void) {
 	puts("getppid: not implemented");
+	return 1;
+}
+
+uid_t getuid(void) {
+	puts("getuid: not implemented");
 	return 1;
 }
 
