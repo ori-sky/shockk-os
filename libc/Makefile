@@ -1,5 +1,5 @@
 CRT0_OBJ=src/crt0.o
-LIBC_OBJS=src/syscalls.o src/ctype.o src/errno.o src/setjmp.o src/stdio.o src/stdlib.o src/string.o
+LIBC_OBJS=src/syscalls.o src/ctype.o src/errno.o src/setjmp.o src/stdio.o src/stdlib.o src/string.o src/strings.o
 CFLAGS=-Iinclude -I$(SHK_INCLUDE_DIR) -Wall -Wextra -Werror
 
 HEADERS=$(shell find include -type f)
