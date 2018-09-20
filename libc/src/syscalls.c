@@ -137,6 +137,7 @@ int wait(int *status) {
 */
 
 int open(const char *path, int oflag, ...) {
+	(void)oflag;
 	int fd;
 	syscall_open(fd, path);
 	return fd;
@@ -151,6 +152,8 @@ ssize_t read(int filedes, void *buf, size_t nbyte) {
 }
 
 int stat(const char * restrict file, struct stat * restrict st) {
+	(void)file;
+	(void)st;
 	puts("stat: not implemented");
 
 	return -1;

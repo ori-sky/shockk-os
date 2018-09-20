@@ -23,7 +23,10 @@ char * strchr(const char *s, int c) {
 }
 
 char * strerror(int errnum) {
-	return "unknown errnum";
+	switch(errnum) {
+	default:
+		return "unknown errnum";
+	}
 }
 
 size_t strlen(const char *s) {
@@ -33,5 +36,8 @@ size_t strlen(const char *s) {
 }
 
 char * strsignal(int signum) {
-	return "unknown signum";
+	switch(signum) {
+	default:
+		return "unknown signum";
+	}
 }

@@ -15,10 +15,12 @@ static FILE *memfile;
 static FILE *file5;
 
 int fflush(FILE *stream) {
+	(void)stream;
 	return 0;
 }
 
 FILE * fmemopen(void * restrict buf, size_t size, const char * restrict mode) {
+	(void)mode;
 	memfile->type = FILE_TYPE_MEM;
 	memfile->buffer = buf;
 	memfile->size = size;
@@ -27,6 +29,7 @@ FILE * fmemopen(void * restrict buf, size_t size, const char * restrict mode) {
 }
 
 FILE * fopen(const char * restrict filename, const char * restrict mode) {
+	(void)mode;
 	int filedes = open(filename, 0);
 	if(filedes == -1) { return NULL; }
 
@@ -67,6 +70,7 @@ int sprintf(char * restrict s, const char * restrict format, ...) {
 }
 
 int vfprintf(FILE * restrict stream, const char * restrict format, va_list arg) {
+	(void)arg;
 	return fputs(format, stream);
 }
 
