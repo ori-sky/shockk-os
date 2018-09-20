@@ -1,10 +1,10 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <kernel/syscall.h>
 /*
-#include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/fcntl.h>
 #include <sys/times.h>
@@ -112,14 +112,6 @@ void * sbrk(ptrdiff_t incr) {
 	}
 }
 
-int stat(const char *file, struct stat *st) {
-	char sz[] = "NOT IMPLEMENTED: stat\n";
-	write(STDERR_FILENO, sz, sizeof(sz) - 1);
-
-	st->st_mode = S_IFCHR;
-	return 0;
-}
-
 clock_t times(struct tms *buf) {
 	char sz[] = "NOT IMPLEMENTED: times\n";
 	write(STDERR_FILENO, sz, sizeof(sz) - 1);
@@ -156,6 +148,12 @@ ssize_t read(int filedes, void *buf, size_t nbyte) {
 		syscall_get(sz[i], filedes);
 	}
 	return nbyte;
+}
+
+int stat(const char * restrict file, struct stat * restrict st) {
+	puts("stat: not implemented");
+
+	return -1;
 }
 
 ssize_t write(int filedes, const void *buf, size_t nbyte) {

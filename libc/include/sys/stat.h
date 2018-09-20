@@ -40,4 +40,14 @@ struct stat {
 #define S_ISGID 02000
 #define S_ISVTX 01000
 
+#define S_ISBLK(M)  0
+#define S_ISCHR(M)  0
+#define S_ISDIR(M)  0
+#define S_ISFIFO(M) 0
+#define S_ISREG(M)  0
+#define S_ISLNK(M)  0
+#define S_ISSOCK(M) 0
+
+int stat(const char * restrict, struct stat * restrict);
+
 #endif
