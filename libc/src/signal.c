@@ -1,6 +1,20 @@
 #include <signal.h>
 #include <stdio.h>
 
+int sigaction(int sig, const struct sigaction * restrict act, struct sigaction * restrict oact) {
+	(void)sig;
+	(void)act;
+	(void)oact;
+	puts("sigaction: not implemented");
+	return -1;
+}
+
+int sigfillset(sigset_t *set) {
+	(void)set;
+	puts("sigfillset: not implemented");
+	return -1;
+}
+
 void (*signal(int sig, void (*func)(int)))(int) {
 	(void)sig;
 	(void)func;
