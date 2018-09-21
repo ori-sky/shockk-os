@@ -11,6 +11,19 @@ void * memcpy(void * restrict s1, const void * restrict s2, size_t n) {
 	return s1;
 }
 
+char * memmove(void *s1, const void *s2, size_t n) {
+	char *sz1 = s1;
+	const char *sz2 = s2;
+	for(size_t i = 0; i < n; ++i) {
+		if(s1 < s2) {
+			sz1[i] = sz2[i];
+		} else if(s1 > s2) {
+			sz1[n - 1 - i] = sz2[n - 1 - i];
+		}
+	}
+	return s1;
+}
+
 char * strcpy(char * restrict s1, const char * restrict s2) {
 	for(size_t i = 0; s2[i] != '\0'; ++i) {
 		s1[i] = s2[i];
