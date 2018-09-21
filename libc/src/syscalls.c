@@ -18,14 +18,6 @@
 /*
 register void *stack_ptr asm ("sp");
 
-int kill(int pid, int sig) {
-	char sz[] = "NOT IMPLEMENTED: kill\n";
-	write(STDERR_FILENO, sz, sizeof(sz) - 1);
-
-	errno = EINVAL;
-	return -1;
-}
-
 int link(const char *old, const char *new) {
 	char sz[] = "NOT IMPLEMENTED: link\n";
 	write(STDERR_FILENO, sz, sizeof(sz) - 1);
