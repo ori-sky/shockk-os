@@ -18,6 +18,7 @@ enum {
 char **environ;
 
 int close(int);
+int dup2(int, int);
 _Noreturn void _exit(int);
 int isatty(int);
 gid_t getegid(void);

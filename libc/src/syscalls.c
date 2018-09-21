@@ -119,6 +119,13 @@ int close(int filedes) {
 	return -1;
 }
 
+int dup2(int filedes, int filedes2) {
+	(void)filedes;
+	(void)filedes2;
+	puts("dup2: not implemented");
+	return -1;
+}
+
 _Noreturn void _exit(int status) {
 	fprintf(stderr, "return code = %d\n", status);
 	fflush(stdout);
