@@ -25,6 +25,16 @@ char * strdup(const char *s) {
 	return dup;
 }
 
+int memcmp(const void *s1, const void *s2, size_t n) {
+	const char *sz1 = s1;
+	const char *sz2 = s2;
+	for(size_t i = 0; i < n; ++i) {
+		if(sz1[i] < sz2[i]) { return -1; }
+		if(sz1[i] > sz2[i]) { return  1; }
+	}
+	return 0;
+}
+
 int strcmp(const char *s1, const char *s2) {
 	for(size_t i = 0; s1[i] != '\0'; ++i) {
 		if(s1[i] < s2[i]) { return -1; }

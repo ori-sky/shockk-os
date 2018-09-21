@@ -7,6 +7,7 @@ void * memcpy(void * restrict, const void * restrict, size_t);
 char * strcpy(char * restrict, const char * restrict);
 char * strdup(const char *);
 
+int memcmp(const void *, const void *, size_t);
 int strcmp(const char *, const char *);
 
 char * strchr(const char *, int);
