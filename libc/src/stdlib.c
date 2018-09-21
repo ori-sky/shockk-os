@@ -32,10 +32,12 @@ unsigned long long int strtoull(const char * restrict nptr, char ** restrict end
 
 void free(void *ptr) {
 	(void)ptr;
+	puts("free: not implemented");
 }
 
 void * malloc(size_t size) {
 	(void)size;
+	puts("malloc: not implemented");
 	return NULL;
 }
 
