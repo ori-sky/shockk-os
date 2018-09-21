@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+int atoi(const char *);
+long int strtol(const char * restrict, char ** restrict, int);
 long long int strtoll(const char * restrict, char ** restrict, int);
 unsigned long long int strtoull(const char * restrict, char ** restrict, int);
 

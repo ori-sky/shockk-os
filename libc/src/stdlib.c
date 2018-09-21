@@ -2,6 +2,18 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+int atoi(const char *nptr) {
+	return (int)strtol(nptr, (char **)NULL, 10);
+}
+
+long int strtol(const char * restrict nptr, char ** restrict endptr, int base) {
+	(void)nptr;
+	(void)endptr;
+	(void)base;
+	puts("strtol: not implemented");
+	return 0;
+}
+
 long long int strtoll(const char * restrict nptr, char ** restrict endptr, int base) {
 	(void)nptr;
 	(void)endptr;
