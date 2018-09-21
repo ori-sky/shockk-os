@@ -157,7 +157,16 @@ size_t fwrite(const void * restrict ptr, size_t size, size_t nmemb, FILE * restr
 	const char *sz;
 	size_t memb;
 	for(memb = 0, sz = ptr; memb < nmemb; ++memb, sz += size) {
-		int ret = write(stream->descriptor, sz, size);
+		int ret = 0;
+		switch(stream->type) {
+		case FILE_TYPE_FD:
+			ret = write(stream->descriptor, sz, size);
+			break;
+		case FILE_TYPE_MEM:
+			memcpy(&((char *)stream->buffer)[stream->position], sz, size);
+			stream->position += size;
+			break;
+		}
 		if(ret < 0) { break; }
 	}
 	return memb;
