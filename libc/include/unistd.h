@@ -28,6 +28,7 @@ int getgroups(int, gid_t[]);
 pid_t getpid(void);
 pid_t getppid(void);
 uid_t getuid(void);
+int pipe(int[2]);
 ssize_t read(int, void *, size_t);
 ssize_t write(int, const void *, size_t);
 

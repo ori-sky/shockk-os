@@ -54,6 +54,7 @@ enum {
 	SIG_SETMASK
 };
 
+int kill(pid_t, int);
 int sigaction(int, const struct sigaction * restrict, struct sigaction * restrict);
 int sigfillset(sigset_t *);
 void (*signal(int, void (*)(int)))(int);

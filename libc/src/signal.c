@@ -1,6 +1,13 @@
 #include <signal.h>
 #include <stdio.h>
 
+int kill(pid_t pid, int sig) {
+	(void)pid;
+	(void)sig;
+	puts("kill: not implemented");
+	return -1;
+}
+
 int sigaction(int sig, const struct sigaction * restrict act, struct sigaction * restrict oact) {
 	(void)sig;
 	(void)act;

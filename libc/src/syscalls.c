@@ -183,6 +183,12 @@ int open(const char *path, int oflag, ...) {
 	return fd;
 }
 
+int pipe(int filedes[2]) {
+	(void)filedes;
+	puts("pipe: not implemented");
+	return -1;
+}
+
 ssize_t read(int filedes, void *buf, size_t nbyte) {
 	char *sz = buf;
 	for(size_t i = 0; i < nbyte; ++i) {
