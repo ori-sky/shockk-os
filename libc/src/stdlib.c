@@ -41,6 +41,13 @@ void * malloc(size_t size) {
 	return NULL;
 }
 
+void * realloc(void *ptr, size_t size) {
+	(void)ptr;
+	(void)size;
+	puts("realloc: not implemented");
+	return NULL;
+}
+
 _Noreturn void abort(void) {
 	puts("abort: not implemented");
 	exit(1);

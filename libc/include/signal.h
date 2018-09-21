@@ -53,10 +53,15 @@ struct sigaction {
 enum {
 	SIG_SETMASK
 };
+void (*signal(int, void (*)(int)))(int);
 
 int kill(pid_t, int);
+int raise(int);
+
 int sigaction(int, const struct sigaction * restrict, struct sigaction * restrict);
+int sigemptyset(sigset_t *);
 int sigfillset(sigset_t *);
-void (*signal(int, void (*)(int)))(int);
+int sigprocmask(int, const sigset_t * restrict, sigset_t * restrict);
+int sigsuspend(const sigset_t *);
 
 #endif
