@@ -11,6 +11,7 @@ int strcmp(const char *, const char *);
 char * strchr(const char *, int);
 size_t strspn(const char *, const char *);
 char * strstr(const char *, const char *);
+char * strtok(char * restrict, const char * restrict);
 
 char * strerror(int);
 size_t strlen(const char *);

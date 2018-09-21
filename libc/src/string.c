@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <string.h>
 
 void * memcpy(void * restrict s1, const void * restrict s2, size_t n) {
@@ -37,6 +38,20 @@ size_t strspn(const char *s1, const char *s2) {
 		if(s1[n] != s2[n]) { break; }
 	}
 	return n;
+}
+
+char * strstr(const char *s1, const char *s2) {
+	(void)s1;
+	(void)s2;
+	puts("strstr: not implemented");
+	return NULL;
+}
+
+char * strtok(char * restrict s1, const char * restrict s2) {
+	(void)s1;
+	(void)s2;
+	puts("strstr: not implemented");
+	return NULL;
 }
 
 char * strerror(int errnum) {
