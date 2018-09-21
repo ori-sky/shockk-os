@@ -8,6 +8,20 @@ int isalpha(int c) {
 	return isupper(c) || islower(c);
 }
 
+int isblank(int c) {
+	switch(c) {
+	case ' ':
+	case '\t':
+		return 1;
+	default:
+		return 0;
+	}
+}
+
+int iscntrl(int c) {
+	return c < 32;
+}
+
 int isdigit(int c) {
 	switch(c) {
 	case '0':
@@ -24,6 +38,10 @@ int isdigit(int c) {
 	default:
 		return 0;
 	}
+}
+
+int isgraph(int c) {
+	return isprint(c) && c != ' ';
 }
 
 int islower(int c) {
@@ -54,6 +72,28 @@ int islower(int c) {
 	case 'x':
 	case 'y':
 	case 'z':
+		return 1;
+	default:
+		return 0;
+	}
+}
+
+int isprint(int c) {
+	return c >= 32 && c <= 127;
+}
+
+int ispunct(int c) {
+	return isprint(c) && !isspace(c) && !isalnum(c);
+}
+
+int isspace(int c) {
+	switch(c) {
+	case ' ':
+	case '\f':
+	case '\n':
+	case '\r':
+	case '\t':
+	case '\v':
 		return 1;
 	default:
 		return 0;
