@@ -41,6 +41,11 @@ void * malloc(size_t size) {
 	return NULL;
 }
 
+_Noreturn void abort(void) {
+	puts("abort: not implemented");
+	exit(1);
+}
+
 _Noreturn void exit(int status) {
 	_Exit(status);
 }

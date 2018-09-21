@@ -12,6 +12,7 @@ unsigned long long int strtoull(const char * restrict, char ** restrict, int);
 void free(void *);
 void * malloc(size_t);
 
+_Noreturn void abort(void);
 _Noreturn void exit(int);
 _Noreturn void _Exit(int);
 
