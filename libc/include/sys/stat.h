@@ -50,5 +50,6 @@ struct stat {
 
 int lstat(const char * restrict, struct stat * restrict);
 int stat(const char * restrict, struct stat * restrict);
+mode_t umask(mode_t);
 
 #endif

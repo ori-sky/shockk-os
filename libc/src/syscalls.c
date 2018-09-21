@@ -211,6 +211,12 @@ int stat(const char * restrict file, struct stat * restrict st) {
 	return -1;
 }
 
+mode_t umask(mode_t cmask) {
+	(void)cmask;
+	puts("umask: not implemented");
+	return 0;
+}
+
 pid_t waitpid(pid_t pid, int *stat_loc, int options) {
 	(void)pid;
 	(void)stat_loc;
