@@ -11,4 +11,8 @@ struct dirent {
 	char d_name[NAME_MAX + 1];
 };
 
+int closedir(DIR *);
+DIR * opendir(const char *);
+struct dirent * readdir(DIR *);
+
 #endif

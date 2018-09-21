@@ -24,6 +24,7 @@ enum {
 	O_WRONLY
 };
 
+int fcntl(int, int, ...);
 int open(const char *, int, ...);
 
 #endif

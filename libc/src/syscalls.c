@@ -18,30 +18,6 @@
 /*
 register void *stack_ptr asm ("sp");
 
-int execve(const char *name, char * const argv[], char * const env[]) {
-	char sz[] = "NOT IMPLEMENTED: execve\n";
-	write(STDERR_FILENO, sz, sizeof(sz) - 1);
-
-	errno = ENOMEM;
-	return -1;
-}
-
-int fork() {
-	char sz[] = "NOT IMPLEMENTED: fork\n";
-	write(STDERR_FILENO, sz, sizeof(sz) - 1);
-
-	errno = EAGAIN;
-	return -1;
-}
-
-int fstat(int file, struct stat *st) {
-	char sz[] = "NOT IMPLEMENTED: fstat\n";
-	write(STDERR_FILENO, sz, sizeof(sz) - 1);
-
-	st->st_mode = S_IFCHR;
-	return 0;
-}
-
 int kill(int pid, int sig) {
 	char sz[] = "NOT IMPLEMENTED: kill\n";
 	write(STDERR_FILENO, sz, sizeof(sz) - 1);
@@ -113,6 +89,12 @@ int wait(int *status) {
 char *__env[1] = {0};
 char **environ = __env;
 
+int chdir(const char *path) {
+	(void)path;
+	puts("chdir: not implemented");
+	return -1;
+}
+
 int close(int filedes) {
 	(void)filedes;
 	puts("close: not implemented");
@@ -126,6 +108,14 @@ int dup2(int filedes, int filedes2) {
 	return -1;
 }
 
+int execve(const char *path, char * const argv[], char * const envp[]) {
+	(void)path;
+	(void)argv;
+	(void)envp;
+	puts("execve: not implemented");
+	return -1;
+}
+
 _Noreturn void _exit(int status) {
 	fprintf(stderr, "return code = %d\n", status);
 	fflush(stdout);
@@ -133,10 +123,30 @@ _Noreturn void _exit(int status) {
 	for(;;);
 }
 
-int isatty(int filedes) {
+int fcntl(int filedes, int cmd, ...) {
 	(void)filedes;
-	puts("isatty: not implemented");
-	return 1;
+	(void)cmd;
+	puts("fcntl: not implemented");
+	return -1;
+}
+
+pid_t fork(void) {
+	puts("fork: not implemented");
+	return -1;
+}
+
+int fstat(int filedes, struct stat *buf) {
+	(void)filedes;
+	(void)buf;
+	puts("fstat: not implemented");
+	return 0;
+}
+
+char * getcwd(char *buf, size_t size) {
+	(void)buf;
+	(void)size;
+	puts("getcwd: not implemented");
+	return NULL;
 }
 
 gid_t getegid(void) {
@@ -161,6 +171,11 @@ int getgroups(int gidgetsize, gid_t grouplist[]) {
 	return -1;
 }
 
+pid_t getpgrp(void) {
+	puts("getpgrp: not implemented");
+	return 1;
+}
+
 pid_t getpid(void) {
 	puts("getpid: not implemented");
 	return 1;
@@ -173,6 +188,12 @@ pid_t getppid(void) {
 
 uid_t getuid(void) {
 	puts("getuid: not implemented");
+	return 1;
+}
+
+int isatty(int filedes) {
+	(void)filedes;
+	puts("isatty: not implemented");
 	return 1;
 }
 
@@ -201,6 +222,13 @@ int lstat(const char * restrict file, struct stat * restrict st) {
 	(void)file;
 	(void)st;
 	puts("lstat: not implemented");
+	return -1;
+}
+
+int setpgid(pid_t pid, pid_t pgid) {
+	(void)pid;
+	(void)pgid;
+	puts("setpgid: not implemented");
 	return -1;
 }
 
