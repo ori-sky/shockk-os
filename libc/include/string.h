@@ -5,6 +5,7 @@
 
 void * memcpy(void * restrict, const void * restrict, size_t);
 char * strcpy(char * restrict, const char * restrict);
+char * strdup(const char *);
 
 int strcmp(const char *, const char *);
 

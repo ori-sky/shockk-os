@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 void * memcpy(void * restrict s1, const void * restrict s2, size_t n) {
@@ -15,6 +16,13 @@ char * strcpy(char * restrict s1, const char * restrict s2) {
 		s1[i] = s2[i];
 	}
 	return s1;
+}
+
+char * strdup(const char *s) {
+	size_t len = strlen(s);
+	char *dup = malloc(len + 1);
+	memcpy(dup, s, len + 1);
+	return dup;
 }
 
 int strcmp(const char *s1, const char *s2) {
