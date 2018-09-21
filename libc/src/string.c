@@ -40,6 +40,23 @@ char * strchr(const char *s, int c) {
 	return NULL;
 }
 
+size_t strcspn(const char *s1, const char *s2) {
+	size_t n;
+	for(n = 0; s1[n] != '\0'; ++n) {
+		if(s1[n] == s2[n]) { break; }
+	}
+	return n;
+}
+
+char * strpbrk(const char *s1, const char *s2) {
+	for(size_t i = 0; s2[i] != '\0'; ++i) {
+		for(size_t n = 0; s2[n] != '\0'; ++n) {
+			if(s1[i] == s2[n]) { return (char *)&s1[i]; }
+		}
+	}
+	return NULL;
+}
+
 size_t strspn(const char *s1, const char *s2) {
 	size_t n;
 	for(n = 0; s1[n] != '\0' && s2[n] != '\0'; ++n) {
