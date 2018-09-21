@@ -4,6 +4,12 @@
 #include <stddef.h>
 #include <sys/types.h>
 
+#ifdef __cplusplus
+#define restrict
+#define _Noreturn [[noreturn]]
+extern "C" {
+#endif
+
 enum {
 	F_OK,
 	R_OK,
@@ -33,5 +39,9 @@ ssize_t read(int, void *, size_t);
 pid_t tcgetpgrp(int);
 int tcsetpgrp(int, pid_t);
 ssize_t write(int, const void *, size_t);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
