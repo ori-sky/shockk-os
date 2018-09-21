@@ -21,4 +21,6 @@ enum {
 	WSTOPPED
 };
 
+pid_t waitpid(pid_t, int *, int);
+
 #endif

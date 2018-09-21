@@ -211,6 +211,14 @@ int stat(const char * restrict file, struct stat * restrict st) {
 	return -1;
 }
 
+pid_t waitpid(pid_t pid, int *stat_loc, int options) {
+	(void)pid;
+	(void)stat_loc;
+	(void)options;
+	puts("waitpid: not implemented");
+	return -1;
+}
+
 ssize_t write(int filedes, const void *buf, size_t nbyte) {
 	if(filedes == STDOUT_FILENO || filedes == STDERR_FILENO) {
 		const char *sz = buf;
