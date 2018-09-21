@@ -211,6 +211,19 @@ int stat(const char * restrict file, struct stat * restrict st) {
 	return -1;
 }
 
+pid_t tcgetpgrp(int filedes) {
+	(void)filedes;
+	puts("tcgetpgrp: not implemented");
+	return -1;
+}
+
+int tcsetpgrp(int filedes, pid_t pgid_id) {
+	(void)filedes;
+	(void)pgid_id;
+	puts("tcsetpgrp: not implemented");
+	return -1;
+}
+
 mode_t umask(mode_t cmask) {
 	(void)cmask;
 	puts("umask: not implemented");
