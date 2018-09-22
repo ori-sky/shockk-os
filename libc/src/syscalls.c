@@ -189,6 +189,17 @@ int isatty(int filedes) {
 	return 1;
 }
 
+void * mmap(void *addr, size_t len, int prot, int flags, int filedes, off_t off) {
+	(void)addr;
+	(void)len;
+	(void)prot;
+	(void)flags;
+	(void)filedes;
+	(void)off;
+	puts("mmap: not implemented");
+	return MAP_FAILED;
+}
+
 int open(const char *path, int oflag, ...) {
 	(void)oflag;
 	int fd;
