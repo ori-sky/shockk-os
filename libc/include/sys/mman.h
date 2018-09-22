@@ -1,6 +1,8 @@
 #ifndef _SYS_MMAN_H
 #define _SYS_MMAN_H 1
 
+#include <sys/types.h>
+
 enum {
 	PROT_EXEC,
 	PROT_NONE,
