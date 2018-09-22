@@ -75,14 +75,58 @@ int vfprintf(FILE * restrict stream, const char * restrict format, va_list arg) 
 }
 
 int vsnprintf(char * restrict s, size_t n, const char * restrict format, va_list arg) {
-	(void)s;
 	(void)n;
-	(void)format;
-	(void)arg;
-	puts("vsnprintf: not implemented");
-	//FILE *f = fmemopen(s, 0, 0);
-	//return vfnprintf(f, format, arg);
-	return -1;
+
+	size_t dstpos = 0;
+	for(size_t srcpos = 0; format[srcpos] != '\0'; ++srcpos) {
+		if(format[srcpos] == '%') {
+			switch(format[srcpos + 1]) {
+			case 's': {
+				char *sz = va_arg(arg, char *);
+				size_t len = strlen(sz);
+				memcpy(&s[dstpos], sz, len);
+				++srcpos;
+				dstpos += len;
+				break;
+			}
+			case 'd': {
+				int x = va_arg(arg, int);
+				size_t len = 0;
+
+				if(x < 0) {
+					s[dstpos++] = '-';
+					x = -x;
+					++len;
+				}
+
+				char tmp[16];
+				char *ptr = tmp;
+
+				while(x || ptr == tmp) {
+					int i = x % 10;
+					x /= 10;
+					*ptr++ = '0' + i;
+				}
+
+				len += ptr - tmp;
+
+				while(ptr > tmp) {
+					s[dstpos++] = *--ptr;
+				}
+
+				++srcpos;
+				break;
+			}
+			default:
+				s[dstpos++] = format[srcpos];
+			}
+		} else {
+			s[dstpos++] = format[srcpos];
+		}
+	}
+	s[dstpos] = '\0';
+
+	return dstpos;
 }
 
 int vsprintf(char * restrict s, const char * restrict format, va_list arg) {
