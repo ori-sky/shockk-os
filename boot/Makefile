@@ -1,4 +1,4 @@
-OBJS=bootsector.s.o stage1.s.o
+OBJS=stage0.s.o stage1.s.o
 
 ASMFLAGS=-f bin
 
