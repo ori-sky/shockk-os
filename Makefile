@@ -28,7 +28,7 @@ IMAGE_MBR=$(CURDIR)/shk-mbr.img
 BOOTDIR=$(CURDIR)/boot
 
 .PHONY: all
-all: image
+all: image-mbr
 
 .PHONY: libc_headers
 libc_headers: $(SYSROOT)/usr/include/stdio.h
