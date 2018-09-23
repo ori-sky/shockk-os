@@ -10,6 +10,7 @@
 #include <kernel/pit.h>
 #include <kernel/ports.h>
 #include <kernel/screen.h>
+#include <kernel/state.h>
 #include <kernel/syscall.h>
 #include <kernel/tss.h>
 
@@ -142,8 +143,8 @@ public:
 
 extern "C" void user_enter(void (*entry)(), void *stack) __attribute__((noreturn));
 
-extern "C" void kernel_entry(Pager *) __attribute__((noreturn));
-void kernel_entry(Pager *pager) {
+extern "C" void kernel_entry(State) __attribute__((noreturn));
+void kernel_entry(State state) {
 	Screen screen;
 	screen << "SHK\n";
 
@@ -151,20 +152,19 @@ void kernel_entry(Pager *pager) {
 	pic_remap(IRQ0, IRQ8);
 	pic_set_masks(0, 0);
 
-	IDT *idt = (IDT *)pager->Reserve();
+	IDT *idt = (IDT *)state.pager->Reserve();
 	idt_init(idt);
 
 	__asm__ ("sti");
 
-	GDT *gdt = (GDT *)pager->Reserve();
-	TSS *tss = (TSS *)pager->Reserve();
+	GDT *gdt = (GDT *)state.pager->Reserve();
+	TSS *tss = (TSS *)state.pager->Reserve();
 	gdt_init(gdt, tss);
-	tss_init(tss, pager);
+	tss_init(tss, state.pager);
 
 	// load /bin/hello.elf and execute it in user space
 
-	// XXX: starting LBA block may not be 0
-	Ext2 fs(pager, 0);
+	Ext2 fs(state.pager, state.lba);
 
 	const char *paths[] = {"bin", "hello.elf"};
 	auto mKernel = fs.GetInode(2, paths);
@@ -185,8 +185,8 @@ void kernel_entry(Pager *pager) {
 		                               addr += PAGE_ALLOCATOR_PAGE_SIZE) {
 			Pager::TableID table = addr / PAGE_ALLOCATOR_PAGE_SIZE / 1024;
 			Pager::PageID  page  = addr / PAGE_ALLOCATOR_PAGE_SIZE % 1024;
-			if(!pager->IsPresent(table, page)) {
-				pager->AllocAt(table, page);
+			if(!state.pager->IsPresent(table, page)) {
+				state.pager->AllocAt(table, page);
 			}
 		}
 
@@ -204,9 +204,9 @@ void kernel_entry(Pager *pager) {
 	auto user_entry = (void(*)())header.entry_ptr;
 
 	constexpr size_t USER_STACK_PAGES = 64;
-	unsigned char *user_stack = (unsigned char *)pager->Alloc();
+	unsigned char *user_stack = (unsigned char *)state.pager->Alloc();
 	for(size_t n = 1; n < USER_STACK_PAGES; ++n) {
-		pager->AllocAt(&user_stack[PAGE_ALLOCATOR_PAGE_SIZE*n]);
+		state.pager->AllocAt(&user_stack[PAGE_ALLOCATOR_PAGE_SIZE*n]);
 	}
 
 	screen << "user stack = " << (uint32_t)user_stack << '\n';

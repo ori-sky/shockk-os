@@ -19,13 +19,13 @@ start:
   jz panic
   call load_lba
 .lba:
-  mov si, lba_msg                                                               ; string pointer
+  mov si, success_msg                                                           ; string pointer
   call print                                                                    ; print string
   mov ax, 0x7000
   mov es, ax
   cmp word [es:0x38], 0xef53                                                    ; test for ext2 superblock signature
   jnz panic
-  mov si, superblock_msg
+  mov si, success_msg
   call print
 .ext2:
   mov eax, 2                                                                    ; ext2 root inode is 2
@@ -111,12 +111,10 @@ get_group_desc_offset:                                                          
   pop ebx
   ret
 
-get_inode_block_offset:                                                         ; in eax = inode selector
-                                                                                ; in ebx = block ptr id
-                                                                                ; out eax = inode block offset
-
 load_lba:                                                                       ; void
   pushad
+  mov cx, [lba_offset]                                                          ; add LBA offset to start block
+  add [packet_start_block], cx
   mov ah, 0x42                                                                  ; extended read sectors from drive
   mov dl, [drive_ref]                                                           ; restore drive reference
   mov si, packet                                                                ; disk address packet
@@ -215,10 +213,9 @@ load_dirent:                                                                    
   ret
 
 ; syntax is S# for Success#, F# for Failure#, D# for Debug#
-lba_msg db 'S0', 0
-superblock_msg db 'S1', 0
-read_error_msg db 'F2', 0
-no_dirent_msg db 'F3', 0
+success_msg db 'S', 0
+read_error_msg db 'R', 0
+no_dirent_msg db 'D', 0
 
 ; strings
 boot_str db 'boot'
@@ -240,5 +237,11 @@ packet_start_block:
   dq 0x2                                                                        ; start block
 packet_end:
 
-  times 510-($-$$) db 0                                                         ; fill rest of sector with zeroes
+  times 506-($-$$) db 0                                                         ; fill rest of sector with zeroes
+
+; exposed vars
+
+lba_offset:
+  dd 0
+
   db 0x55, 0xAA                                                                 ; boot signature

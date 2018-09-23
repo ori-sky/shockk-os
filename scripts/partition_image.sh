@@ -1,5 +1,5 @@
 #!/bin/sh
-fdisk shk.img << EOF
+fdisk shk-mbr.img << EOF
 o
 n
 p

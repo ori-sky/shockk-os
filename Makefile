@@ -14,6 +14,7 @@ export TARGET_AR =$(TOOLCHAIN_PREFIX)/bin/$(TARGET)-ar
 export QEMU=qemu-system-i386
 
 export SHKBOOT_BIN=$(CURDIR)/shkboot.bin
+export MBR_BIN=$(CURDIR)/mbr.bin
 export LOADER_ELF=$(CURDIR)/loader.elf
 export KERNEL_ELF=$(CURDIR)/kernel.elf
 export CRT0_O=$(CURDIR)/crt0.o
@@ -22,7 +23,8 @@ export LIBC_A=$(CURDIR)/libc.a
 export INCLUDE_PATHS=$(CURDIR)/include
 export CXXWARNS=-Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual -Wformat=2 -Winit-self -Wmissing-include-dirs -Wredundant-decls -Wstrict-overflow=5 -Wundef -Wdisabled-optimization -Wsign-conversion -Wstack-protector -Winline -Wpadded -Wswitch-enum
 
-IMAGE=$(CURDIR)/shk.img
+export IMAGE=$(CURDIR)/shk.img
+IMAGE_MBR=$(CURDIR)/shk-mbr.img
 BOOTDIR=$(CURDIR)/boot
 
 .PHONY: all
@@ -43,6 +45,10 @@ toolchain: libc_headers
 .PHONY: $(SHKBOOT_BIN)
 $(SHKBOOT_BIN): toolchain
 	$(MAKE) -C boot $@
+
+.PHONY: $(MBR_BIN)
+$(MBR_BIN): toolchain
+	$(MAKE) -C mbr $@
 
 .PHONY: $(LOADER_ELF)
 $(LOADER_ELF): toolchain
@@ -80,12 +86,20 @@ clean-image:
 	rm -fv $(IMAGE)
 
 .PHONY: image
-image: $(SHKBOOT_BIN) $(LOADER_ELF) $(KERNEL_ELF)
+image: $(SHKBOOT_BIN) $(LOADER_ELF) $(KERNEL_ELF) test
 	dd bs=512 count=65536 if=/dev/zero of=$(IMAGE)
 	mkfs.ext2 -F $(IMAGE)
 	dd bs=512 count=2 if=$(SHKBOOT_BIN) of=$(IMAGE) conv=notrunc
 	e2cp -v $(LOADER_ELF) $(IMAGE):/boot/loader.elf
 	e2cp -v $(KERNEL_ELF) $(IMAGE):/boot/kernel.elf
+	$(MAKE) -C test install
+
+.PHONY: image-mbr
+image-mbr: image $(MBR_BIN)
+	dd bs=512 count=$$(( 65536 + 2048 )) if=/dev/zero of=$(IMAGE_MBR)
+	sh scripts/partition_image.sh
+	dd bs=448 count=1 if=$(MBR_BIN) of=$(IMAGE_MBR) conv=notrunc
+	dd bs=512 count=65536 if=$(IMAGE) of=$(IMAGE_MBR) conv=notrunc seek=2048
 
 .PHONY: qemu
 qemu:
@@ -94,6 +108,7 @@ qemu:
 .PHONY: clean
 clean:
 	$(MAKE) -C boot clean
+	$(MAKE) -C mbr clean
 	$(MAKE) -C loader clean
 	$(MAKE) -C kernel clean
 	$(MAKE) -C libc clean
@@ -102,6 +117,7 @@ clean:
 distclean: clean
 	rm -rfv $(SYSROOT)
 	rm -fv $(IMAGE)
+	rm -fv $(IMAGE_MBR)
 
 .PHONY: toolchain-clean
 toolchain-clean:

@@ -122,6 +122,8 @@ get_block_offset:                                                               
 
 load_lba:                                                                       ; void
   pushad
+  mov cx, [0x7dfa]                                                              ; add LBA offset to start block
+  add [packet_start_block], cx
   mov ah, 0x42                                                                  ; extended read sectors from drive
   mov dl, [drive_ref]                                                           ; restore drive reference
   mov si, packet                                                                ; disk address packet

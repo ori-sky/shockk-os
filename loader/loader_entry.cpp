@@ -8,6 +8,7 @@
 #include <kernel/itoa.h>
 #include <kernel/panic.h>
 #include <kernel/screen.h>
+#include <kernel/state.h>
 
 #define SCREEN_CASE(X)       case X:  return screen << #X
 #define SCREEN_DEFAULT(X, Y) default: return screen << #X << "::<INVALID> (" << static_cast<uint32_t>(Y) << ')'
@@ -136,21 +137,29 @@ public:
 	}
 };
 
+enum class BootType {
+	Unknown,
+	Multiboot,
+	SHKBoot
+};
+
 extern "C"
 void loader_entry(uint32_t mb_magic, uint32_t mb_addr) __attribute__((noreturn));
 void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
 	Screen screen;
 	screen << "SHK\n";
 
-	bool multiboot = false;
+	BootType boot_type = BootType::Unknown;
+
 	switch(mb_magic) {
 	default:
 		kernel_panic("invalid boot signature (should be 0x2BADB002 or 0xBAADC0DE)");
 	case 0x2BADB002:
-		multiboot = true;
+		boot_type = BootType::Multiboot;
 		break;
 	case 0xBAADC0DE:
 		a20_enable();
+		boot_type = BootType::SHKBoot;
 		break;
 	}
 
@@ -161,13 +170,23 @@ void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
 	ata_init();
 
 	uint32_t starting_lba = 0;
-	if(multiboot) {
+	switch(boot_type) {
+	case BootType::Unknown:
+		break;
+	case BootType::Multiboot: {
 		uint8_t *mb = (uint8_t *)mb_addr;
 		uint8_t part_id = mb[14];
 
 		MBR mbr = mbr_read();
 		starting_lba = mbr.entries[part_id].starting_lba;
+		break;
 	}
+	case BootType::SHKBoot:
+		starting_lba = *(uint32_t *)0x7dfa;
+		break;
+	}
+
+	screen << "starting LBA = " << starting_lba << '\n';
 
 	Ext2 fs(pager, starting_lba);
 
@@ -204,8 +223,10 @@ void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
 		}
 	}
 
-	auto kernel_entry = (void(*)(Pager *))header.entry_ptr;
-	kernel_entry(pager);
+	State state{starting_lba, pager};
+
+	auto kernel_entry = (void(*)(State))header.entry_ptr;
+	kernel_entry(state);
 
 	for(;;) { __asm__ ("hlt"); } // unreachable
 }
