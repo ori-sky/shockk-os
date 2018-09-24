@@ -16,11 +16,17 @@ long int strtol(const char * restrict nptr, char ** restrict endptr, int base) {
 }
 
 long long int strtoll(const char * restrict nptr, char ** restrict endptr, int base) {
+	if(base != 10) {
+		puts("strtoll: base != 10");
+		return 0;
+	}
+
 	(void)nptr;
 	(void)endptr;
 	(void)base;
-	puts("strtoll: not implemented");
-	return 0;
+
+	printf("strtoll: not implemented (%s)\n", nptr);
+	return 1;
 }
 
 unsigned long long int strtoull(const char * restrict nptr, char ** restrict endptr, int base) {
