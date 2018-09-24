@@ -32,7 +32,7 @@ extern "C" int syscall_main(int command, int arg1, int arg2, int arg3) {
 			return buffer[pos++];
 		}
 	case SYSCALL_COMMAND_PUT:
-		screen_put(arg1);
+		screen_put(arg1, SCREEN_COLOR_USER);
 		break;
 	default:
 		screen_print("unrecognized syscall command\n");
