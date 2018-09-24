@@ -3,18 +3,14 @@
 
 #include <sys/types.h>
 
-enum {
-	PROT_EXEC,
-	PROT_NONE,
-	PROT_READ,
-	PROT_WRITE
-};
+#define PROT_NONE  0
+#define PROT_READ  1
+#define PROT_WRITE 2
+#define PROT_EXEC  4
 
-enum {
-	MAP_FIXED,
-	MAP_PRIVATE,
-	MAP_SHARED
-};
+#define MAP_PRIVATE 0
+#define MAP_SHARED  1
+#define MAP_FIXED   2
 
 #define MAP_FAILED ((void *)0)
 

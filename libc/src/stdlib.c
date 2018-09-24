@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/mman.h>
 #include <unistd.h>
 
 int atoi(const char *nptr) {
@@ -36,9 +37,7 @@ void free(void *ptr) {
 }
 
 void * malloc(size_t size) {
-	(void)size;
-	puts("malloc: not implemented");
-	return NULL;
+	return mmap(0, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, 0, 0);
 }
 
 void * realloc(void *ptr, size_t size) {

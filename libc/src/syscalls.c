@@ -190,15 +190,25 @@ int isatty(int filedes) {
 	return 1;
 }
 
-void * mmap(void *addr, size_t len, int prot, int flags, int filedes, off_t off) {
-	(void)addr;
+void * mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off) {
+	if(addr != NULL) {
+		puts("mmap: non-null addr not supported");
+		return MAP_FAILED;
+	}
+	if(fildes != 0) {
+		puts("mmap: fildes not supported");
+		return MAP_FAILED;
+	}
+
 	(void)len;
 	(void)prot;
 	(void)flags;
-	(void)filedes;
 	(void)off;
-	puts("mmap: not implemented");
-	return MAP_FAILED;
+
+	static void *next_addr = (void *)0x1000000;
+	addr = next_addr;
+	next_addr += len;
+	return addr;
 }
 
 int open(const char *path, int oflag, ...) {

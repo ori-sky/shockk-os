@@ -145,6 +145,8 @@ extern "C" void user_enter(void (*entry)(), void *stack) __attribute__((noreturn
 
 extern "C" void kernel_entry(State) __attribute__((noreturn));
 void kernel_entry(State state) {
+	_kernel_state = state;
+
 	Screen screen;
 	screen << "SHK\n";
 
@@ -209,7 +211,11 @@ void kernel_entry(State state) {
 		state.pager->AllocAt(&user_stack[PAGE_ALLOCATOR_PAGE_SIZE*n]);
 	}
 
-	screen << "user stack = " << (uint32_t)user_stack << '\n';
+	screen << '\n';
+	screen << "entering user space\n";
+	screen << "heap  = 0x1000000\n";
+	screen << "stack = " << (uint32_t)user_stack << '\n';
+	screen << '\n';
 
 	user_enter(user_entry, &user_stack[PAGE_ALLOCATOR_PAGE_SIZE * USER_STACK_PAGES / 2]);
 

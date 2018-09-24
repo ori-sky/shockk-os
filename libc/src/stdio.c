@@ -70,8 +70,59 @@ int sprintf(char * restrict s, const char * restrict format, ...) {
 }
 
 int vfprintf(FILE * restrict stream, const char * restrict format, va_list arg) {
-	(void)arg;
-	return fputs(format, stream);
+	size_t dstpos = 0;
+	for(size_t srcpos = 0; format[srcpos] != '\0'; ++srcpos) {
+		if(format[srcpos] == '%') {
+			switch(format[srcpos + 1]) {
+			case 's': {
+				char *sz = va_arg(arg, char *);
+				size_t len = strlen(sz);
+				fputs(sz,  stream);
+				++srcpos;
+				dstpos += len;
+				break;
+			}
+			case 'd': {
+				int x = va_arg(arg, int);
+				size_t len = 0;
+
+				if(x < 0) {
+					fputc('-', stream);
+					++dstpos;
+					x = -x;
+					++len;
+				}
+
+				char tmp[16];
+				char *ptr = tmp;
+
+				while(x || ptr == tmp) {
+					int i = x % 10;
+					x /= 10;
+					*ptr++ = '0' + i;
+				}
+
+				len += ptr - tmp;
+
+				while(ptr > tmp) {
+					fputc(*--ptr, stream);
+					++dstpos;
+				}
+
+				++srcpos;
+				break;
+			}
+			default:
+				fputc(format[srcpos], stream);
+				++dstpos;
+			}
+		} else {
+			fputc(format[srcpos], stream);
+			++dstpos;
+		}
+	}
+
+	return dstpos;
 }
 
 int vsnprintf(char * restrict s, size_t n, const char * restrict format, va_list arg) {

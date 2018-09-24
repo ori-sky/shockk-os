@@ -1,11 +1,12 @@
-#include <kernel/kb.h>
-#include <kernel/ports.h>
-#include <kernel/pic.h>
-#include <kernel/irq.h>
 #include <kernel/cpu.h>
-#include <kernel/screen.h>
-#include <kernel/panic.h>
+#include <kernel/irq.h>
 #include <kernel/itoa.h>
+#include <kernel/kb.h>
+#include <kernel/panic.h>
+#include <kernel/pic.h>
+#include <kernel/ports.h>
+#include <kernel/screen.h>
+#include <kernel/state.h>
 
 bool stdin_available = false;
 char stdin_char = '\0';
@@ -65,7 +66,18 @@ extern "C" void isr_main(struct CPUState cpu_state) {
 				screen_put('\n');
 			}
 		}
-		kernel_panic("");
+		if(cr2 == 0x1000000) {
+			screen_print("allocating page at 0x");
+			uitoa((unsigned int)cr2, s0, 16);
+			screen_print(s0);
+			screen_put('\n');
+
+			Pager::TableID table = cr2 / PAGE_ALLOCATOR_PAGE_SIZE / 1024;
+			Pager::PageID  page  = cr2 / PAGE_ALLOCATOR_PAGE_SIZE % 1024;
+			_kernel_state.pager->AllocAt(table, page);
+		} else {
+			kernel_panic("page fault");
+		}
 		break;
 	case IRQ0: /* PIT */
 		//screen_print("yield\n");
