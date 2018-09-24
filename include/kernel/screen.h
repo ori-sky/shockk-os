@@ -16,7 +16,7 @@ extern "C" {
 #define SCREEN_CELL_TO_ROW(C) ((C) / SCREEN_COLUMNS)
 
 #define SCREEN_COLOR_DEFAULT 0x20
-#define SCREEN_COLOR_USER    0x07
+#define SCREEN_COLOR_USER    0x30
 
 void screen_init(const uint8_t = SCREEN_COLOR_DEFAULT);
 void screen_cursor_to(const unsigned short);
