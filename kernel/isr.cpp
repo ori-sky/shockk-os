@@ -27,7 +27,8 @@ extern "C" void isr_main(struct CPUState cpu_state) {
 	__asm__ __volatile__ ("mov %%cr2, %0" : "=r" (cr2));
 
 	char s0[] = "        ";
-	char s1[] = "                                ";
+	char s1[] = "                ";
+	char s2[] = "                                ";
 	uint8_t scancode;
 
 	switch(cpu_state.interrupt) {
@@ -39,15 +40,15 @@ extern "C" void isr_main(struct CPUState cpu_state) {
 		uitoa((unsigned int)cpu_state.iret_eip, s0, 16);
 		screen_print(s0);
 		screen_print(" error=0b");
-		uitoa((unsigned int)cpu_state.error, s1, 2);
-		screen_print(s1);
+		uitoa((unsigned int)cpu_state.error, s2, 2);
+		screen_print(s2);
 		screen_put('\n');
 		break;
 	case 0xE: /* page fault */
 		screen_print("page fault at 0x");
 		uitoa((unsigned int)cpu_state.iret_eip, s0, 16);
 		screen_print(s0);
-		screen_print(" cr2=");
+		screen_print(" cr2=0x");
 		uitoa((unsigned int)cr2, s0, 16);
 		screen_print(s0);
 		screen_print(" error=0b");
@@ -56,10 +57,17 @@ extern "C" void isr_main(struct CPUState cpu_state) {
 		screen_put('\n');
 		{
 			void **ebp = (void **)cpu_state.ebp;
-			for(unsigned int frame = 0; frame < 8; ++frame) {
+			for(unsigned int frame = 0; frame < 3; ++frame) {
+				// if ebp is outside of stack region
+				if(ebp < (void *)0x8000000 || ebp > (void *)(0x8000000 + 0x100000)) {
+					screen_print("from <no frame pointer>\n");
+					break;
+				}
+
 				void * eip = ebp[1];
 				if(eip == NULL) { break; }
 				ebp = (void **)ebp[0];
+
 				screen_print("from 0x");
 				s0[uitoa((unsigned int)eip, s0, 16)] = '\0';
 				screen_print(s0);
