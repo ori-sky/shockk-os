@@ -26,6 +26,10 @@ long long int strtoll(const char * restrict nptr, char ** restrict endptr, int b
 	(void)base;
 
 	printf("strtoll: not implemented (%s)\n", nptr);
+
+	if(endptr != NULL) {
+		*endptr = (char *)&nptr[1];
+	}
 	return 1;
 }
 

@@ -200,12 +200,19 @@ void * mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off) 
 		return MAP_FAILED;
 	}
 
-	(void)len;
 	(void)prot;
 	(void)flags;
 	(void)off;
 
 	static void *next_addr = (void *)0x1000000;
+
+	if(next_addr > (void *)0x1001000) {
+		puts("mmap: ran out of heap space");
+		return MAP_FAILED;
+	}
+
+	printf("mmap: allocating %d bytes at %d\n", (int)len, (int)next_addr);
+
 	addr = next_addr;
 	next_addr += len;
 	return addr;
