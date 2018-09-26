@@ -247,9 +247,12 @@ ssize_t read(int filedes, void *buf, size_t nbyte) {
 		} while(sz[n] == '\0');
 
 		// POSIX -> 11. General Terminal Interface -> Canonical Mode Input Processing
-		if(sz[n] == '\n') { break; }
+		if(sz[n] == '\n') {
+			++n;
+			break;
+		}
 	}
-	return nbyte;
+	return n;
 }
 
 int setpgid(pid_t pid, pid_t pgid) {
