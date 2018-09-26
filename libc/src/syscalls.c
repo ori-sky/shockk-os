@@ -190,6 +190,13 @@ int isatty(int filedes) {
 	return 1;
 }
 
+int lstat(const char * restrict file, struct stat * restrict st) {
+	(void)file;
+	(void)st;
+	puts("lstat: not implemented");
+	return -1;
+}
+
 void * mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off) {
 	if(addr != NULL) {
 		puts("mmap: non-null addr not supported");
@@ -243,13 +250,6 @@ ssize_t read(int filedes, void *buf, size_t nbyte) {
 		if(sz[n] == '\n') { break; }
 	}
 	return nbyte;
-}
-
-int lstat(const char * restrict file, struct stat * restrict st) {
-	(void)file;
-	(void)st;
-	puts("lstat: not implemented");
-	return -1;
 }
 
 int setpgid(pid_t pid, pid_t pgid) {
