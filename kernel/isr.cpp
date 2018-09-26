@@ -55,7 +55,17 @@ extern "C" void isr_main(struct CPUState cpu_state) {
 		uitoa((unsigned int)cpu_state.error, s1, 2);
 		screen_print(s1);
 		screen_put('\n');
-		{
+		if(cr2 >= 0x1000000 && cr2 < 0x2000000) {
+			screen_print("allocating page at 0x");
+			uitoa((unsigned int)cr2, s0, 16);
+			screen_print(s0);
+			screen_put('\n');
+
+			Pager::TableID table = cr2 / PAGE_ALLOCATOR_PAGE_SIZE / 1024;
+			Pager::PageID  page  = cr2 / PAGE_ALLOCATOR_PAGE_SIZE % 1024;
+			_kernel_state.pager->AllocAt(table, page);
+		} else {
+			// try to print stack trace for page fault
 			void **ebp = (void **)cpu_state.ebp;
 			for(unsigned int frame = 0; frame < 3; ++frame) {
 				// if ebp is outside of stack region
@@ -73,17 +83,6 @@ extern "C" void isr_main(struct CPUState cpu_state) {
 				screen_print(s0);
 				screen_put('\n');
 			}
-		}
-		if(cr2 >= 0x1000000 && cr2 < 0x2000000) {
-			screen_print("allocating page at 0x");
-			uitoa((unsigned int)cr2, s0, 16);
-			screen_print(s0);
-			screen_put('\n');
-
-			Pager::TableID table = cr2 / PAGE_ALLOCATOR_PAGE_SIZE / 1024;
-			Pager::PageID  page  = cr2 / PAGE_ALLOCATOR_PAGE_SIZE % 1024;
-			_kernel_state.pager->AllocAt(table, page);
-		} else {
 			kernel_panic("page fault");
 		}
 		break;

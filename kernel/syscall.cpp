@@ -24,6 +24,10 @@ extern "C" int syscall_main(int command, int arg1, int arg2, int arg3) {
 			}
 			__asm__ ("cli");
 			stdin_available = false;
+
+			// POSIX -> 11. General Terminal Interface -> Canonical Mode Input Processing
+			screen_put(stdin_char, SCREEN_COLOR_USER);
+
 			return stdin_char;
 		} else {
 			if(pos > sizeof(buffer)) { return EOF; }
@@ -35,7 +39,8 @@ extern "C" int syscall_main(int command, int arg1, int arg2, int arg3) {
 			screen_put(arg1, SCREEN_COLOR_USER);
 			break;
 		case STDERR_FILENO:
-			screen_put(arg1, SCREEN_COLOR_ERROR);
+			//screen_put(arg1, SCREEN_COLOR_ERROR); // XXX: too messy for now
+			screen_put(arg1, SCREEN_COLOR_USER);
 			break;
 		default:
 			screen_print("SYSCALL_COMMAND_PUT: unsupported fileno\n");
