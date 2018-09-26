@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/mman.h>
 #include <unistd.h>
 
@@ -46,14 +47,24 @@ void free(void *ptr) {
 }
 
 void * malloc(size_t size) {
-	return mmap(0, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, 0, 0);
+	size_t *psize = mmap(0, sizeof(size) + size, PROT_READ | PROT_WRITE, MAP_PRIVATE, 0, 0);
+	*psize = size;
+	return &psize[1];
 }
 
 void * realloc(void *ptr, size_t size) {
-	(void)ptr;
-	(void)size;
-	puts("realloc: not implemented");
-	return NULL;
+	if(ptr == NULL) { return malloc(size); }
+
+	size_t *psize = ((size_t *)ptr) - 1;
+	if(size <= *psize) {
+		*psize = size;
+		return ptr;
+	} else {
+		void *newptr = malloc(size);
+		memcpy(newptr, ptr, *psize);
+		free(ptr);
+		return newptr;
+	}
 }
 
 _Noreturn void abort(void) {
