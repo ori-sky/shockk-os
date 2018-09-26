@@ -21,7 +21,7 @@ enum {
 #define STDOUT_FILENO 1
 #define STDERR_FILENO 2
 
-char **environ;
+extern char **environ;
 
 int chdir(const char *);
 int close(int);

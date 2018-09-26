@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -103,10 +104,30 @@ char * strtok(char * restrict s1, const char * restrict s2) {
 }
 
 char * strerror(int errnum) {
-	switch(errnum) {
-	default:
-		return "unknown errnum";
+	enum _errno_e e = errnum;
+	switch(e) {
+	case EACCES:
+		return "EACCES";
+	case EAGAIN:
+		return "EAGAIN";
+	case EBADF:
+		return "EBADF";
+	case EEXIST:
+		return "EEXIST";
+	case EINTR:
+		return "EINTR";
+	case ENOENT:
+		return "ENOENT";
+	case ENOEXEC:
+		return "ENOEXEC";
+	case ENOTDIR:
+		return "ENOTDIR";
+	case ERANGE:
+		return "ERANGE";
+	case EWOULDBLOCK:
+		return "EWOULDBLOCK";
 	}
+	return "unknown errnum";
 }
 
 size_t strlen(const char *s) {

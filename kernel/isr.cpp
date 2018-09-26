@@ -74,7 +74,7 @@ extern "C" void isr_main(struct CPUState cpu_state) {
 				screen_put('\n');
 			}
 		}
-		if(cr2 == 0x1000000) {
+		if(cr2 >= 0x1000000 && cr2 < 0x2000000) {
 			screen_print("allocating page at 0x");
 			uitoa((unsigned int)cr2, s0, 16);
 			screen_print(s0);

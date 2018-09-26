@@ -206,7 +206,7 @@ void * mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off) 
 
 	static void *next_addr = (void *)0x1000000;
 
-	if(next_addr > (void *)0x1001000) {
+	if(next_addr > (void *)0x2000000) {
 		puts("mmap: ran out of heap space");
 		return MAP_FAILED;
 	}
@@ -233,8 +233,14 @@ int pipe(int filedes[2]) {
 
 ssize_t read(int filedes, void *buf, size_t nbyte) {
 	char *sz = buf;
-	for(size_t i = 0; i < nbyte; ++i) {
-		syscall_get(sz[i], filedes);
+	size_t n = 0;
+	for(n = 0; n < nbyte; ++n) {
+		do {
+			syscall_get(sz[n], filedes);
+		} while(sz[n] == '\0');
+
+		// POSIX -> 11. General Terminal Interface -> Canonical Mode Input Processing
+		if(sz[n] == '\n') { break; }
 	}
 	return nbyte;
 }
@@ -291,7 +297,7 @@ ssize_t write(int filedes, const void *buf, size_t nbyte) {
 	if(filedes == STDOUT_FILENO || filedes == STDERR_FILENO) {
 		const char *sz = buf;
 		for(size_t i = 0; i < nbyte; ++i) {
-			syscall_put(sz[i]);
+			syscall_put(sz[i], filedes);
 		}
 		return nbyte;
 	} else {

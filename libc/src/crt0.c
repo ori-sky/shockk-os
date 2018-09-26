@@ -5,6 +5,7 @@
 extern int main();
 
 void _start() {
-	int ret = main();
+	char *argv[] = {"/bin/hello.elf", 0};
+	int ret = main(1, argv);
 	exit(ret);
 }

@@ -17,8 +17,8 @@ enum {
 #define syscall_get(C, FD) __asm__ __volatile__ \
 	("int $0x80" : "=a" (C) : "a" (SYSCALL_COMMAND_GET), "b" (FD))
 
-// put(C)
-#define syscall_put(C) __asm__ __volatile__ \
-	("int $0x80" : : "a" (SYSCALL_COMMAND_PUT), "b" (C))
+// put(C, FD)
+#define syscall_put(C, FD) __asm__ __volatile__ \
+	("int $0x80" : : "a" (SYSCALL_COMMAND_PUT), "b" (C), "c" (FD))
 
 #endif
