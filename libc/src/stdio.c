@@ -70,16 +70,49 @@ int sprintf(char * restrict s, const char * restrict format, ...) {
 }
 
 int vfprintf(FILE * restrict stream, const char * restrict format, va_list arg) {
+	size_t formatpos = 0;
+	bool in_format = false;
+	int num_l = 0;
+	//bool has_precision = false;
+	//int precision = 0;
+
 	size_t dstpos = 0;
 	for(size_t srcpos = 0; format[srcpos] != '\0'; ++srcpos) {
-		if(format[srcpos] == '%') {
-			switch(format[srcpos + 1]) {
+		if(in_format) {
+			switch(format[srcpos]) {
+			case 'l':
+				++num_l;
+				break;
 			case 's': {
 				char *sz = va_arg(arg, char *);
 				size_t len = strlen(sz);
-				fputs(sz,  stream);
-				++srcpos;
+				fputs(sz, stream);
 				dstpos += len;
+
+				in_format = false;
+				break;
+			}
+			case 'u': {
+				unsigned int x = va_arg(arg, unsigned int);
+				size_t len = 0;
+
+				char tmp[16];
+				char *ptr = tmp;
+
+				while(x || ptr == tmp) {
+					unsigned int i = x % 10;
+					x /= 10;
+					*ptr++ = '0' + i;
+				}
+
+				len += ptr - tmp;
+
+				while(ptr > tmp) {
+					fputc(*--ptr, stream);
+					++dstpos;
+				}
+
+				in_format = false;
 				break;
 			}
 			case 'd': {
@@ -109,16 +142,29 @@ int vfprintf(FILE * restrict stream, const char * restrict format, va_list arg) 
 					++dstpos;
 				}
 
-				++srcpos;
+				in_format = false;
 				break;
 			}
 			default:
+				//fputc(format[srcpos], stream);
+				//fputc(' ', stream);
+				//printf("vfprintf: unhandled format specifier (%s)\n", format);
+
+				fputc('%', stream);
+				++dstpos;
+
+				srcpos = formatpos;
+				in_format = false;
+				break;
+			}
+		} else {
+			if(format[srcpos] == '%') {
+				formatpos = srcpos;
+				in_format = true;
+			} else {
 				fputc(format[srcpos], stream);
 				++dstpos;
 			}
-		} else {
-			fputc(format[srcpos], stream);
-			++dstpos;
 		}
 	}
 
@@ -128,16 +174,62 @@ int vfprintf(FILE * restrict stream, const char * restrict format, va_list arg) 
 int vsnprintf(char * restrict s, size_t n, const char * restrict format, va_list arg) {
 	(void)n;
 
+	size_t formatpos = 0;
+	bool in_format = false;
+	int num_l = 0;
+	bool has_precision = false;
+	int precision = 0;
+
 	size_t dstpos = 0;
 	for(size_t srcpos = 0; format[srcpos] != '\0'; ++srcpos) {
-		if(format[srcpos] == '%') {
-			switch(format[srcpos + 1]) {
+		if(in_format) {
+			switch(format[srcpos]) {
+			case '.':
+				has_precision = true;
+				precision = 0;
+				break;
+			case '*':
+				precision = va_arg(arg, int);
+				break;
+			case 'l':
+				++num_l;
+				break;
 			case 's': {
 				char *sz = va_arg(arg, char *);
 				size_t len = strlen(sz);
+				if(has_precision && precision < (int)len) {
+					len = precision;
+				}
+
 				memcpy(&s[dstpos], sz, len);
-				++srcpos;
 				dstpos += len;
+
+				in_format = false;
+				has_precision = false;
+				break;
+			}
+			case 'u': {
+				unsigned int x = va_arg(arg, unsigned int);
+				size_t len = 0;
+
+				char tmp[16];
+				char *ptr = tmp;
+
+				while(x || ptr == tmp) {
+					unsigned int i = x % 10;
+					x /= 10;
+					*ptr++ = '0' + i;
+				}
+
+				len += ptr - tmp;
+
+				while(ptr > tmp) {
+					s[dstpos] = *--ptr;
+					++dstpos;
+				}
+
+				in_format = false;
+				has_precision = false;
 				break;
 			}
 			case 'd': {
@@ -145,7 +237,8 @@ int vsnprintf(char * restrict s, size_t n, const char * restrict format, va_list
 				size_t len = 0;
 
 				if(x < 0) {
-					s[dstpos++] = '-';
+					s[dstpos] = '-';
+					++dstpos;
 					x = -x;
 					++len;
 				}
@@ -162,20 +255,37 @@ int vsnprintf(char * restrict s, size_t n, const char * restrict format, va_list
 				len += ptr - tmp;
 
 				while(ptr > tmp) {
-					s[dstpos++] = *--ptr;
+					s[dstpos] = *--ptr;
+					++dstpos;
 				}
 
-				++srcpos;
+				in_format = false;
+				has_precision = false;
 				break;
 			}
 			default:
-				s[dstpos++] = format[srcpos];
+				//fputc(format[srcpos], stream);
+				//fputc(' ', stream);
+				//printf("vfprintf: unhandled format specifier (%s)\n", format);
+
+				s[dstpos] = '%';
+				++dstpos;
+
+				srcpos = formatpos;
+				in_format = false;
+				has_precision = false;
+				break;
 			}
 		} else {
-			s[dstpos++] = format[srcpos];
+			if(format[srcpos] == '%') {
+				formatpos = srcpos;
+				in_format = true;
+			} else {
+				s[dstpos] = format[srcpos];
+				++dstpos;
+			}
 		}
 	}
-	s[dstpos] = '\0';
 
 	return dstpos;
 }
