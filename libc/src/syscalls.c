@@ -263,9 +263,8 @@ int setpgid(pid_t pid, pid_t pgid) {
 }
 
 int stat(const char * restrict file, struct stat * restrict st) {
-	(void)file;
 	(void)st;
-	puts("stat: not implemented");
+	printf("stat: not implemented: %s\n", file);
 	return -1;
 }
 
