@@ -8,8 +8,15 @@
 *.elf
 *.img
 *.floppy
+
 build
+
 toolchain/*
 !toolchain/Makefile
 !toolchain/*.patch
+
+usr/*
+!usr/Makefile
+!usr/*.patch
+
 sysroot
