@@ -118,6 +118,8 @@ char * strerror(int errnum) {
 		return "EEXIST";
 	case EINTR:
 		return "EINTR";
+	case EIO:
+		return "EIO";
 	case ENOENT:
 		return "ENOENT";
 	case ENOEXEC:
