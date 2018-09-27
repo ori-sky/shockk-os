@@ -6,7 +6,8 @@ all: $(ELFS)
 
 .PHONY: install
 install: all
-	e2cp -v $(ELFS) $(IMAGE):/bin/
+	mkdir -pv $(SYSROOT)/bin
+	cp -v $(ELFS) $(SYSROOT)/bin
 
 %.elf: %.c $(SYSROOT)/usr/lib/libc.a
 	$(TARGET_CC) $(CFLAGS) $< -o $@

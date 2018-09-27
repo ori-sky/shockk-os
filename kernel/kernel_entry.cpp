@@ -164,13 +164,13 @@ void kernel_entry(State state) {
 	gdt_init(gdt, tss);
 	tss_init(tss, state.pager);
 
-	// load /bin/hello.elf and execute it in user space
+	// load /bin/dash and execute it in user space
 
 	Ext2 fs(state.pager, state.lba);
 
-	const char *paths[] = {"bin", "hello.elf"};
+	const char *paths[] = {"bin", "dash"};
 	auto mKernel = fs.GetInode(2, paths);
-	if(mKernel.IsNothing()) { kernel_panic("failed to get /bin/hello.elf inode"); }
+	if(mKernel.IsNothing()) { kernel_panic("failed to get /bin/dash inode"); }
 	auto kernel = mKernel.FromJust();
 
 	ELFHeader header;

@@ -81,18 +81,24 @@ libc: $(SYSROOT)/usr/lib/crt0.o $(SYSROOT)/usr/lib/libc.a
 test: libc
 	$(MAKE) -C test all
 
+.PHONY: usr
+usr: libc
+	$(MAKE) -C usr all
+
 .PHONY: clean-image
 clean-image:
 	rm -fv $(IMAGE)
 
 .PHONY: image
-image: $(SHKBOOT_BIN) $(LOADER_ELF) $(KERNEL_ELF) test
+image: $(SHKBOOT_BIN) $(LOADER_ELF) $(KERNEL_ELF) test usr
 	dd bs=512 count=65536 if=/dev/zero of=$(IMAGE)
 	mkfs.ext2 -F $(IMAGE)
 	dd bs=512 count=2 if=$(SHKBOOT_BIN) of=$(IMAGE) conv=notrunc
 	e2cp -v $(LOADER_ELF) $(IMAGE):/boot/loader.elf
 	e2cp -v $(KERNEL_ELF) $(IMAGE):/boot/kernel.elf
 	$(MAKE) -C test install
+	e2mkdir -v $(IMAGE):/bin
+	e2cp -v $(SYSROOT)/bin/* $(IMAGE):/bin
 
 .PHONY: image-mbr
 image-mbr: image $(MBR_BIN)
@@ -123,6 +129,14 @@ distclean: clean
 toolchain-clean:
 	$(MAKE) -C toolchain clean
 
+.PHONY: usr-clean
+usr-clean:
+	$(MAKE) -C usr clean
+
 .PHONY: toolchain-distclean
 toolchain-distclean:
 	$(MAKE) -C toolchain distclean
+
+.PHONY: usr-distclean
+usr-distclean:
+	$(MAKE) -C usr distclean
