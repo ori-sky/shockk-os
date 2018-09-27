@@ -26,9 +26,11 @@ char * memmove(void *s1, const void *s2, size_t n) {
 }
 
 char * strcpy(char * restrict s1, const char * restrict s2) {
-	for(size_t i = 0; s2[i] != '\0'; ++i) {
-		s1[i] = s2[i];
+	size_t n;
+	for(n = 0; s2[n] != '\0'; ++n) {
+		s1[n] = s2[n];
 	}
+	s1[n] = '\0';
 	return s1;
 }
 
