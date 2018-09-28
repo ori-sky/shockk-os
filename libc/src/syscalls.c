@@ -263,9 +263,26 @@ int setpgid(pid_t pid, pid_t pgid) {
 }
 
 int stat(const char * restrict file, struct stat * restrict st) {
-	(void)st;
-	printf("stat: not implemented: %s\n", file);
-	return -1;
+	//printf("stat: not implemented: %s\n", file);
+	(void)file;
+
+	st->st_dev          = 0;
+	st->st_ino          = 50;
+	st->st_mode         = S_IRUSR | S_IWUSR;
+	st->st_nlink        = 1;
+	st->st_uid          = 1;
+	st->st_gid          = 1;
+	st->st_atim.tv_sec  = 0;
+	st->st_atim.tv_nsec = 0;
+	st->st_mtim.tv_sec  = 0;
+	st->st_mtim.tv_nsec = 0;
+	st->st_ctim.tv_sec  = 0;
+	st->st_ctim.tv_nsec = 0;
+
+	return 0;
+
+	//errno = ENOENT;
+	//return -1;
 }
 
 pid_t tcgetpgrp(int filedes) {

@@ -44,7 +44,7 @@ struct stat {
 #define S_ISCHR(M)  0
 #define S_ISDIR(M)  0
 #define S_ISFIFO(M) 0
-#define S_ISREG(M)  0
+#define S_ISREG(M)  1
 #define S_ISLNK(M)  0
 #define S_ISSOCK(M) 0
 
