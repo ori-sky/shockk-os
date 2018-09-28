@@ -105,6 +105,14 @@ char * strtok(char * restrict s1, const char * restrict s2) {
 	return NULL;
 }
 
+void * memset(void *s, int c, size_t n) {
+	unsigned char *sz = s;
+	for(size_t i = 0; i < n; ++i) {
+		sz[i] = (unsigned char)c;
+	}
+	return s;
+}
+
 char * strerror(int errnum) {
 	enum _errno_e e = errnum;
 	switch(e) {

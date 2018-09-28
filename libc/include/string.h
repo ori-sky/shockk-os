@@ -18,6 +18,7 @@ size_t strspn(const char *, const char *);
 char * strstr(const char *, const char *);
 char * strtok(char * restrict, const char * restrict);
 
+void * memset(void *, int, size_t);
 char * strerror(int);
 size_t strlen(const char *);
 char * strsignal(int);
