@@ -5,7 +5,7 @@
 extern int main();
 
 void _start() {
-	char *argv[] = {"/bin/dash", 0};
+	char *argv[] = {"/bin/dash.elf", 0};
 	int ret = main(1, argv);
 	exit(ret);
 }

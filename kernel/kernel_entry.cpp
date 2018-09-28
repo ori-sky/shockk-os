@@ -178,9 +178,9 @@ void kernel_entry(State state) {
 	if(mTwo.IsNothing()) { kernel_panic("failed to get /bin/two.elf inode"); }
 	auto two = mTwo.FromJust();
 
-	const char *paths[] = {"bin", "dash"};
+	const char *paths[] = {"bin", "dash.elf"};
 	auto mDash = fs.GetInode(2, paths);
-	if(mDash.IsNothing()) { kernel_panic("failed to get /bin/dash inode"); }
+	if(mDash.IsNothing()) { kernel_panic("failed to get /bin/dash.elf inode"); }
 	auto dash = mDash.FromJust();
 
 	ELF elf(fs, dash);

@@ -23,8 +23,11 @@ diff -ruN gcc-8.2.0/fixincludes/mkfixinc.sh gcc-8.2.0/fixincludes/mkfixinc.sh
      x86_64-*-mingw32* | \
 diff -ruN gcc-8.2.0/gcc/config/shk.h gcc-8.2.0/gcc/config/shk.h
 --- gcc-8.2.0/gcc/config/shk.h	1970-01-01 00:00:00.000000000 +0000
-+++ gcc-8.2.0/gcc/config/shk.h	2018-09-01 18:27:39.701234900 +0100
-@@ -0,0 +1,24 @@
++++ gcc-8.2.0/gcc/config/shk.h	2018-09-29 00:27:39.701234900 +0100
+@@ -0,0 +1,27 @@
++#undef TARGET_EXECUTABLE_SUFFIX
++#define TARGET_EXECUTABLE_SUFFIX ".elf"
++
 +#undef TARGET_SHK
 +#define TARGET_SHK 1
 +
