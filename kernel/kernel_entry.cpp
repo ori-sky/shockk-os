@@ -168,42 +168,23 @@ void kernel_entry(State state) {
 
 	Ext2 fs(state.pager, state.lba);
 
+	const char *pathsOne[] = {"bin", "one.elf"};
+	auto mOne = fs.GetInode(2, pathsOne);
+	if(mOne.IsNothing()) { kernel_panic("failed to get /bin/one.elf inode"); }
+	auto one = mOne.FromJust();
+
+	const char *pathsTwo[] = {"bin", "two.elf"};
+	auto mTwo = fs.GetInode(2, pathsTwo);
+	if(mTwo.IsNothing()) { kernel_panic("failed to get /bin/two.elf inode"); }
+	auto two = mTwo.FromJust();
+
 	const char *paths[] = {"bin", "dash"};
-	auto mKernel = fs.GetInode(2, paths);
-	if(mKernel.IsNothing()) { kernel_panic("failed to get /bin/dash inode"); }
-	auto kernel = mKernel.FromJust();
+	auto mDash = fs.GetInode(2, paths);
+	if(mDash.IsNothing()) { kernel_panic("failed to get /bin/dash inode"); }
+	auto dash = mDash.FromJust();
 
-	ELFHeader header;
-	fs.ReadInode(kernel, 0, &header);
-	screen << header;
-
-	for(size_t p = 0; p < header.ph_count; ++p) {
-		uint32_t offset = header.ph_offset + p * header.ph_size;
-		ELFProgramHeader ph;
-		fs.ReadInode(kernel, offset, &ph);
-		screen << ph;
-
-		for(uint32_t addr = ph.v_addr; addr < ph.v_addr + ph.mem_size;
-		                               addr += PAGE_ALLOCATOR_PAGE_SIZE) {
-			Pager::TableID table = addr / PAGE_ALLOCATOR_PAGE_SIZE / 1024;
-			Pager::PageID  page  = addr / PAGE_ALLOCATOR_PAGE_SIZE % 1024;
-			if(!state.pager->IsPresent(table, page)) {
-				state.pager->AllocAt(table, page);
-			}
-		}
-
-		char *addr = (char *)ph.v_addr;
-		fs.ReadInode(kernel, ph.offset, ph.file_size, addr);
-
-		// zero-initialize rest of memory image
-		for(uint32_t byte = ph.file_size; byte < ph.mem_size; ++byte) {
-			addr[byte] = 0;
-		}
-	}
-
-	//for(;;);
-
-	auto user_entry = (void(*)())header.entry_ptr;
+	ELF elf(fs, dash);
+	auto user_entry = elf.entry();
 
 	constexpr size_t USER_STACK_PAGES = 64;
 	unsigned char *user_stack = (unsigned char *)state.pager->Alloc();

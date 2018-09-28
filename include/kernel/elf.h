@@ -1,6 +1,8 @@
 #ifndef KERNEL_ELF_H
 #define KERNEL_ELF_H
 
+#include <kernel/ext2.h>
+#include <kernel/state.h>
 #include <stdint.h>
 
 enum class ELFIdentVersion : uint8_t {
@@ -86,5 +88,42 @@ struct ELFProgramHeader {
 	uint32_t flags;
 	uint32_t align;
 } __attribute__((packed));
+
+class ELF {
+private:
+	ELFHeader header;
+
+public:
+	ELF(Ext2 &fs, Ext2::Inode &inode) {
+		fs.ReadInode(inode, 0, &header);
+
+		for(size_t p = 0; p < header.ph_count; ++p) {
+			uint32_t offset = header.ph_offset + p * header.ph_size;
+			ELFProgramHeader ph;
+			fs.ReadInode(inode, offset, &ph);
+
+			for(uint32_t addr = ph.v_addr; addr < ph.v_addr + ph.mem_size;
+										   addr += PAGE_ALLOCATOR_PAGE_SIZE) {
+				Pager::TableID table = addr / PAGE_ALLOCATOR_PAGE_SIZE / 1024;
+				Pager::PageID  page  = addr / PAGE_ALLOCATOR_PAGE_SIZE % 1024;
+				if(!_kernel_state.pager->IsPresent(table, page)) {
+					_kernel_state.pager->AllocAt(table, page);
+				}
+			}
+
+			char *addr = (char *)ph.v_addr;
+			fs.ReadInode(inode, ph.offset, ph.file_size, addr);
+
+			// zero-initialize rest of memory image
+			for(uint32_t byte = ph.file_size; byte < ph.mem_size; ++byte) {
+				addr[byte] = 0;
+			}
+		}
+	}
+
+	void (*entry())() {
+		return (void(*)())header.entry_ptr;
+	}
+};
 
 #endif
