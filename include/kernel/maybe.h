@@ -3,8 +3,8 @@
 
 template<typename T> class Maybe {
 private:
-	const bool is_just;
-	const T value;
+	bool is_just;
+	T value;
 public:
 	Maybe(void)      : is_just(false), value(T{}) {}
 	Maybe(const T x) : is_just(true),  value(x)   {}

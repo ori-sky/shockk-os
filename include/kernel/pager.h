@@ -51,6 +51,7 @@ public:
 		void Make(TableID, Table *, bool = true);
 		void Make(TableID, bool = true);
 	public:
+		Context() = default;
 		Context(Pager *, Directory *, bool = true);
 
 		const Directory * GetDirectory(void) { return directory; }

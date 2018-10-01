@@ -12,6 +12,7 @@
 #include <kernel/screen.h>
 #include <kernel/state.h>
 #include <kernel/syscall.h>
+#include <kernel/task.h>
 #include <kernel/tss.h>
 
 #define SCREEN_CASE(X)       case X:  return screen << #X
@@ -195,6 +196,8 @@ void kernel_entry(State state) {
 		state.pager->GetContext().AllocAt(&stackOne[PAGE_ALLOCATOR_PAGE_SIZE*n]);
 	}
 
+	Task taskOne(ctxOne, stackOne);
+
 	state.pager->Enable(ctxTwo);
 	ELF elfTwo(fs, two);
 
@@ -203,8 +206,10 @@ void kernel_entry(State state) {
 		state.pager->GetContext().AllocAt(&stackTwo[PAGE_ALLOCATOR_PAGE_SIZE*n]);
 	}
 
+	Task taskTwo(ctxTwo, stackTwo);
+
 	state.pager->Enable(ctxOne);
-	state.next = ctxTwo;
+	state.mNext = taskTwo;
 
 	screen << '\n';
 	screen << "entering user space\n";
