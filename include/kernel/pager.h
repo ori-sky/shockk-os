@@ -48,9 +48,10 @@ public:
 		Pager *parent;
 		Directory *directory;
 
-		void Make(TableID);
+		void Make(TableID, Table *, bool = true);
+		void Make(TableID, bool = true);
 	public:
-		Context(Pager *, Directory *);
+		Context(Pager *, Directory *, bool = true);
 
 		const Directory * GetDirectory(void) { return directory; }
 
@@ -85,7 +86,7 @@ public:
 	static Pager * Create();
 
 	Context & GetContext(void) { return context; }
-	Context MakeContext(void);
+	Context MakeContext(bool = true);
 
 	void Load(Context);
 	void Enable(Context);

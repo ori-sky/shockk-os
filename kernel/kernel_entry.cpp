@@ -183,6 +183,9 @@ void kernel_entry(State state) {
 	if(mDash.IsNothing()) { kernel_panic("failed to get /bin/dash.elf inode"); }
 	auto dash = mDash.FromJust();
 
+	auto context = state.pager->MakeContext();
+	state.pager->Enable(context);
+
 	ELF elf(fs, dash);
 	auto user_entry = elf.entry();
 

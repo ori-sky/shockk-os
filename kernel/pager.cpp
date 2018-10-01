@@ -4,7 +4,8 @@
 // Pager::Context //
 ////////////////////
 
-Pager::Context::Context(Pager *parent, Directory *dir) : parent(parent), directory(dir) {
+Pager::Context::Context(Pager *parent, Directory *dir, bool copy_kernel_pages)
+                      : parent(parent), directory(dir) {
 	// initialize directory
 	for(unsigned int table = 0; table < 1024; ++table) {
 		directory->tables[table].present = 0;
@@ -20,6 +21,14 @@ Pager::Context::Context(Pager *parent, Directory *dir) : parent(parent), directo
 	for(unsigned int table = 0; table < LOW_MAP; ++table) {
 		for(unsigned int page = 0; page < 1024; ++page) {
 			Map(table, page, (void *)((table * 1024 + page) * PAGE_ALLOCATOR_PAGE_SIZE));
+		}
+	}
+
+	// copy kernel pages
+	if(copy_kernel_pages) {
+		for(TableID table = KERNEL_RESERVE; table < 1024; ++table) {
+			Table *table_addr = (Table *)(parent->GetContext().directory->tables[table].address << 12);
+			Make(table, table_addr, false);
 		}
 	}
 }
@@ -61,15 +70,21 @@ void * Pager::Context::AllocIn(TableID lower, TableID upper) {
 	return NULL;
 }
 
-void Pager::Context::Make(TableID table) {
-	Table *table_addr = static_cast<Table *>(page_allocator_reserve(parent->allocator));
+void Pager::Context::Make(TableID table, Table *table_addr, bool initialize) {
 	directory->tables[table].address = (uint32_t)table_addr >> 12;
 
 	// we set the present flag last to avoid page table caching issues
 	directory->tables[table].present = 1;
 
 	// initialize all pages to present=0
-	Unmap(table);
+	if(initialize) {
+		Unmap(table);
+	}
+}
+
+void Pager::Context::Make(TableID table, bool initialize) {
+	Table *table_addr = static_cast<Table *>(page_allocator_reserve(parent->allocator));
+	Make(table, table_addr, initialize);
 }
 
 void * Pager::Context::Map(TableID table, PageID page, void *phys_addr) {
@@ -125,7 +140,7 @@ Pager * Pager::Create(void) {
 	Pager *pager = static_cast<Pager *>(page_allocator_reserve(allocator));
 	pager->allocator = allocator;
 
-	auto context = pager->MakeContext();
+	auto context = pager->MakeContext(false);
 	pager->Load(context);
 
 	// reserve page for pager itself
@@ -138,8 +153,9 @@ Pager * Pager::Create(void) {
 	return vPager;
 }
 
-Pager::Context Pager::MakeContext(void) {
-	return Context{this, static_cast<Directory *>(page_allocator_reserve(allocator))};
+Pager::Context Pager::MakeContext(bool copy_kernel_pages) {
+	Directory *dir = static_cast<Directory *>(page_allocator_reserve(allocator));
+	return Context(this, dir, copy_kernel_pages);
 }
 
 void Pager::Load(const Directory *dir) {
