@@ -106,8 +106,8 @@ public:
 										   addr += PAGE_ALLOCATOR_PAGE_SIZE) {
 				Pager::TableID table = addr / PAGE_ALLOCATOR_PAGE_SIZE / 1024;
 				Pager::PageID  page  = addr / PAGE_ALLOCATOR_PAGE_SIZE % 1024;
-				if(!_kernel_state.pager->IsPresent(table, page)) {
-					_kernel_state.pager->AllocAt(table, page);
+				if(!_kernel_state.pager->GetContext().IsPresent(table, page)) {
+					_kernel_state.pager->GetContext().AllocAt(table, page);
 				}
 			}
 

@@ -208,8 +208,8 @@ void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
 		                               addr += PAGE_ALLOCATOR_PAGE_SIZE) {
 			Pager::TableID table = addr / PAGE_ALLOCATOR_PAGE_SIZE / 1024;
 			Pager::PageID  page  = addr / PAGE_ALLOCATOR_PAGE_SIZE % 1024;
-			if(!pager->IsPresent(table, page)) {
-				pager->AllocAt(table, page);
+			if(!pager->GetContext().IsPresent(table, page)) {
+				pager->GetContext().AllocAt(table, page);
 			}
 		}
 

@@ -154,13 +154,13 @@ void kernel_entry(State state) {
 	pic_remap(IRQ0, IRQ8);
 	pic_set_masks(0, 0);
 
-	IDT *idt = (IDT *)state.pager->Reserve();
+	IDT *idt = (IDT *)state.pager->GetContext().Reserve();
 	idt_init(idt);
 
 	__asm__ ("sti");
 
-	GDT *gdt = (GDT *)state.pager->Reserve();
-	TSS *tss = (TSS *)state.pager->Reserve();
+	GDT *gdt = (GDT *)state.pager->GetContext().Reserve();
+	TSS *tss = (TSS *)state.pager->GetContext().Reserve();
 	gdt_init(gdt, tss);
 	tss_init(tss, state.pager);
 
@@ -187,9 +187,9 @@ void kernel_entry(State state) {
 	auto user_entry = elf.entry();
 
 	constexpr size_t USER_STACK_PAGES = 64;
-	unsigned char *user_stack = (unsigned char *)state.pager->Alloc();
+	unsigned char *user_stack = (unsigned char *)state.pager->GetContext().Alloc();
 	for(size_t n = 1; n < USER_STACK_PAGES; ++n) {
-		state.pager->AllocAt(&user_stack[PAGE_ALLOCATOR_PAGE_SIZE*n]);
+		state.pager->GetContext().AllocAt(&user_stack[PAGE_ALLOCATOR_PAGE_SIZE*n]);
 	}
 
 	screen << '\n';

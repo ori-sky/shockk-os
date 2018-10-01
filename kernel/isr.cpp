@@ -63,7 +63,7 @@ extern "C" void isr_main(struct CPUState cpu_state) {
 
 			Pager::TableID table = cr2 / PAGE_ALLOCATOR_PAGE_SIZE / 1024;
 			Pager::PageID  page  = cr2 / PAGE_ALLOCATOR_PAGE_SIZE % 1024;
-			_kernel_state.pager->AllocAt(table, page);
+			_kernel_state.pager->GetContext().AllocAt(table, page);
 		} else {
 			// try to print stack trace for page fault
 			void **ebp = (void **)cpu_state.ebp;

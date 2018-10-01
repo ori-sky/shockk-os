@@ -39,47 +39,58 @@ private:
 	struct Directory {
 		DirectoryEntry tables[1024];
 	} __attribute__((packed));
-
-	struct Context {
-		Directory *directory;
-	};
 public:
 	using TableID = size_t;
 	using PageID = size_t;
+
+	class Context {
+	private:
+		Pager *parent;
+		Directory *directory;
+
+		void Make(TableID);
+	public:
+		Context(Pager *, Directory *);
+
+		const Directory * GetDirectory(void) { return directory; }
+
+		bool IsPresent(TableID, PageID);
+
+		void * Alloc(void) { return AllocIn(LOW_MAP, KERNEL_RESERVE); }
+		void * Reserve(void) { return AllocIn(KERNEL_RESERVE, 1024); }
+		void * AllocAt(void *addr) {
+			TableID table = uint32_t(addr) / PAGE_ALLOCATOR_PAGE_SIZE / 1024;
+			PageID  page  = uint32_t(addr) / PAGE_ALLOCATOR_PAGE_SIZE % 1024;
+			return AllocAt(table, page);
+		}
+		void * AllocAt(TableID, PageID);
+		void * AllocIn(TableID, TableID);
+
+		void * Map(TableID, PageID, void *);
+		void Unmap(TableID);
+	};
 private:
 	PageAllocator *allocator;
 	Context context;
 
-	static void LoadDirectory(Directory *);
+	static void Load(const Directory *);
 
 	Pager(void);
-	void MakeTable(TableID);
-	void * Map(TableID, PageID, void *);
-	void Unmap(TableID);
-	void Reload(void);
+
+	void Reload(void) { Load(context.GetDirectory()); }
 public:
 	static constexpr TableID LOW_MAP        = 1;   // upper bound of 1:1 mapping
 	static constexpr TableID KERNEL_RESERVE = 768; // lower bound of kernel
 
 	static Pager * Create();
 
+	Context & GetContext(void) { return context; }
 	Context MakeContext(void);
+
 	void Load(Context);
 	void Enable(Context);
-
 	void Enable(void);
 	void Disable(void);
-	bool IsPresent(TableID, PageID);
-	void * Alloc(void);
-	void * Reserve(void);
-	void * AllocIn(TableID, TableID);
-	void * AllocAt(TableID, PageID);
-
-	void * AllocAt(void *addr) {
-		TableID table = uint32_t(addr) / PAGE_ALLOCATOR_PAGE_SIZE / 1024;
-		PageID  page  = uint32_t(addr) / PAGE_ALLOCATOR_PAGE_SIZE % 1024;
-		return AllocAt(table, page);
-	}
 };
 
 #endif
