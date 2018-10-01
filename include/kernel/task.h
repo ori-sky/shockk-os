@@ -1,14 +1,18 @@
 #ifndef KERNEL_TASK_H
 #define KERNEL_TASK_H
 
+#include <kernel/pager.h>
+
 class Task {
 private:
-	Pager::Context context;
-	unsigned char *stack;
 public:
-	Task() = default;
-	Task(Pager::Context context, unsigned char *stack)
-	   : context(context), stack(stack) {}
+	static constexpr size_t STACK_PAGES = 64;
+
+	Pager::Context context;
+	unsigned char *kernel_stack;
+	unsigned char *stack;
+
+	Task(void);
 };
 
 #endif

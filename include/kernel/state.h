@@ -9,7 +9,7 @@
 struct State {
 	uint32_t lba;
 	Pager *pager;
-	Maybe<Task> mNext;
+	Task *next;
 };
 
 extern State _kernel_state;

@@ -87,7 +87,11 @@ extern "C" void isr_main(struct CPUState cpu_state) {
 		}
 		break;
 	case IRQ0: /* PIT */
-		screen_print("yield\n");
+		if(_kernel_state.next != nullptr) {
+			screen_print("yield\n");
+			//task_switch(next);
+			_kernel_state.next = nullptr;
+		}
 		break;
 	case IRQ1: /* keyboard */
 		scancode = ports_inb(0x60); // read scancode from keyboard

@@ -34,6 +34,6 @@ struct TSS {
 	uint32_t iomap_base;
 } __attribute__((packed));
 
-void tss_init(struct TSS *, Pager *);
+void tss_init(struct TSS *, unsigned char *);
 
 #endif

@@ -163,7 +163,6 @@ void kernel_entry(State state) {
 	GDT *gdt = (GDT *)state.pager->GetContext().Reserve();
 	TSS *tss = (TSS *)state.pager->GetContext().Reserve();
 	gdt_init(gdt, tss);
-	tss_init(tss, state.pager);
 
 	// load /bin/dash and execute it in user space
 
@@ -184,41 +183,25 @@ void kernel_entry(State state) {
 	if(mDash.IsNothing()) { kernel_panic("failed to get /bin/dash.elf inode"); }
 	auto dash = mDash.FromJust();
 
-	auto ctxOne = state.pager->MakeContext();
-	auto ctxTwo = state.pager->MakeContext();
-
-	state.pager->Enable(ctxOne);
+	Task taskOne;
+	state.pager->Enable(taskOne.context);
 	ELF elfOne(fs, one);
 
-	constexpr size_t USER_STACK_PAGES = 64;
-	unsigned char *stackOne = (unsigned char *)state.pager->GetContext().Alloc();
-	for(size_t n = 1; n < USER_STACK_PAGES; ++n) {
-		state.pager->GetContext().AllocAt(&stackOne[PAGE_ALLOCATOR_PAGE_SIZE*n]);
-	}
-
-	Task taskOne(ctxOne, stackOne);
-
-	state.pager->Enable(ctxTwo);
+	Task taskTwo;
+	state.pager->Enable(taskTwo.context);
 	ELF elfTwo(fs, two);
 
-	unsigned char *stackTwo = (unsigned char *)state.pager->GetContext().Alloc();
-	for(size_t n = 1; n < USER_STACK_PAGES; ++n) {
-		state.pager->GetContext().AllocAt(&stackTwo[PAGE_ALLOCATOR_PAGE_SIZE*n]);
-	}
-
-	Task taskTwo(ctxTwo, stackTwo);
-
-	state.pager->Enable(ctxOne);
-	state.mNext = taskTwo;
+	state.pager->Enable(taskOne.context);
+	state.next = &taskTwo;
 
 	screen << '\n';
 	screen << "entering user space\n";
+	screen << "stack = " << (uint32_t)taskOne.stack << '\n';
 	screen << "heap  = 0x1000000\n";
-	screen << "stack = " << (uint32_t)stackOne << '\n';
 	screen << '\n';
 
-	auto user_entry = elfOne.entry();
-	user_enter(user_entry, &stackOne[PAGE_ALLOCATOR_PAGE_SIZE * USER_STACK_PAGES / 2]);
+	tss_init(tss, taskOne.kernel_stack);
+	user_enter(elfOne.entry(), &taskOne.stack[PAGE_ALLOCATOR_PAGE_SIZE * Task::STACK_PAGES]);
 
 	for(;;) { __asm__ ("hlt"); } // unreachable
 }
