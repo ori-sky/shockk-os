@@ -164,7 +164,6 @@ void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
 	}
 
 	struct Pager *pager = Pager::Create();
-	pager->Reload();
 	pager->Enable();
 
 	ata_init();

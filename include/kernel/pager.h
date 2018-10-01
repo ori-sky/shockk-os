@@ -39,12 +39,16 @@ private:
 	struct Directory {
 		DirectoryEntry tables[1024];
 	} __attribute__((packed));
+
+	struct Context {
+		Directory *directory;
+	};
 public:
 	using TableID = size_t;
 	using PageID = size_t;
 private:
 	PageAllocator *allocator;
-	Directory *directory;
+	Context context;
 
 	static void LoadDirectory(Directory *);
 
@@ -52,13 +56,17 @@ private:
 	void MakeTable(TableID);
 	void * Map(TableID, PageID, void *);
 	void Unmap(TableID);
+	void Reload(void);
 public:
 	static constexpr TableID LOW_MAP        = 1;   // upper bound of 1:1 mapping
 	static constexpr TableID KERNEL_RESERVE = 768; // lower bound of kernel
 
 	static Pager * Create();
 
-	void Reload(void);
+	Context MakeContext(void);
+	void Load(Context);
+	void Enable(Context);
+
 	void Enable(void);
 	void Disable(void);
 	bool IsPresent(TableID, PageID);
