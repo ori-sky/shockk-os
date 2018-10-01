@@ -7,6 +7,7 @@
 struct State {
 	uint32_t lba;
 	Pager *pager;
+	Pager::Context next;
 };
 
 extern State _kernel_state;
