@@ -94,13 +94,13 @@ private:
 	ELFHeader header;
 
 public:
-	ELF(Ext2 &fs, Ext2::Inode &inode) {
-		fs.ReadInode(inode, 0, &header);
+	ELF(Ext2::Inode &inode) {
+		_kernel_state.fs.ReadInode(inode, 0, &header);
 
 		for(size_t p = 0; p < header.ph_count; ++p) {
 			uint32_t offset = header.ph_offset + p * header.ph_size;
 			ELFProgramHeader ph;
-			fs.ReadInode(inode, offset, &ph);
+			_kernel_state.fs.ReadInode(inode, offset, &ph);
 
 			for(uint32_t addr = ph.v_addr; addr < ph.v_addr + ph.mem_size;
 										   addr += PAGE_ALLOCATOR_PAGE_SIZE) {
@@ -112,7 +112,7 @@ public:
 			}
 
 			char *addr = (char *)ph.v_addr;
-			fs.ReadInode(inode, ph.offset, ph.file_size, addr);
+			_kernel_state.fs.ReadInode(inode, ph.offset, ph.file_size, addr);
 
 			// zero-initialize rest of memory image
 			for(uint32_t byte = ph.file_size; byte < ph.mem_size; ++byte) {

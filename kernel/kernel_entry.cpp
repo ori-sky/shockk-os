@@ -14,6 +14,7 @@
 #include <kernel/syscall.h>
 #include <kernel/task.h>
 #include <kernel/tss.h>
+#include <kernel/user.h>
 
 #define SCREEN_CASE(X)       case X:  return screen << #X
 #define SCREEN_DEFAULT(X, Y) default: return screen << #X << "::<INVALID> (" << static_cast<uint32_t>(Y) << ')'
@@ -142,8 +143,6 @@ public:
 	}
 };
 
-extern "C" void user_enter(void (*entry)(), void *stack) __attribute__((noreturn));
-
 extern "C" void kernel_entry(const State) __attribute__((noreturn));
 void kernel_entry(const State state) {
 	_kernel_state = state;
@@ -166,33 +165,26 @@ void kernel_entry(const State state) {
 
 	// load /bin/dash and execute it in user space
 
-	Ext2 fs(_kernel_state.pager, _kernel_state.lba);
-
 	const char *pathsOne[] = {"bin", "one.elf"};
-	auto mOne = fs.GetInode(2, pathsOne);
+	auto mOne = _kernel_state.fs.GetInode(2, pathsOne);
 	if(mOne.IsNothing()) { kernel_panic("failed to get /bin/one.elf inode"); }
 	auto one = mOne.FromJust();
 
-	const char *pathsTwo[] = {"bin", "two.elf"};
-	auto mTwo = fs.GetInode(2, pathsTwo);
-	if(mTwo.IsNothing()) { kernel_panic("failed to get /bin/two.elf inode"); }
-	auto two = mTwo.FromJust();
-
 	const char *paths[] = {"bin", "dash.elf"};
-	auto mDash = fs.GetInode(2, paths);
+	auto mDash = _kernel_state.fs.GetInode(2, paths);
 	if(mDash.IsNothing()) { kernel_panic("failed to get /bin/dash.elf inode"); }
 	auto dash = mDash.FromJust();
 
-	auto taskOne = Task::Create();
-	_kernel_state.pager->Enable(taskOne->context);
-	ELF elfOne(fs, one);
-
-	auto taskTwo = Task::Create();
-	_kernel_state.pager->Enable(taskTwo->context);
-	ELF elfTwo(fs, two);
+	auto taskOne = Task::Create("one.elf");
+	auto taskTwo = Task::Create("two.elf");
 
 	_kernel_state.pager->Enable(taskOne->context);
-	_kernel_state.next = taskTwo;
+	ELF elfOne(one);
+
+	taskOne->next = taskTwo;
+	//taskTwo->next = taskOne;
+
+	_kernel_state.task = taskOne;
 
 	screen << '\n';
 	screen << "entering user space\n";

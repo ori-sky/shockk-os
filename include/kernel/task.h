@@ -10,14 +10,15 @@ public:
 	unsigned char *kernel_esp;
 	unsigned char *kernel_stack;
 	unsigned char *stack;
+	Task *next = nullptr;
 	Pager::Context context;
 
 	static constexpr size_t STACK_PAGES = 64;
 
-	static Task * Create();
+	static Task * Create(const char *);
 };
 
 extern "C" void task_switch(Task *);
-extern "C" void task_entry(void) __attribute__((noreturn));
+extern "C" void task_entry(const char *) __attribute__((noreturn));
 
 #endif

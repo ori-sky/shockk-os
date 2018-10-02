@@ -105,6 +105,7 @@ private:
 	uint32_t lba;
 	Superblock superblock;
 public:
+	Ext2() = default;
 	Ext2(Pager *pager, uint32_t lba);
 	uint32_t GetBlockSize(void);
 	uint32_t GetBlockAddr(uint32_t block_id);

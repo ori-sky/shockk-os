@@ -87,10 +87,10 @@ extern "C" void isr_main(struct CPUState cpu_state) {
 		}
 		break;
 	case IRQ0: /* PIT */
-		if(_kernel_state.next != nullptr) {
+		if(_kernel_state.task != nullptr && _kernel_state.task->next != nullptr) {
 			screen_print("yield\n");
-			task_switch(_kernel_state.next);
-			_kernel_state.next = nullptr;
+			task_switch(_kernel_state.task->next);
+			_kernel_state.task = _kernel_state.task->next;
 		}
 		break;
 	case IRQ1: /* keyboard */
