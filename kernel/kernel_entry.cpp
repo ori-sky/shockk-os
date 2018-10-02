@@ -144,8 +144,8 @@ public:
 
 extern "C" void user_enter(void (*entry)(), void *stack) __attribute__((noreturn));
 
-extern "C" void kernel_entry(State) __attribute__((noreturn));
-void kernel_entry(State state) {
+extern "C" void kernel_entry(const State) __attribute__((noreturn));
+void kernel_entry(const State state) {
 	_kernel_state = state;
 
 	Screen screen;
@@ -155,18 +155,18 @@ void kernel_entry(State state) {
 	pic_remap(IRQ0, IRQ8);
 	pic_set_masks(0, 0);
 
-	IDT *idt = (IDT *)state.pager->GetContext().Reserve();
+	IDT *idt = (IDT *)_kernel_state.pager->GetContext().Reserve();
 	idt_init(idt);
 
 	__asm__ ("sti");
 
-	GDT *gdt = (GDT *)state.pager->GetContext().Reserve();
-	TSS *tss = (TSS *)state.pager->GetContext().Reserve();
+	GDT *gdt = (GDT *)_kernel_state.pager->GetContext().Reserve();
+	TSS *tss = (TSS *)_kernel_state.pager->GetContext().Reserve();
 	gdt_init(gdt, tss);
 
 	// load /bin/dash and execute it in user space
 
-	Ext2 fs(state.pager, state.lba);
+	Ext2 fs(_kernel_state.pager, _kernel_state.lba);
 
 	const char *pathsOne[] = {"bin", "one.elf"};
 	auto mOne = fs.GetInode(2, pathsOne);
@@ -183,25 +183,25 @@ void kernel_entry(State state) {
 	if(mDash.IsNothing()) { kernel_panic("failed to get /bin/dash.elf inode"); }
 	auto dash = mDash.FromJust();
 
-	Task taskOne;
-	state.pager->Enable(taskOne.context);
+	auto taskOne = Task::Create();
+	_kernel_state.pager->Enable(taskOne->context);
 	ELF elfOne(fs, one);
 
-	Task taskTwo;
-	state.pager->Enable(taskTwo.context);
+	auto taskTwo = Task::Create();
+	_kernel_state.pager->Enable(taskTwo->context);
 	ELF elfTwo(fs, two);
 
-	state.pager->Enable(taskOne.context);
-	state.next = &taskTwo;
+	_kernel_state.pager->Enable(taskOne->context);
+	_kernel_state.next = taskTwo;
 
 	screen << '\n';
 	screen << "entering user space\n";
-	screen << "stack = " << (uint32_t)taskOne.stack << '\n';
+	screen << "stack = " << (uint32_t)taskOne->stack << '\n';
 	screen << "heap  = 0x1000000\n";
 	screen << '\n';
 
-	tss_init(tss, taskOne.kernel_stack);
-	user_enter(elfOne.entry(), &taskOne.stack[PAGE_ALLOCATOR_PAGE_SIZE * Task::STACK_PAGES]);
+	tss_init(tss, taskOne->kernel_stack);
+	user_enter(elfOne.entry(), &taskOne->stack[PAGE_ALLOCATOR_PAGE_SIZE * Task::STACK_PAGES]);
 
 	for(;;) { __asm__ ("hlt"); } // unreachable
 }
