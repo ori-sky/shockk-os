@@ -222,7 +222,7 @@ void loader_entry(uint32_t mb_magic, uint32_t mb_addr) {
 		}
 	}
 
-	State state{fs, pager, nullptr};
+	State state{fs, pager, nullptr, nullptr};
 
 	auto kernel_entry = (void(*)(State))header.entry_ptr;
 	kernel_entry(state);

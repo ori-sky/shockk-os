@@ -88,9 +88,13 @@ extern "C" void isr_main(struct CPUState cpu_state) {
 		break;
 	case IRQ0: /* PIT */
 		if(_kernel_state.task != nullptr && _kernel_state.task->next != nullptr) {
-			screen_print("yield\n");
-			task_switch(_kernel_state.task->next);
+			__asm__ ("cli");
+			auto curr = _kernel_state.task;
 			_kernel_state.task = _kernel_state.task->next;
+			task_switch(_kernel_state.tss, curr, _kernel_state.task);
+			__asm__ ("sti");
+		} else {
+			screen_print("ran out of tasks\n");
 		}
 		break;
 	case IRQ1: /* keyboard */

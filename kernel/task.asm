@@ -6,10 +6,17 @@ task_switch:
   push esi
   push edi
   push ebp
-  mov esi, [esp+(4+1)*4]                                                        ; esi = pointer to next task
+  mov edi, [esp+(4+2)*4]                                                        ; edi = pointer to current task
+  cmp edi, 0                                                                    ; only save esp if not null
+  je .next
+  mov [edi], esp                                                                ; save kernel esp of current task
+.next:
+  mov esi, [esp+(4+3)*4]                                                        ; esi = pointer to next task
   mov esp, [esi]                                                                ; esp = esp of next task
   mov eax, [esi+(4+1)*4]                                                        ; eax = cr3 of next task
   mov ebx, [esi+4]                                                              ; ebx = stack top of next task
+  mov edi, [esp+(4+1)*4]                                                        ; edi = pointer to TSS
+  mov [edi+4], ebx                                                              ; tss.esp0 = stack top of next task
   mov ecx, cr3                                                                  ; ecx = cr3 of current task
   cmp eax, ecx                                                                  ; skip reload if same address space
   je .done

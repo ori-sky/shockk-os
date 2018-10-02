@@ -5,11 +5,13 @@
 #include <kernel/maybe.h>
 #include <kernel/pager.h>
 #include <kernel/task.h>
+#include <kernel/tss.h>
 #include <stdint.h>
 
 struct State {
 	Ext2 fs;
 	Pager *pager;
+	TSS *tss;
 	Task *task;
 };
 

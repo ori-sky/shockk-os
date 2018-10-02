@@ -163,37 +163,19 @@ void kernel_entry(const State state) {
 	TSS *tss = (TSS *)_kernel_state.pager->GetContext().Reserve();
 	gdt_init(gdt, tss);
 
-	// load /bin/dash and execute it in user space
-
-	const char *pathsOne[] = {"bin", "one.elf"};
-	auto mOne = _kernel_state.fs.GetInode(2, pathsOne);
-	if(mOne.IsNothing()) { kernel_panic("failed to get /bin/one.elf inode"); }
-	auto one = mOne.FromJust();
-
-	const char *paths[] = {"bin", "dash.elf"};
-	auto mDash = _kernel_state.fs.GetInode(2, paths);
-	if(mDash.IsNothing()) { kernel_panic("failed to get /bin/dash.elf inode"); }
-	auto dash = mDash.FromJust();
+	_kernel_state.tss = tss;
 
 	auto taskOne = Task::Create("one.elf");
 	auto taskTwo = Task::Create("two.elf");
 
-	_kernel_state.pager->Enable(taskOne->context);
-	ELF elfOne(one);
-
 	taskOne->next = taskTwo;
-	//taskTwo->next = taskOne;
-
-	_kernel_state.task = taskOne;
-
-	screen << '\n';
-	screen << "entering user space\n";
-	screen << "stack = " << (uint32_t)taskOne->stack << '\n';
-	screen << "heap  = 0x1000000\n";
-	screen << '\n';
+	taskTwo->next = taskOne;
 
 	tss_init(tss, taskOne->kernel_stack);
-	user_enter(elfOne.entry(), &taskOne->stack[PAGE_ALLOCATOR_PAGE_SIZE * Task::STACK_PAGES]);
+	_kernel_state.task = taskOne;
+
+	__asm__ ("cli");
+	task_switch(tss, nullptr, taskOne);
 
 	for(;;) { __asm__ ("hlt"); } // unreachable
 }
