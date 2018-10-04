@@ -1,18 +1,28 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <kernel/screen.h>
-#include <kernel/syscall.h>
+#include <kernel/cpu.h>
 #include <kernel/isr.h>
+#include <kernel/screen.h>
+#include <kernel/state.h>
+#include <kernel/syscall.h>
+#include <kernel/task.h>
 
 static const char buffer[] = "this is a file baked into the kernel, it does not exist on the disk";
 static size_t pos = 0;
 
-extern "C" int syscall_main(int command, int arg1, int arg2, int arg3) {
-	(void)arg2;
+extern "C" int syscall_main(int command, int arg1, int arg2, int arg3, IRETState iret) {
 	(void)arg3;
 
 	switch(command) {
+	case SYSCALL_COMMAND_FORK: {
+		auto task = Task::Create("one.elf");
+		task->next = _kernel_state.task->next;
+		_kernel_state.task->next = task;
+		return 0;
+		return -1;
+		break;
+	}
 	case SYSCALL_COMMAND_OPEN:
 		return 5;
 		break;

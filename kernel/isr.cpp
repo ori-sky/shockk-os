@@ -13,7 +13,7 @@ char stdin_char = '\0';
 
 static unsigned int alpha_counter;
 
-extern "C" void isr_main(struct CPUState cpu_state) {
+extern "C" void isr_main(struct CPUState cpu_state, struct IRETState iret) {
 	if(cpu_state.interrupt == IRQ7) { return; }
 	if(cpu_state.interrupt >= IRQ0) {
 		ports_outb(PIC_PORT_MASTER, 0x20);
@@ -37,7 +37,7 @@ extern "C" void isr_main(struct CPUState cpu_state) {
 		break;
 	case 0xD: /* general protection fault */
 		screen_print("GPF at 0x");
-		uitoa((unsigned int)cpu_state.iret_eip, s0, 16);
+		uitoa((unsigned int)iret.eip, s0, 16);
 		screen_print(s0);
 		screen_print(" error=0b");
 		uitoa((unsigned int)cpu_state.error, s2, 2);
@@ -46,8 +46,10 @@ extern "C" void isr_main(struct CPUState cpu_state) {
 		break;
 	case 0xE: /* page fault */
 		screen_print("page fault at 0x");
-		uitoa((unsigned int)cpu_state.iret_eip, s0, 16);
+		uitoa((unsigned int)iret.eip, s0, 16);
 		screen_print(s0);
+		screen_print(" task=");
+		screen_print(_kernel_state.task->exe_name);
 		screen_print(" cr2=0x");
 		uitoa((unsigned int)cr2, s0, 16);
 		screen_print(s0);
@@ -63,7 +65,7 @@ extern "C" void isr_main(struct CPUState cpu_state) {
 
 			Pager::TableID table = cr2 / PAGE_ALLOCATOR_PAGE_SIZE / 1024;
 			Pager::PageID  page  = cr2 / PAGE_ALLOCATOR_PAGE_SIZE % 1024;
-			_kernel_state.pager->GetContext().AllocAt(table, page);
+			_kernel_state.task->context.AllocAt(table, page);
 		} else {
 			// try to print stack trace for page fault
 			void **ebp = (void **)cpu_state.ebp;

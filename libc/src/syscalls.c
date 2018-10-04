@@ -124,8 +124,9 @@ int fcntl(int filedes, int cmd, ...) {
 }
 
 pid_t fork(void) {
-	puts("fork: not implemented");
-	return -1;
+	pid_t pid;
+	syscall_fork(pid);
+	return pid;
 }
 
 int fstat(int filedes, struct stat *buf) {

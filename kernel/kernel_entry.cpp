@@ -172,7 +172,8 @@ void kernel_entry(const State state) {
 
 	taskOne->next  = taskTwo;
 	taskTwo->next  = taskLoop;
-	taskLoop->next = taskOne;
+	taskLoop->next = taskDash;
+	taskDash->next = taskDash;
 
 	tss_init(tss, taskOne->kernel_stack);
 	_kernel_state.task = taskOne;

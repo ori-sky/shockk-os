@@ -4,10 +4,15 @@
 #include <stdint.h>
 
 enum {
+	SYSCALL_COMMAND_FORK,
 	SYSCALL_COMMAND_OPEN,
 	SYSCALL_COMMAND_GET,
 	SYSCALL_COMMAND_PUT
 };
+
+// PID = fork()
+#define syscall_fork(PID) __asm__ __volatile \
+	("int $0x80" : "=a" (PID) : "a" (SYSCALL_COMMAND_FORK))
 
 // FD = open(PATH)
 #define syscall_open(FD, PATH) __asm__ __volatile \
