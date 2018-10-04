@@ -165,11 +165,14 @@ void kernel_entry(const State state) {
 
 	_kernel_state.tss = tss;
 
-	auto taskOne = Task::Create("one.elf");
-	auto taskTwo = Task::Create("two.elf");
+	auto taskOne  = Task::Create("one.elf");
+	auto taskTwo  = Task::Create("two.elf");
+	auto taskDash = Task::Create("dash.elf");
+	auto taskLoop = Task::Create("loop.elf");
 
-	taskOne->next = taskTwo;
-	taskTwo->next = taskOne;
+	taskOne->next  = taskTwo;
+	taskTwo->next  = taskLoop;
+	taskLoop->next = taskOne;
 
 	tss_init(tss, taskOne->kernel_stack);
 	_kernel_state.task = taskOne;

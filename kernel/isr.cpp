@@ -89,9 +89,12 @@ extern "C" void isr_main(struct CPUState cpu_state) {
 	case IRQ0: /* PIT */
 		if(_kernel_state.task != nullptr && _kernel_state.task->next != nullptr) {
 			__asm__ ("cli");
+
+			//screen_print("yield\n");
 			auto curr = _kernel_state.task;
 			_kernel_state.task = _kernel_state.task->next;
 			task_switch(_kernel_state.tss, curr, _kernel_state.task);
+
 			__asm__ ("sti");
 		} else {
 			screen_print("ran out of tasks\n");
