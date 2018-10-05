@@ -94,7 +94,7 @@ extern "C" void isr_main(struct CPUState cpu_state, struct IRETState iret) {
 
 			//screen_print("yield\n");
 			auto curr = _kernel_state.task;
-			_kernel_state.task = _kernel_state.task->next;
+			_kernel_state.task = curr->next;
 			task_switch(_kernel_state.tss, curr, _kernel_state.task);
 
 			__asm__ ("sti");

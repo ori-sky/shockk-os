@@ -113,7 +113,9 @@ _Noreturn void _exit(int status) {
 	fprintf(stderr, "return code = %d\n", status);
 	fflush(stdout);
 	fflush(stderr);
-	for(;;);
+	for(;;) {
+		syscall_exit();
+	}
 }
 
 int fcntl(int filedes, int cmd, ...) {

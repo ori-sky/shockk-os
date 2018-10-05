@@ -23,6 +23,17 @@ extern "C" int syscall_main(int command, int arg1, int arg2, int arg3, IRETState
 		return -1;
 		break;
 	}
+	case SYSCALL_COMMAND_EXIT: {
+		auto curr = _kernel_state.task;
+		screen_print("exiting task ");
+		screen_print(curr->exe_name);
+		screen_put('\n');
+		for(;;) {
+			_kernel_state.task = curr->next;
+			task_switch(_kernel_state.tss, curr, _kernel_state.task);
+		}
+		break;
+	}
 	case SYSCALL_COMMAND_OPEN:
 		return 5;
 		break;
