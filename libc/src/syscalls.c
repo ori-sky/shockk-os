@@ -104,7 +104,8 @@ int dup2(int filedes, int filedes2) {
 int execve(const char *path, char * const argv[], char * const envp[]) {
 	(void)argv;
 	(void)envp;
-	syscall_exec(path);
+	syscall_exec(path); // noreturn if successful
+	errno = EACCES;
 	return -1;
 }
 
@@ -138,18 +139,21 @@ int fstat(int filedes, struct stat *buf) {
 }
 
 gid_t getegid(void) {
-	puts("getegid: not implemented");
-	return 1;
+	gid_t egid;
+	syscall_getegid(egid);
+	return egid;
 }
 
 uid_t geteuid(void) {
-	puts("geteuid: not implemented");
-	return 1;
+	uid_t euid;
+	syscall_geteuid(euid);
+	return euid;
 }
 
 gid_t getgid(void) {
-	puts("getgid: not implemented");
-	return 1;
+	gid_t gid;
+	syscall_getgid(gid);
+	return gid;
 }
 
 int getgroups(int gidgetsize, gid_t grouplist[]) {
@@ -165,24 +169,30 @@ pid_t getpgrp(void) {
 }
 
 pid_t getpid(void) {
-	puts("getpid: not implemented");
-	return 1;
+	pid_t pid;
+	syscall_getpid(pid);
+	return pid;
 }
 
 pid_t getppid(void) {
-	puts("getppid: not implemented");
-	return 1;
+	pid_t ppid;
+	syscall_getppid(ppid);
+	return ppid;
 }
 
 uid_t getuid(void) {
-	puts("getuid: not implemented");
-	return 1;
+	uid_t uid;
+	syscall_getuid(uid);
+	return uid;
 }
 
 int isatty(int filedes) {
-	(void)filedes;
-	puts("isatty: not implemented");
-	return 1;
+	if(filedes == STDIN_FILENO || filedes == STDOUT_FILENO || filedes == STDERR_FILENO) {
+		return 1;
+	} else {
+		printf("isatty: not implemented for %d\n", filedes);
+		return 0;
+	}
 }
 
 int lstat(const char * restrict file, struct stat * restrict st) {

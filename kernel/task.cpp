@@ -54,20 +54,12 @@ bool Task::Exec(const char *path) {
 		if(path[i] == '/') {
 			buffer[i - off] = '\0';
 
-			screen_print("getting inode ");
-			screen_print(buffer);
-			screen_put('\n');
-
 			mData = _kernel_state.fs.GetInode(data, buffer);
 			if(mData.IsNothing()) { return false; }
 			data = mData.FromJust();
 
 			off = i + 1;
 		} else if(path[i] == '\0') {
-			screen_print("getting inode ");
-			screen_print(buffer);
-			screen_put('\n');
-
 			mData = _kernel_state.fs.GetInode(data, buffer);
 			if(mData.IsNothing()) { return false; }
 			data = mData.FromJust();
@@ -108,18 +100,8 @@ bool Task::Exec(const char *path) {
 
 	// load elf
 
-	//auto old_task = _kernel_state.task;
-	//auto old_context = _kernel_state.pager->GetContext();
-	//_kernel_state.task = this;
-	//_kernel_state.pager->Enable(context);
-
-	screen_print("ONE\n");
 	ELF elf(context, data);
-	screen_print("TWO\n");
 	entry = elf.entry();
-
-	//_kernel_state.task = old_task;
-	//_kernel_state.pager->Enable(old_context);
 
 	return true;
 }

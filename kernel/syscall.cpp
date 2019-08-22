@@ -29,7 +29,6 @@ extern "C" int syscall_main(int command, int arg1, int arg2, int arg3, IRETState
 		if(_kernel_state.task->Exec(path)) {
 			task_switch(nullptr, _kernel_state.task);
 		}
-		screen_print("DEBUG\n");
 		break;
 	}
 	case SYSCALL_COMMAND_EXIT: {
@@ -42,6 +41,13 @@ extern "C" int syscall_main(int command, int arg1, int arg2, int arg3, IRETState
 		}
 		break;
 	}
+	case SYSCALL_COMMAND_GETEGID:
+	case SYSCALL_COMMAND_GETEUID:
+	case SYSCALL_COMMAND_GETGID:
+	case SYSCALL_COMMAND_GETPID:
+	case SYSCALL_COMMAND_GETPPID:
+	case SYSCALL_COMMAND_GETUID:
+		return 1;
 	case SYSCALL_COMMAND_OPEN:
 		return 5;
 		break;
