@@ -114,7 +114,7 @@ public:
 			}
 
 			auto old_context = _kernel_state.pager->GetContext();
-			_kernel_state.pager->Load(context);
+			_kernel_state.pager->Enable(context);
 
 			char *addr = (char *)ph.v_addr;
 			_kernel_state.fs.ReadInode(inode, ph.offset, ph.file_size, addr);
@@ -124,7 +124,7 @@ public:
 				addr[byte] = 0;
 			}
 
-			_kernel_state.pager->Load(old_context);
+			_kernel_state.pager->Enable(old_context);
 		}
 	}
 

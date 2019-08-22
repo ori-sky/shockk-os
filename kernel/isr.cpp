@@ -34,7 +34,10 @@ extern "C" void isr_main(struct CPUState cpu_state, struct IRETState iret) {
 
 	switch(cpu_state.interrupt) {
 	case 0x0: /* divide by zero */
-		screen_print("divide-by-zero error\n");
+		screen_print("divide-by-zero at 0x");
+		uitoa((unsigned int)iret.eip, s0, 16);
+		screen_print(s0);
+		screen_put('\n');
 		break;
 	case 0xD: /* general protection fault */
 		screen_print("GPF at 0x");

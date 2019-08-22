@@ -160,7 +160,7 @@ Pager::Context Pager::MakeContext(bool copy_kernel_pages) {
 
 Pager::Context Pager::ForkContext(Context parent) {
 	static unsigned char buf[PAGE_ALLOCATOR_PAGE_SIZE];
-	auto saved = GetContext();
+	auto old_context = GetContext();
 	auto context = Pager::MakeContext();
 
 	__asm__ ("cli");
@@ -186,7 +186,11 @@ Pager::Context Pager::ForkContext(Context parent) {
 		}
 	}
 
+	Enable(old_context);
+
 	__asm__ ("sti");
+
+	return context;
 }
 
 void Pager::Load(const Directory *dir) {

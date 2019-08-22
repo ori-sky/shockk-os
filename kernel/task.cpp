@@ -8,30 +8,44 @@ Task * Task::Create(const char *path) {
 	return task->Exec(path) ? task : nullptr;
 }
 
-Task * Task::Fork(void) {
+Task * Task::Fork(uint32_t ebp, IRETState iret) const {
 	Task *task = (Task *)_kernel_state.pager->GetContext().Reserve();
 
-	task->context = _kernel_state.pager->MakeContext();
-
-	unsigned char *self_kernel_stack_page = kernel_stack - PAGE_ALLOCATOR_PAGE_SIZE;
-	unsigned char *task_kernel_stack_page = (unsigned char *)task->context.Reserve();
-
-	task->kernel_stack = task_kernel_stack_page + PAGE_ALLOCATOR_PAGE_SIZE;
-	task->kernel_esp = task->kernel_stack;
+	task->context = _kernel_state.pager->ForkContext(context);
 
 	// copy exe_name to task structure page
 	size_t n;
 	for(n = 0; n < sizeof(task->exe_name) - 1 && exe_name[n] != '\0'; ++n) {
 		task->exe_name[n] = exe_name[n];
 	}
+	task->exe_name[n++] = '2';
 	task->exe_name[n] = '\0';
 
-	auto diff = kernel_stack - kernel_esp;
-	task->kernel_esp -= diff;
+	// set up stack
 
-	for(size_t off = 0; off < PAGE_ALLOCATOR_PAGE_SIZE; ++off) {
-		task_kernel_stack_page[off] = self_kernel_stack_page[off];
-	}
+	task->kernel_stack = (unsigned char *)task->context.Reserve() + PAGE_ALLOCATOR_PAGE_SIZE;
+	task->kernel_esp = task->kernel_stack;
+
+	// IRETState
+	task->kernel_esp -= 4;
+	*(uint32_t *)task->kernel_esp = iret.ss;
+	task->kernel_esp -= 4;
+	*(uint32_t *)task->kernel_esp = iret.esp;
+	task->kernel_esp -= 4;
+	*(uint32_t *)task->kernel_esp = iret.eflags;
+	task->kernel_esp -= 4;
+	*(uint32_t *)task->kernel_esp = iret.cs;
+	task->kernel_esp -= 4;
+	*(uint32_t *)task->kernel_esp = iret.eip;
+
+	task->kernel_esp -= 4;
+	*(uint32_t *)task->kernel_esp = ebp;                      // ebp
+	task->kernel_esp -= 4;
+	*(uint32_t *)task->kernel_esp = (uint32_t)&_task_fork;    // ret addr for task_fork
+
+	task->kernel_esp -= 4*4;                                  // regs pushed by task_switch
+
+	task->stack = stack;
 
 	return task;
 }

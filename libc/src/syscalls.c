@@ -129,6 +129,7 @@ int fcntl(int filedes, int cmd, ...) {
 pid_t fork(void) {
 	pid_t pid = 0;
 	syscall_fork(pid);
+	printf("fork returned %d\n", pid);
 	return pid;
 }
 

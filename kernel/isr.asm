@@ -30,6 +30,7 @@ isr_stub:
 %macro SYSCALL_INTERRUPT 1
     global isr_stub_%1
     isr_stub_%1:
+        push ebp                                                                ; save ebp
         push edx                                                                ; push argument 3
         push ecx                                                                ; push argument 2
         push ebx                                                                ; push argument 1
@@ -40,6 +41,7 @@ isr_stub:
         pop ebx                                                                 ; pop argument 1
         pop ecx                                                                 ; pop argument 2
         pop edx                                                                 ; pop argument 3
+        pop ebp                                                                 ; restore ebp
         iret                                                                    ; return from interrupt
         times 32-($-isr_stub_%1) db 0                                           ; align stub to 32 bytes
 %endmacro

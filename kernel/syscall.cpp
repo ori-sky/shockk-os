@@ -11,20 +11,19 @@
 static const char buffer[] = "this is a file baked into the kernel, it does not exist on the disk";
 static size_t pos = 0;
 
-extern "C" int syscall_main(int command, int arg1, int arg2, int arg3, IRETState iret) {
+extern "C" int syscall_main(int command, int arg1, int arg2, int arg3, uint32_t ebp, IRETState iret) {
 	switch(command) {
 	case SYSCALL_COMMAND_FORK: {
-		//screen_print("SYSCALL FORK\n");
-		auto curr = _kernel_state.task->next;
-		auto task = curr->Fork();
-		//task->next = curr->next;
-		//curr->next = task;
+		screen_print("SYSCALL FORK\n");
+		auto curr = _kernel_state.task;
+		auto task = curr->Fork(ebp, iret);
+		task->next = curr->next;
+		curr->next = task;
 		//_task_fork(_kernel_state.tss, curr, task); // ret after this
-		return 0;
-		break;
+		return 1;
 	}
 	case SYSCALL_COMMAND_EXEC: {
-		//screen_print("SYSCALL EXEC\n");
+		screen_print("SYSCALL EXEC\n");
 		char *path = (char *)arg1;
 		if(_kernel_state.task->Exec(path)) {
 			task_switch(nullptr, _kernel_state.task);

@@ -2,6 +2,7 @@
 #define KERNEL_TASK_H
 
 #include <kernel/pager.h>
+#include <kernel/cpu.h>
 #include <kernel/tss.h>
 
 class Task {
@@ -21,7 +22,7 @@ public:
 
 	static Task * Create(const char *);
 
-	Task * Fork(void);
+	Task * Fork(uint32_t, IRETState) const;
 	bool Exec(const char *);
 };
 
