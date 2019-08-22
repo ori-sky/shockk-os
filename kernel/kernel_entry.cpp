@@ -165,10 +165,10 @@ void kernel_entry(const State state) {
 
 	_kernel_state.tss = tss;
 
-	auto taskOne  = Task::Create("one.elf");
-	auto taskTwo  = Task::Create("two.elf");
-	auto taskDash = Task::Create("dash.elf");
-	auto taskLoop = Task::Create("loop.elf");
+	auto taskOne  = Task::Create("/bin/one.elf");
+	auto taskTwo  = Task::Create("/bin/two.elf");
+	auto taskDash = Task::Create("/bin/dash.elf");
+	auto taskLoop = Task::Create("/bin/loop.elf");
 
 	taskOne->next  = taskTwo;
 	taskTwo->next  = taskLoop;
@@ -176,10 +176,7 @@ void kernel_entry(const State state) {
 	taskDash->next = taskDash;
 
 	tss_init(tss, taskOne->kernel_stack);
-	_kernel_state.task = taskOne;
-
-	__asm__ ("cli");
-	task_switch(tss, nullptr, taskOne);
+	task_switch(nullptr, taskOne);
 
 	for(;;) { __asm__ ("hlt"); } // unreachable
 }

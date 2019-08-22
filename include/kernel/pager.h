@@ -86,8 +86,10 @@ public:
 
 	static Pager * Create();
 
-	Context & GetContext(void) { return context; }
 	Context MakeContext(bool = true);
+	Context ForkContext(Context parent);
+
+	Context & GetContext(void) { return context; }
 
 	void Load(Context);
 	void Enable(Context);

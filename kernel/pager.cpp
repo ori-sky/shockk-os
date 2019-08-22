@@ -158,6 +158,37 @@ Pager::Context Pager::MakeContext(bool copy_kernel_pages) {
 	return Context(this, dir, copy_kernel_pages);
 }
 
+Pager::Context Pager::ForkContext(Context parent) {
+	static unsigned char buf[PAGE_ALLOCATOR_PAGE_SIZE];
+	auto saved = GetContext();
+	auto context = Pager::MakeContext();
+
+	__asm__ ("cli");
+
+	for(TableID table = LOW_MAP; table < KERNEL_RESERVE; ++table) {
+		for(unsigned int page = 0; page < 1024; ++page) {
+			if(parent.IsPresent(table, page)) {
+				unsigned char *ptr = (unsigned char *)((table * 1024 + page) * PAGE_ALLOCATOR_PAGE_SIZE);
+
+				Enable(parent);
+
+				for(size_t off = 0; off < PAGE_ALLOCATOR_PAGE_SIZE; ++off) {
+					buf[off] = ptr[off];
+				}
+
+				context.AllocAt(table, page);
+				Enable(context);
+
+				for(size_t off = 0; off < PAGE_ALLOCATOR_PAGE_SIZE; ++off) {
+					ptr[off] = buf[off];
+				}
+			}
+		}
+	}
+
+	__asm__ ("sti");
+}
+
 void Pager::Load(const Directory *dir) {
 	__asm__ ("mov %0, %%cr3" : : "r" (dir));
 }

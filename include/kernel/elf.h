@@ -94,7 +94,9 @@ private:
 	ELFHeader header;
 
 public:
-	ELF(Ext2::Inode &inode) {
+	ELF(void) = default;
+
+	ELF(Pager::Context context, Ext2::Inode &inode) {
 		_kernel_state.fs.ReadInode(inode, 0, &header);
 
 		for(size_t p = 0; p < header.ph_count; ++p) {
@@ -106,10 +108,13 @@ public:
 										   addr += PAGE_ALLOCATOR_PAGE_SIZE) {
 				Pager::TableID table = addr / PAGE_ALLOCATOR_PAGE_SIZE / 1024;
 				Pager::PageID  page  = addr / PAGE_ALLOCATOR_PAGE_SIZE % 1024;
-				if(!_kernel_state.task->context.IsPresent(table, page)) {
-					_kernel_state.task->context.AllocAt(table, page);
+				if(!context.IsPresent(table, page)) {
+					context.AllocAt(table, page);
 				}
 			}
+
+			auto old_context = _kernel_state.pager->GetContext();
+			_kernel_state.pager->Load(context);
 
 			char *addr = (char *)ph.v_addr;
 			_kernel_state.fs.ReadInode(inode, ph.offset, ph.file_size, addr);
@@ -118,6 +123,8 @@ public:
 			for(uint32_t byte = ph.file_size; byte < ph.mem_size; ++byte) {
 				addr[byte] = 0;
 			}
+
+			_kernel_state.pager->Load(old_context);
 		}
 	}
 

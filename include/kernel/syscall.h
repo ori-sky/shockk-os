@@ -5,6 +5,7 @@
 
 enum {
 	SYSCALL_COMMAND_FORK,
+	SYSCALL_COMMAND_EXEC,
 	SYSCALL_COMMAND_EXIT,
 	SYSCALL_COMMAND_OPEN,
 	SYSCALL_COMMAND_GET,
@@ -14,6 +15,10 @@ enum {
 // PID = fork()
 #define syscall_fork(PID) __asm__ __volatile__ \
 	("int $0x80" : "=a" (PID) : "a" (SYSCALL_COMMAND_FORK))
+
+// exec(PATH)
+#define syscall_exec(PATH) __asm__ __volatile__ \
+	("int $0x80" : : "a" (SYSCALL_COMMAND_EXEC), "b" (PATH))
 
 // noreturn exit()
 #define syscall_exit() __asm__ __volatile__ \

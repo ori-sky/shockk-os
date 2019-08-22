@@ -7,6 +7,7 @@ enum _errno_e {
 	EBADF,
 	EEXIST,
 	EINTR,
+	EINVAL,
 	EIO,
 	ENOENT,
 	ENOEXEC,

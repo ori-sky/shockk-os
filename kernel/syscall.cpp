@@ -12,15 +12,24 @@ static const char buffer[] = "this is a file baked into the kernel, it does not 
 static size_t pos = 0;
 
 extern "C" int syscall_main(int command, int arg1, int arg2, int arg3, IRETState iret) {
-	(void)arg3;
-
 	switch(command) {
 	case SYSCALL_COMMAND_FORK: {
-		auto task = Task::Create("one.elf");
-		task->next = _kernel_state.task->next;
-		_kernel_state.task->next = task;
+		screen_print("SYSCALL FORK\n");
+		auto curr = _kernel_state.task->next;
+		auto task = curr->Fork();
+		//task->next = curr->next;
+		//curr->next = task;
+		//_task_fork(_kernel_state.tss, curr, task); // ret after this
 		return 0;
-		return -1;
+		break;
+	}
+	case SYSCALL_COMMAND_EXEC: {
+		screen_print("SYSCALL EXEC\n");
+		char *path = (char *)arg1;
+		if(_kernel_state.task->Exec(path)) {
+			task_switch(nullptr, _kernel_state.task);
+		}
+		screen_print("DEBUG\n");
 		break;
 	}
 	case SYSCALL_COMMAND_EXIT: {
@@ -29,8 +38,7 @@ extern "C" int syscall_main(int command, int arg1, int arg2, int arg3, IRETState
 		screen_print(curr->exe_name);
 		screen_put('\n');
 		for(;;) {
-			_kernel_state.task = curr->next;
-			task_switch(_kernel_state.tss, curr, _kernel_state.task);
+			task_switch(curr, curr->next);
 		}
 		break;
 	}

@@ -102,10 +102,9 @@ int dup2(int filedes, int filedes2) {
 }
 
 int execve(const char *path, char * const argv[], char * const envp[]) {
-	(void)path;
 	(void)argv;
 	(void)envp;
-	puts("execve: not implemented");
+	syscall_exec(path);
 	return -1;
 }
 
@@ -126,7 +125,7 @@ int fcntl(int filedes, int cmd, ...) {
 }
 
 pid_t fork(void) {
-	pid_t pid;
+	pid_t pid = 0;
 	syscall_fork(pid);
 	return pid;
 }
@@ -136,13 +135,6 @@ int fstat(int filedes, struct stat *buf) {
 	(void)buf;
 	puts("fstat: not implemented");
 	return 0;
-}
-
-char * getcwd(char *buf, size_t size) {
-	(void)buf;
-	(void)size;
-	puts("getcwd: not implemented");
-	return NULL;
 }
 
 gid_t getegid(void) {
@@ -221,7 +213,7 @@ void * mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off) 
 		return MAP_FAILED;
 	}
 
-	printf("mmap: allocating %d bytes at %d\n", (int)len, (int)next_addr);
+	//printf("mmap: allocating %d bytes at %d\n", (int)len, (int)next_addr);
 
 	addr = next_addr;
 	next_addr += len;

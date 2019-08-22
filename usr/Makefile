@@ -21,10 +21,10 @@ dash-$(DASH_VERSION): dash-$(DASH_VERSION).tar.gz
 
 build-dash-$(DASH_VERSION): dash-$(DASH_VERSION)
 	mkdir -pv $@
-	export PATH="$(TOOLCHAIN_PREFIX)/bin:$$PATH"; cd $@ && ../$</configure --host=$(TARGET) --prefix="/" --enable-static
+	export PATH="$(TOOLCHAIN_PREFIX)/bin:$$PATH"; cd $@ && ../$</configure --host=$(TARGET) --prefix="/" --enable-static --enable-debug
 
 $(SYSROOT)/bin/dash: build-dash-$(DASH_VERSION)
-	export PATH="$(TOOLCHAIN_PREFIX)/bin:$$PATH"; $(MAKE) -C $< CC=$(TARGET)-gcc
+	export PATH="$(TOOLCHAIN_PREFIX)/bin:$$PATH"; $(MAKE) -C $< CC=$(TARGET)-gcc CFLAGS='-O0 -g'
 	export PATH="$(TOOLCHAIN_PREFIX)/bin:$$PATH"; $(MAKE) -C $< install-exec CC=$(TARGET)-gcc DESTDIR="$(SYSROOT)"
 
 # configure --host=i386-shk --enable-static --prefix=??? --sysroot???

@@ -1,9 +1,10 @@
 NASM_VERSION=2.12.02
 BINUTILS_VERSION=2.31
 GCC_VERSION=8.2.0
+GDB_VERSION=8.2
 
 .PHONY: all
-all: nasm binutils gcc
+all: nasm binutils gcc gdb
 
 .PHONY: nasm
 nasm: $(TOOLCHAIN_PREFIX)/bin/nasm
@@ -13,6 +14,9 @@ binutils: $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-ar
 
 .PHONY: gcc
 gcc: $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-gcc
+
+.PHONY: gdb
+gdb: $(TOOLCHAIN_PREFIX)/bin/gdb
 
 # downloads
 
@@ -24,6 +28,9 @@ binutils-$(BINUTILS_VERSION).tar.gz:
 
 gcc-$(GCC_VERSION).tar.gz:
 	wget ftp://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/$@
+
+gdb-$(GDB_VERSION).tar.gz:
+	wget ftp://ftp.gnu.org/gnu/gdb/$@
 
 # patches
 
@@ -37,6 +44,9 @@ binutils-$(BINUTILS_VERSION): binutils-$(BINUTILS_VERSION).tar.gz
 gcc-$(GCC_VERSION): gcc-$(GCC_VERSION).tar.gz
 	tar -xvf $<
 	patch -p0 < shk-gcc-$(GCC_VERSION).patch
+
+gdb-$(GDB_VERSION): gdb-$(GDB_VERSION).tar.gz
+	tar -xvf $<
 
 # gcc prerequisites
 
@@ -76,11 +86,19 @@ $(TOOLCHAIN_PREFIX)/bin/$(TARGET)-gcc: build-gcc-$(GCC_VERSION) $(SYSROOT)/usr/i
 	$(MAKE) -C $< install-gcc
 	$(MAKE) -C $< install-target-libgcc
 
+# gdb build
+
+build-gdb-$(GDB_VERSION): gdb-$(GDB_VERSION)
+	mkdir -pv $@
+
+$(TOOLCHAIN_PREFIX)/bin/gdb: build-gdb-$(GDB_VERSION)
+
 .PHONY: clean
 clean:
 	rm -rfv "$(TOOLCHAIN_PREFIX)"
 	$(MAKE) -C build-binutils-$(BINUTILS_VERSION) clean
 	$(MAKE) -C build-gcc-$(GCC_VERSION) clean
+	$(MAKE) -C build-gdb-$(GDB_VERSION) clean
 
 .PHONY: distclean
 distclean:
@@ -88,3 +106,4 @@ distclean:
 	rm -rfv "build-nasm-$(NASM_VERSION)"
 	rm -rfv "build-binutils-$(BINUTILS_VERSION)"
 	rm -rfv "build-gcc-$(GCC_VERSION)"
+	rm -rfv "build-gdb-$(GDB_VERSION)"
