@@ -26,9 +26,10 @@ extern "C" void isr_main(struct CPUState cpu_state, struct IRETState iret) {
 	uint32_t cr2;
 	__asm__ __volatile__ ("mov %%cr2, %0" : "=r" (cr2));
 
-	char s0[] = "        ";
-	char s1[] = "                ";
-	char s2[] = "                                ";
+	char s0[]  = "        ";
+	char s00[] = "        ";
+	char s1[]  = "                ";
+	char s2[]  = "                                ";
 	uint8_t scancode;
 
 	switch(cpu_state.interrupt) {
@@ -54,8 +55,8 @@ extern "C" void isr_main(struct CPUState cpu_state, struct IRETState iret) {
 		uitoa((unsigned int)cr2, s0, 16);
 		screen_print(s0);
 		screen_print(" error=0b");
-		uitoa((unsigned int)cpu_state.error, s1, 2);
-		screen_print(s1);
+		uitoa((unsigned int)cpu_state.error, s00, 2);
+		screen_print(s00);
 		screen_put('\n');
 		if(cr2 >= 0x1000000 && cr2 < 0x2000000) {
 			screen_print("allocating page at 0x");

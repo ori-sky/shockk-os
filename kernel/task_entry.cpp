@@ -8,8 +8,7 @@
 void task_entry(Task *task) {
 	__asm__ ("sti");
 
-	screen_print("spawned new task\n");
-	screen_print("loading ");
+	screen_print("spawned new task ");
 	screen_print(task->exe_name);
 	screen_put('\n');
 

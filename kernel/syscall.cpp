@@ -14,7 +14,7 @@ static size_t pos = 0;
 extern "C" int syscall_main(int command, int arg1, int arg2, int arg3, IRETState iret) {
 	switch(command) {
 	case SYSCALL_COMMAND_FORK: {
-		screen_print("SYSCALL FORK\n");
+		//screen_print("SYSCALL FORK\n");
 		auto curr = _kernel_state.task->next;
 		auto task = curr->Fork();
 		//task->next = curr->next;
@@ -24,7 +24,7 @@ extern "C" int syscall_main(int command, int arg1, int arg2, int arg3, IRETState
 		break;
 	}
 	case SYSCALL_COMMAND_EXEC: {
-		screen_print("SYSCALL EXEC\n");
+		//screen_print("SYSCALL EXEC\n");
 		char *path = (char *)arg1;
 		if(_kernel_state.task->Exec(path)) {
 			task_switch(nullptr, _kernel_state.task);

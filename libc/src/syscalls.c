@@ -91,6 +91,7 @@ int chdir(const char *path) {
 int close(int filedes) {
 	(void)filedes;
 	puts("close: not implemented");
+	errno = EBADF;
 	return -1;
 }
 
@@ -314,6 +315,7 @@ pid_t waitpid(pid_t pid, int *stat_loc, int options) {
 	(void)stat_loc;
 	(void)options;
 	puts("waitpid: not implemented");
+	errno = ECHILD;
 	return -1;
 }
 

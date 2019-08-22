@@ -5,6 +5,7 @@ enum _errno_e {
 	EACCES,
 	EAGAIN,
 	EBADF,
+	ECHILD,
 	EEXIST,
 	EINTR,
 	EINVAL,

@@ -122,6 +122,8 @@ char * strerror(int errnum) {
 		return "EAGAIN";
 	case EBADF:
 		return "EBADF";
+	case ECHILD:
+		return "ECHILD";
 	case EEXIST:
 		return "EEXIST";
 	case EINTR:
