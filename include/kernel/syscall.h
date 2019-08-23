@@ -18,52 +18,25 @@ enum {
 	SYSCALL_COMMAND_PUT
 };
 
-// exec(PATH)
-#define syscall_exec(PATH) __asm__ __volatile__ \
-	("int $0x80" : : "a" (SYSCALL_COMMAND_EXEC), "b" (PATH))
+#define syscall0(CMD, ARG1, ARG2, ARG3) \
+	__asm__ __volatile__ \
+	("int $0x80" : : "a" (CMD), "b" (ARG1), "c" (ARG2), "d" (ARG3))
 
-// noreturn exit()
-#define syscall_exit() __asm__ __volatile__ \
-	("int $0x80" : : "a" (SYSCALL_COMMAND_EXIT))
+#define syscall1(CMD, RET1, ARG1, ARG2, ARG3) \
+	__asm__ __volatile__ \
+	("int $0x80" : "=a" (RET1) : "a" (CMD), "b" (ARG1), "c" (ARG2), "d" (ARG3))
 
-// PID = fork()
-#define syscall_fork(PID) __asm__ __volatile__ \
-	("int $0x80" : "=a" (PID) : "a" (SYSCALL_COMMAND_FORK))
-
-// C = get(FD)
-#define syscall_get(C, FD) __asm__ __volatile__ \
-	("int $0x80" : "=a" (C) : "a" (SYSCALL_COMMAND_GET), "b" (FD))
-
-// EGID = getegid()
-#define syscall_getegid(EGID) __asm__ __volatile__ \
-	("int $0x80" : "=a" (EGID) : "a" (SYSCALL_COMMAND_GETEGID))
-
-// EUID = geteuid()
-#define syscall_geteuid(EUID) __asm__ __volatile__ \
-	("int $0x80" : "=a" (EUID) : "a" (SYSCALL_COMMAND_GETEUID))
-
-// GID = getgid()
-#define syscall_getgid(GID) __asm__ __volatile__ \
-	("int $0x80" : "=a" (GID) : "a" (SYSCALL_COMMAND_GETGID))
-
-// PID = getpid()
-#define syscall_getpid(PID) __asm__ __volatile__ \
-	("int $0x80" : "=a" (PID) : "a" (SYSCALL_COMMAND_GETPID))
-
-// PPID = getppid()
-#define syscall_getppid(PPID) __asm__ __volatile__ \
-	("int $0x80" : "=a" (PPID) : "a" (SYSCALL_COMMAND_GETPPID))
-
-// UID = getuid()
-#define syscall_getuid(UID) __asm__ __volatile__ \
-	("int $0x80" : "=a" (UID) : "a" (SYSCALL_COMMAND_GETUID))
-
-// FD = open(PATH)
-#define syscall_open(FD, PATH) __asm__ __volatile \
-	("int $0x80" : "=a" (FD) : "a" (SYSCALL_COMMAND_OPEN), "b" (PATH))
-
-// put(C, FD)
-#define syscall_put(C, FD) __asm__ __volatile__ \
-	("int $0x80" : : "a" (SYSCALL_COMMAND_PUT), "b" (C), "c" (FD))
+#define syscall_exec(PATH)     syscall0(SYSCALL_COMMAND_EXEC,          PATH, 0,  0)
+#define syscall_exit()         syscall0(SYSCALL_COMMAND_EXIT,          0,    0,  0)
+#define syscall_fork(PID)      syscall1(SYSCALL_COMMAND_FORK,    PID,  0,    0,  0)
+#define syscall_get(C, FD)     syscall1(SYSCALL_COMMAND_GET,     C,    FD,   0,  0)
+#define syscall_getegid(EGID)  syscall1(SYSCALL_COMMAND_GETEGID, EGID, 0,    0,  0)
+#define syscall_geteuid(EUID)  syscall1(SYSCALL_COMMAND_GETEUID, EUID, 0,    0,  0)
+#define syscall_getgid(GID)    syscall1(SYSCALL_COMMAND_GETGID,  GID,  0,    0,  0)
+#define syscall_getpid(PID)    syscall1(SYSCALL_COMMAND_GETPID,  PID,  0,    0,  0)
+#define syscall_getppid(PPID)  syscall1(SYSCALL_COMMAND_GETPPID, PPID, 0,    0,  0)
+#define syscall_getuid(UID)    syscall1(SYSCALL_COMMAND_GETUID,  UID,  0,    0,  0)
+#define syscall_open(FD, PATH) syscall1(SYSCALL_COMMAND_OPEN,    FD,   PATH, 0,  0)
+#define syscall_put(C, FD)     syscall0(SYSCALL_COMMAND_PUT,           C,    FD, 0)
 
 #endif
