@@ -88,6 +88,8 @@ extern "C" ret syscall_main(int command, int arg1, int arg2, int arg3, uint32_t 
 			break;
 		}
 		break;
+	case SYSCALL_COMMAND_WAITPID:
+		return {1, 0};
 	default:
 		kernel_panic("unrecognized syscall command");
 		break;

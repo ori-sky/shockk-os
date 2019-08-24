@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <kernel/syscall.h>
 /*
@@ -129,7 +130,6 @@ int fcntl(int filedes, int cmd, ...) {
 pid_t fork(void) {
 	pid_t pid = 0;
 	syscall_fork(pid);
-	printf("fork returned %d\n", pid);
 	return pid;
 }
 
@@ -312,12 +312,43 @@ mode_t umask(mode_t cmask) {
 }
 
 pid_t waitpid(pid_t pid, int *stat_loc, int options) {
-	(void)pid;
-	(void)stat_loc;
-	(void)options;
-	puts("waitpid: not implemented");
-	errno = ECHILD;
-	return -1;
+	if(options > (WCONTINUED | WNOHANG | WUNTRACED)) {
+		errno = EINVAL;
+		return -1;
+	}
+
+	if(options > 0) {
+		puts("waitpid: options not implemented");
+		errno = EINVAL;
+		return -1;
+	}
+
+	if(pid > 0) {
+		puts("waitpid: pid > 0 not implemented");
+		errno = ECHILD;
+		return -1;
+	} else if(pid == 0) {
+		puts("waitpid: pid == 0 not implemented");
+		errno = ECHILD;
+		return -1;
+	} else if(pid == (pid_t)-1) {
+		pid_t ret;
+		int stat;
+		syscall_waitpid(ret, stat, pid);
+
+		if(ret == -1) {
+			errno = ECHILD;
+		}
+
+		if(stat_loc != NULL) {
+			*stat_loc = stat;
+		}
+		return ret;
+	} else /*if(pid < (pid_t)-1)*/ {
+		puts("waitpid: pid < -1 not implemented");
+		errno = ECHILD;
+		return -1;
+	}
 }
 
 ssize_t write(int filedes, const void *buf, size_t nbyte) {

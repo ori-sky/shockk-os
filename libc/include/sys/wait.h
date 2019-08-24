@@ -1,11 +1,9 @@
 #ifndef _SYS_WAIT_H
 #define _SYS_WAIT_H 1
 
-enum {
-	WCONTINUED,
-	WNOHANG,
-	WUNTRACED
-};
+#define WCONTINUED 1
+#define WNOHANG    2
+#define WUNTRACED  4
 
 #define WEXITSTATUS(STATUS)   0
 #define WIFCONTINUED(STATUS)  0
