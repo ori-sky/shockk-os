@@ -30,18 +30,20 @@ isr_stub:
 %macro SYSCALL_INTERRUPT 1
     global isr_stub_%1
     isr_stub_%1:
-        push ebp                                                                ; save ebp
+        push ebp                                                                ; save ebp from ring 3
+        mov ebp, esp                                                            ; save esp in ebp
+        sub esp, 16                                                             ; allocate return struct on stack
         push edx                                                                ; push argument 3
         push ecx                                                                ; push argument 2
         push ebx                                                                ; push argument 1
         push eax                                                                ; push command code
         cld                                                                     ; clear direction flag
+        lea eax, [ebp-8]                                                        ; calculate return struct address
+        push eax                                                                ; push return struct address
         call syscall_main                                                       ; call C syscall handler
-        add esp, 4                                                              ; clean up pushed command code
-        pop ebx                                                                 ; pop argument 1
-        pop ecx                                                                 ; pop argument 2
-        pop edx                                                                 ; pop argument 3
-        pop ebp                                                                 ; restore ebp
+        mov eax, [ebp-8]                                                        ; retrieve first return value
+        mov edx, [ebp-4]                                                        ; retrieve second return value
+        leave                                                                   ; pop everything and restore ebp
         iret                                                                    ; return from interrupt
         times 32-($-isr_stub_%1) db 0                                           ; align stub to 32 bytes
 %endmacro

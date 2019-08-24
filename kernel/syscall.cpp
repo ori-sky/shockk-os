@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <kernel/cpu.h>
 #include <kernel/isr.h>
+#include <kernel/panic.h>
 #include <kernel/screen.h>
 #include <kernel/state.h>
 #include <kernel/syscall.h>
@@ -11,7 +12,12 @@
 static const char buffer[] = "this is a file baked into the kernel, it does not exist on the disk";
 static size_t pos = 0;
 
-extern "C" int syscall_main(int command, int arg1, int arg2, int arg3, uint32_t ebp, IRETState iret) {
+struct ret {
+	int32_t ret1;
+	int32_t ret2;
+};
+
+extern "C" ret syscall_main(int command, int arg1, int arg2, int arg3, uint32_t ebp, int ret2, int ret1, int pad2, int pad1, IRETState iret) {
 	switch(command) {
 	case SYSCALL_COMMAND_FORK: {
 		screen_print("SYSCALL FORK\n");
@@ -20,7 +26,7 @@ extern "C" int syscall_main(int command, int arg1, int arg2, int arg3, uint32_t 
 		task->next = curr->next;
 		curr->next = task;
 		//_task_fork(_kernel_state.tss, curr, task); // ret after this
-		return 1;
+		return {1, 0};
 	}
 	case SYSCALL_COMMAND_EXEC: {
 		screen_print("SYSCALL EXEC\n");
@@ -35,6 +41,7 @@ extern "C" int syscall_main(int command, int arg1, int arg2, int arg3, uint32_t 
 		screen_print("exiting task ");
 		screen_print(curr->exe_name);
 		screen_put('\n');
+
 		for(;;) {
 			task_switch(curr, curr->next);
 		}
@@ -46,9 +53,9 @@ extern "C" int syscall_main(int command, int arg1, int arg2, int arg3, uint32_t 
 	case SYSCALL_COMMAND_GETPID:
 	case SYSCALL_COMMAND_GETPPID:
 	case SYSCALL_COMMAND_GETUID:
-		return 1;
+		return {1, 0};
 	case SYSCALL_COMMAND_OPEN:
-		return 5;
+		return {5, 0};
 		break;
 	case SYSCALL_COMMAND_GET:
 		if(arg1 == STDIN_FILENO) {
@@ -62,10 +69,10 @@ extern "C" int syscall_main(int command, int arg1, int arg2, int arg3, uint32_t 
 			// POSIX -> 11. General Terminal Interface -> Canonical Mode Input Processing
 			screen_put(stdin_char, SCREEN_COLOR_USER);
 
-			return stdin_char;
+			return {stdin_char, 0};
 		} else {
-			if(pos > sizeof(buffer)) { return EOF; }
-			return buffer[pos++];
+			if(pos > sizeof(buffer)) { return {EOF, 0}; }
+			return {buffer[pos++], 0};
 		}
 	case SYSCALL_COMMAND_PUT:
 		switch(arg2) {
@@ -82,8 +89,8 @@ extern "C" int syscall_main(int command, int arg1, int arg2, int arg3, uint32_t 
 		}
 		break;
 	default:
-		screen_print("unrecognized syscall command\n");
+		kernel_panic("unrecognized syscall command");
 		break;
 	}
-	return 0;
+	return {0, 0};
 }
