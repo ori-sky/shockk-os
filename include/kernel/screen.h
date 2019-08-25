@@ -32,4 +32,57 @@ void screen_print(const char *s, const uint8_t = SCREEN_COLOR_DEFAULT);
 }
 #endif
 
+#ifdef __cplusplus
+
+#include <kernel/itoa.h>
+
+class Screen {
+public:
+	Screen(void) {
+		screen_init();
+	}
+
+	friend Screen & operator<<(Screen &screen, const char c) {
+		screen_put(c);
+		return screen;
+	}
+
+	friend Screen & operator<<(Screen &screen, const uint8_t i) {
+		char sz[4] = {0};
+		itoa(static_cast<int>(i), sz, 16);
+		return screen << "0x" << sz;
+	}
+
+	friend Screen & operator<<(Screen &screen, const uint16_t i) {
+		char sz[8] = {0};
+		itoa(static_cast<int>(i), sz, 16);
+		return screen << "0x" << sz;
+	}
+
+	friend Screen & operator<<(Screen &screen, const uint32_t i) {
+		char sz[16] = {0};
+		itoa(static_cast<int>(i), sz, 16);
+		return screen << "0x" << sz;
+	}
+
+	friend Screen & operator<<(Screen &screen, const int16_t i) {
+		char sz[8] = {0};
+		itoa(static_cast<int>(i), sz, 16);
+		return screen << "0x" << sz;
+	}
+
+	friend Screen & operator<<(Screen &screen, const int32_t i) {
+		char sz[16] = {0};
+		itoa(static_cast<int>(i), sz, 16);
+		return screen << "0x" << sz;
+	}
+
+	friend Screen & operator<<(Screen &screen, const char *sz) {
+		screen_print(sz);
+		return screen;
+	}
+};
+
+#endif
+
 #endif

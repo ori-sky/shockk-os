@@ -13,11 +13,11 @@ static const char buffer[] = "this is a file baked into the kernel, it does not 
 static size_t pos = 0;
 
 struct ret {
-	int32_t ret1;
-	int32_t ret2;
+	int ret1;
+	int ret2;
 };
 
-extern "C" ret syscall_main(int command, int arg1, int arg2, int arg3, uint32_t ebp, int ret2, int ret1, int pad2, int pad1, IRETState iret) {
+extern "C" ret syscall_main(int command, int arg1, int arg2, int arg3, uint32_t ebp, int /*ret2*/, int /*ret1*/, int /*pad2*/, int /*pad1*/, IRETState iret) {
 	switch(command) {
 	case SYSCALL_COMMAND_FORK: {
 		screen_print("SYSCALL FORK\n");
@@ -25,8 +25,7 @@ extern "C" ret syscall_main(int command, int arg1, int arg2, int arg3, uint32_t 
 		auto task = curr->Fork(ebp, iret);
 		task->next = curr->next;
 		curr->next = task;
-		//_task_fork(_kernel_state.tss, curr, task); // ret after this
-		return {1, 0};
+		return {task->pid, 0};
 	}
 	case SYSCALL_COMMAND_EXEC: {
 		screen_print("SYSCALL EXEC\n");
@@ -41,6 +40,8 @@ extern "C" ret syscall_main(int command, int arg1, int arg2, int arg3, uint32_t 
 		screen_print("exiting task ");
 		screen_print(curr->exe_name);
 		screen_put('\n');
+
+		curr->running = false;
 
 		for(;;) {
 			task_switch(curr, curr->next);
@@ -88,8 +89,26 @@ extern "C" ret syscall_main(int command, int arg1, int arg2, int arg3, uint32_t 
 			break;
 		}
 		break;
-	case SYSCALL_COMMAND_WAITPID:
-		return {1, 0};
+	case SYSCALL_COMMAND_WAITPID: {
+		auto curr = _kernel_state.task;
+
+		int pid = arg1;
+		if(pid == -1) {
+			bool found = false;
+			while(!found) {
+				task_switch(curr, curr->next);
+				for(uint32_t p = 1; p < _kernel_state.next_pid; ++p) {
+					if(p != curr->pid && !_kernel_state.pids[p]->running) {
+						found = true;
+						pid = p;
+						break;
+					}
+				}
+			}
+		}
+		_kernel_state.screen << "kernel waitpid done (pid=" << pid << ", next_pid=" << _kernel_state.next_pid << ")\n";
+		return {pid, 0};
+	}
 	default:
 		kernel_panic("unrecognized syscall command");
 		break;

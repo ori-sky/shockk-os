@@ -21,7 +21,7 @@ export CRT0_O=$(CURDIR)/crt0.o
 export LIBC_A=$(CURDIR)/libc.a
 
 export INCLUDE_PATHS=$(CURDIR)/include
-export CXXWARNS=-Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual -Wformat=2 -Winit-self -Wmissing-include-dirs -Wredundant-decls -Wstrict-overflow=5 -Wundef -Wdisabled-optimization -Wsign-conversion -Wstack-protector -Winline -Wpadded -Wswitch-enum
+export CXXWARNS=-Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual -Wformat=2 -Winit-self -Wmissing-include-dirs -Wredundant-decls -Wstrict-overflow=5 -Wundef -Wdisabled-optimization -Wsign-conversion -Wstack-protector -Winline -Wswitch-enum
 
 export IMAGE=$(CURDIR)/shk.img
 IMAGE_MBR=$(CURDIR)/shk-mbr.img

@@ -5,11 +5,22 @@
 
 Task * Task::Create(const char *path) {
 	Task *task = (Task *)_kernel_state.pager->GetContext().Reserve();
-	return task->Exec(path) ? task : nullptr;
+	if(task->Exec(path)) {
+		task->running = true;
+		task->pid = _kernel_state.next_pid++;
+		_kernel_state.pids[task->pid] = task;
+		return task;
+	} else {
+		return nullptr;
+	}
 }
 
 Task * Task::Fork(uint32_t ebp, IRETState iret) const {
 	Task *task = (Task *)_kernel_state.pager->GetContext().Reserve();
+
+	task->running = true;
+	task->pid = _kernel_state.next_pid++;
+	_kernel_state.pids[task->pid] = task;
 
 	task->context = _kernel_state.pager->ForkContext(context);
 
@@ -18,7 +29,6 @@ Task * Task::Fork(uint32_t ebp, IRETState iret) const {
 	for(n = 0; n < sizeof(task->exe_name) - 1 && exe_name[n] != '\0'; ++n) {
 		task->exe_name[n] = exe_name[n];
 	}
-	task->exe_name[n++] = '2';
 	task->exe_name[n] = '\0';
 
 	// set up stack
@@ -121,6 +131,11 @@ bool Task::Exec(const char *path) {
 }
 
 void task_switch(Task *curr, Task *next) {
+	// if next task is dead, skip it
+	if(!next->running && next->next != nullptr) {
+		next = next->next;
+	}
+
 	__asm__ ("cli");
 	_kernel_state.task = next;
 	_task_switch(_kernel_state.tss, curr, next);

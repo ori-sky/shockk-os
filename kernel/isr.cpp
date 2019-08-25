@@ -73,12 +73,12 @@ extern "C" void isr_main(struct CPUState cpu_state, struct IRETState iret) {
 		} else {
 			// try to print stack trace for page fault
 			void **ebp = (void **)cpu_state.ebp;
-			for(unsigned int frame = 0; frame < 3; ++frame) {
+			for(unsigned int frame = 0; frame < 8; ++frame) {
 				// if ebp is outside of stack region
-				if(ebp < (void *)0x8000000 || ebp > (void *)(0x8000000 + 0x100000)) {
-					screen_print("from <no frame pointer>\n");
-					break;
-				}
+				//if(ebp < (void *)0x8000000 || ebp > (void *)(0x8000000 + 0x100000)) {
+				//	screen_print("from <no frame pointer>\n");
+				//	break;
+				//}
 
 				void * eip = ebp[1];
 				if(eip == NULL) { break; }
