@@ -8,6 +8,7 @@
 class Task {
 private:
 	Task(void) = default;
+	Task(uint32_t pid) : pid(pid) {}
 public:
 	static constexpr size_t STACK_PAGES = 64;
 
@@ -17,10 +18,10 @@ public:
 	Task *next = nullptr;
 	Pager::Context context;
 
-	void (*entry)();
+	void (*entry)() = nullptr;
 	uint32_t pid;
 	char exe_name[512];
-	bool running;
+	bool running = true;
 
 	static Task * Create(const char *);
 

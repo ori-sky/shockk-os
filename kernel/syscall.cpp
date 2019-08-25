@@ -106,7 +106,7 @@ extern "C" ret syscall_main(int command, int arg1, int arg2, int arg3, uint32_t 
 				}
 			}
 		}
-		_kernel_state.screen << "kernel waitpid done (pid=" << pid << ", next_pid=" << _kernel_state.next_pid << ")\n";
+		//_kernel_state.screen << "kernel waitpid done (pid=" << pid << ", next_pid=" << _kernel_state.next_pid << ")\n";
 		return {pid, 0};
 	}
 	default:

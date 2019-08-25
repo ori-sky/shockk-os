@@ -1,13 +1,14 @@
 #include <kernel/elf.h>
+#include <kernel/new.h>
 #include <kernel/screen.h>
 #include <kernel/state.h>
 #include <kernel/task.h>
 
 Task * Task::Create(const char *path) {
-	Task *task = (Task *)_kernel_state.pager->GetContext().Reserve();
+	auto ptr = _kernel_state.pager->GetContext().Reserve();
+	auto task = new (ptr) Task(_kernel_state.next_pid);
 	if(task->Exec(path)) {
-		task->running = true;
-		task->pid = _kernel_state.next_pid++;
+		++_kernel_state.next_pid;
 		_kernel_state.pids[task->pid] = task;
 		return task;
 	} else {
@@ -16,10 +17,8 @@ Task * Task::Create(const char *path) {
 }
 
 Task * Task::Fork(uint32_t ebp, IRETState iret) const {
-	Task *task = (Task *)_kernel_state.pager->GetContext().Reserve();
-
-	task->running = true;
-	task->pid = _kernel_state.next_pid++;
+	auto ptr = _kernel_state.pager->GetContext().Reserve();
+	auto task = new (ptr) Task(_kernel_state.next_pid++);
 	_kernel_state.pids[task->pid] = task;
 
 	task->context = _kernel_state.pager->ForkContext(context);
