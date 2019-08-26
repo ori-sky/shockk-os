@@ -97,10 +97,10 @@ extern "C" ret syscall_main(int command, int arg1, int arg2, int arg3, uint32_t 
 			bool found = false;
 			while(!found) {
 				task_switch(curr, curr->next);
-				for(uint32_t p = 1; p < _kernel_state.next_pid; ++p) {
-					if(p != curr->pid && !_kernel_state.pids[p]->running) {
+				for(auto child = curr->child; child != nullptr; child = child->sibling) {
+					if(!child->task->running) {
 						found = true;
-						pid = p;
+						pid = child->task->pid;
 						break;
 					}
 				}

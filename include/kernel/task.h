@@ -10,14 +10,23 @@ private:
 	Task(void) = default;
 	Task(uint32_t pid) : pid(pid) {}
 public:
+	struct Child {
+		Child *sibling;
+		Task *task;
+	};
+
 	static constexpr size_t STACK_PAGES = 64;
 
+	// XXX: DO NOT REORDER
+	// the order of these members is important for _task_switch
 	unsigned char *kernel_esp;
 	unsigned char *kernel_stack;
 	unsigned char *stack;
 	Task *next = nullptr;
 	Pager::Context context;
 
+	// XXX: these members can be reordered as required
+	Child *child = nullptr;
 	void (*entry)() = nullptr;
 	uint32_t pid;
 	char exe_name[512];
@@ -25,7 +34,7 @@ public:
 
 	static Task * Create(const char *);
 
-	Task * Fork(uint32_t, IRETState) const;
+	Task * Fork(uint32_t, IRETState);
 	bool Exec(const char *);
 };
 

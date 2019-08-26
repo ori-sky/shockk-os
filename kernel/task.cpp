@@ -16,10 +16,14 @@ Task * Task::Create(const char *path) {
 	}
 }
 
-Task * Task::Fork(uint32_t ebp, IRETState iret) const {
+Task * Task::Fork(uint32_t ebp, IRETState iret) {
 	auto ptr = _kernel_state.pager->GetContext().Reserve();
 	auto task = new (ptr) Task(_kernel_state.next_pid++);
 	_kernel_state.pids[task->pid] = task;
+
+	ptr = _kernel_state.pager->GetContext().Reserve();
+	child = new (ptr) Child;
+	child->task = task;
 
 	task->context = _kernel_state.pager->ForkContext(context);
 
