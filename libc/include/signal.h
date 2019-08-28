@@ -13,6 +13,8 @@ enum {
 };
 
 enum {
+	SIGABRT,
+	SIGALRM,
 	SIGCHLD,
 	SIGCONT,
 	SIGHUP,
@@ -23,6 +25,11 @@ enum {
 	SIGTSTP,
 	SIGTTIN,
 	SIGTTOU,
+	SIGUSR1,
+	SIGUSR2,
+	SIGVTALRM,
+	SIGXCPU,
+	SIGXFSZ,
 	NSIG
 };
 
@@ -51,8 +58,25 @@ struct sigaction {
 };
 
 enum {
+	SIG_BLOCK,
+	SIG_UNBLOCK,
 	SIG_SETMASK
 };
+
+enum {
+	SA_NOCLDSTOP,
+	SA_ONSTACK,
+	SA_RESETHAND,
+	SA_RESTART,
+	SA_SIGINFO,
+	SA_NOCLDWAIT,
+	SA_NODEFER,
+	SS_ONSTACK,
+	SS_DISABLE,
+	MINSIGSTKSZ,
+	SIGSTKSZ
+};
+
 void (*signal(int, void (*)(int)))(int);
 
 int kill(pid_t, int);

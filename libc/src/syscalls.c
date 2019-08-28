@@ -197,6 +197,13 @@ int isatty(int filedes) {
 	}
 }
 
+int link(const char *path1, const char *path2) {
+	(void)path1;
+	(void)path2;
+	puts("link: not implemented");
+	return -1;
+}
+
 int lstat(const char * restrict file, struct stat * restrict st) {
 	(void)file;
 	(void)st;
@@ -290,6 +297,13 @@ int stat(const char * restrict file, struct stat * restrict st) {
 
 	//errno = ENOENT;
 	//return -1;
+}
+
+int symlink(const char *path1, const char *path2) {
+	(void)path1;
+	(void)path2;
+	puts("symlink: not implemented");
+	return -1;
 }
 
 pid_t tcgetpgrp(int filedes) {

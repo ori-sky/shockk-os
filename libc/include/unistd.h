@@ -17,11 +17,19 @@ enum {
 	X_OK
 };
 
+enum {
+	_SC_CLK_TCK
+};
+
 #define STDIN_FILENO  0
 #define STDOUT_FILENO 1
 #define STDERR_FILENO 2
 
 extern char **environ;
+extern char *optarg;
+extern int opterr;
+extern int optind;
+extern int optopt;
 
 int chdir(const char *);
 int close(int);
@@ -34,14 +42,17 @@ gid_t getegid(void);
 uid_t geteuid(void);
 gid_t getgid(void);
 int getgroups(int, gid_t[]);
+int getopt(int, char * const [], const char *);
 pid_t getpgrp(void);
 pid_t getpid(void);
 pid_t getppid(void);
 uid_t getuid(void);
 int isatty(int);
+int link(const char *, const char *);
 int pipe(int[2]);
 ssize_t read(int, void *, size_t);
 int setpgid(pid_t, pid_t);
+int symlink(const char *, const char *);
 pid_t tcgetpgrp(int);
 int tcsetpgrp(int, pid_t);
 ssize_t write(int, const void *, size_t);

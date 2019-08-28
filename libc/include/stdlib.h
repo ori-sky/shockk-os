@@ -4,6 +4,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#define EXIT_FAILURE 1
+#define EXIT_SUCCESS 0
+
 int atoi(const char *);
 long int strtol(const char * restrict, char ** restrict, int);
 long long int strtoll(const char * restrict, char ** restrict, int);

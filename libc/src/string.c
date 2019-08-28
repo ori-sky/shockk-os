@@ -118,10 +118,14 @@ char * strerror(int errnum) {
 	switch(e) {
 	case EACCES:
 		return "EACCES";
+	case EAFNOSUPPORT:
+		return "EAFNOSUPPORT";
 	case EAGAIN:
 		return "EAGAIN";
 	case EBADF:
 		return "EBADF";
+	case EBUSY:
+		return "EBUSY";
 	case ECHILD:
 		return "ECHILD";
 	case EEXIST:
@@ -132,14 +136,28 @@ char * strerror(int errnum) {
 		return "EINVAL";
 	case EIO:
 		return "EIO";
+	case EISDIR:
+		return "EISDIR";
+	case ELOOP:
+		return "ELOOP";
+	case ENAMETOOLONG:
+		return "ENAMETOOLONG";
 	case ENOENT:
 		return "ENOENT";
 	case ENOEXEC:
 		return "ENOEXEC";
+	case ENOMEM:
+		return "ENOMEM";
+	case ENOSYS:
+		return "ENOSYS";
+	case ENOTTY:
+		return "ENOTTY";
 	case ENOTDIR:
 		return "ENOTDIR";
 	case ERANGE:
 		return "ERANGE";
+	case ESPIPE:
+		return "ESPIPE";
 	case EWOULDBLOCK:
 		return "EWOULDBLOCK";
 	}

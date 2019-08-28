@@ -24,21 +24,31 @@ struct stat {
 #define st_mtime st_mtim.tv_sec
 #define st_ctime st_ctim.tv_sec
 
-#define S_IRWXU  0700
-#define S_IRUSR  0400
-#define S_IWUSR  0200
-#define S_IXUSR  0100
-#define S_IRWXG   070
-#define S_IRGRP   040
-#define S_IWGRP   020
-#define S_IXGRP   010
-#define S_IRWXO    07
-#define S_IROTH    04
-#define S_IWOTH    02
-#define S_IXOTH    01
-#define S_ISUID 04000
-#define S_ISGID 02000
-#define S_ISVTX 01000
+#define S_IFMT   02000000
+#define S_IFBLK  01000000
+#define S_IFCHR   0400000
+#define S_IFIFO   0200000
+#define S_IFREG   0100000
+#define S_IFDIR    040000
+#define S_IFLNK    020000
+#define S_IFSOCK   010000
+
+#define S_ISUID     04000
+#define S_ISGID     02000
+#define S_ISVTX     01000
+
+#define S_IRWXU      0700
+#define S_IRUSR      0400
+#define S_IWUSR      0200
+#define S_IXUSR      0100
+#define S_IRWXG       070
+#define S_IRGRP       040
+#define S_IWGRP       020
+#define S_IXGRP       010
+#define S_IRWXO        07
+#define S_IROTH        04
+#define S_IWOTH        02
+#define S_IXOTH        01
 
 #define S_ISBLK(M)  0
 #define S_ISCHR(M)  0
