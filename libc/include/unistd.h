@@ -53,6 +53,7 @@ int pipe(int[2]);
 ssize_t read(int, void *, size_t);
 int setpgid(pid_t, pid_t);
 int symlink(const char *, const char *);
+long sysconf(int);
 pid_t tcgetpgrp(int);
 int tcsetpgrp(int, pid_t);
 ssize_t write(int, const void *, size_t);

@@ -34,8 +34,17 @@ long long int strtoll(const char * restrict nptr, char ** restrict endptr, int b
 	return 1;
 }
 
-unsigned long long int strtoull(const char * restrict nptr, char ** restrict endptr, int base) {
-	(void)nptr;
+unsigned long strtoul(const char * restrict str, char **restrict endptr, int base) {
+	(void)str;
+	(void)endptr;
+	(void)base;
+	puts("strtoul: not implemented");
+	return 0;
+}
+
+
+unsigned long long int strtoull(const char * restrict str, char ** restrict endptr, int base) {
+	(void)str;
 	(void)endptr;
 	(void)base;
 	puts("strtoull: not implemented");
@@ -97,4 +106,14 @@ void qsort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, co
 			}
 		}
 	}
+}
+
+void *bsearch(const void *key, const void *base, size_t nel, size_t width, int (*compar)(const void *, const void *)) {
+	(void)key;
+	(void)base;
+	(void)nel;
+	(void)width;
+	(void)compar;
+	puts("bsearch: not implemented");
+	return NULL;
 }

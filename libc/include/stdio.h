@@ -46,6 +46,7 @@ int fprintf(FILE * restrict, const char * restrict, ...);
 int printf(const char * restrict, ...);
 int sprintf(char * restrict, const char * restrict, ...);
 int vfprintf(FILE * restrict, const char * restrict, va_list);
+int vprintf(const char * restrict, va_list);
 int vsnprintf(char * restrict, size_t, const char * restrict, va_list);
 int vsprintf(char * restrict, const char * restrict, va_list);
 
@@ -59,6 +60,8 @@ int putc(int, FILE *);
 int putchar(int);
 int puts(const char *);
 
+void clearerr(FILE *);
+int ferror(FILE *);
 size_t fread(void * restrict, size_t, size_t, FILE * restrict);
 size_t fwrite(const void * restrict, size_t, size_t, FILE * restrict);
 

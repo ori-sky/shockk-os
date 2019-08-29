@@ -10,4 +10,6 @@ struct tms {
 	clock_t tms_cstime;
 };
 
+clock_t times(struct tms *);
+
 #endif

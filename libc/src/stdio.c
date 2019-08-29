@@ -188,6 +188,10 @@ int vfprintf(FILE * restrict stream, const char * restrict format, va_list arg) 
 	return dstpos;
 }
 
+int vprintf(const char * restrict format, va_list arg) {
+	return vfprintf(stdout, format, arg);
+}
+
 int vsnprintf(char * restrict s, size_t n, const char * restrict format, va_list arg) {
 	(void)n;
 
@@ -369,6 +373,15 @@ int puts(const char *s) {
 	int ret2 = putchar('\n');
 	if(ret2 == EOF) { return EOF; }
 	return ret + 1;
+}
+
+void clearerr(FILE *stream) {
+	(void)stream;
+}
+
+int ferror(FILE *stream) {
+	(void)stream;
+	return 0;
 }
 
 size_t fread(void * restrict ptr, size_t size, size_t nmemb, FILE * restrict stream) {

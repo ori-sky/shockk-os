@@ -85,4 +85,7 @@ enum {
 	TCOFLUSH
 };
 
+int tcgetattr(int, struct termios *);
+int tcsetattr(int, int, const struct termios *);
+
 #endif

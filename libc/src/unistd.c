@@ -1,5 +1,6 @@
 #include <errno.h>
 #include <unistd.h>
+#include <stdio.h>
 
 char * getcwd(char *buf, size_t size) {
 	if(size == 0) {
@@ -16,4 +17,10 @@ char * getcwd(char *buf, size_t size) {
 	buf[1] = '\0';
 
 	return buf;
+}
+
+long sysconf(int name) {
+	(void)name;
+	puts("sysconf: not implemented");
+	return -1;
 }

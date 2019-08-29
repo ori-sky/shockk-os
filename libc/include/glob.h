@@ -17,4 +17,7 @@ enum {
 	GLOB_NOSPACE
 };
 
+int glob(const char *restrict, int, int(*)(const char *, int), glob_t *restrict);
+void globfree(glob_t *);
+
 #endif

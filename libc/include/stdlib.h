@@ -10,6 +10,7 @@
 int atoi(const char *);
 long int strtol(const char * restrict, char ** restrict, int);
 long long int strtoll(const char * restrict, char ** restrict, int);
+unsigned long strtoul(const char * restrict, char ** restrict, int);
 unsigned long long int strtoull(const char * restrict, char ** restrict, int);
 
 void free(void *);
@@ -21,5 +22,7 @@ _Noreturn void exit(int);
 _Noreturn void _Exit(int);
 
 void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
+
+void *bsearch(const void *, const void *, size_t, size_t, int (*)(const void *, const void *));
 
 #endif
