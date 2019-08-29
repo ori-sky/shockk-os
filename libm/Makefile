@@ -1,4 +1,4 @@
-LIBC_OBJS=src/syscalls.o src/ctype.o src/dirent.o src/errno.o src/getopt.o src/malloc.o src/setjmp.o src/signal.o src/stdio.o src/stdlib.o src/string.o src/strings.o src/unistd.o
+LIBM_OBJS=src/math.o
 CFLAGS=-Iinclude -I$(SHK_INCLUDE_DIR) -Wall -Wextra -Werror -g
 
 HEADERS=$(shell find include -type f)
@@ -6,7 +6,7 @@ HEADERS=$(shell find include -type f)
 .PHONY: headers
 headers: $(HEADERS)
 
-$(LIBC_A): headers $(LIBC_OBJS)
+$(LIBM_A): headers $(LIBM_OBJS)
 	$(TARGET_AR) rcs $@ $(filter-out $<,$^)
 
 src/%.o: src/%.c
@@ -14,5 +14,5 @@ src/%.o: src/%.c
 
 .PHONY: clean
 clean:
-	rm -fv $(LIBC_OBJS)
-	rm -fv $(LIBC_A)
+	rm -fv $(LIBM_OBJS)
+	rm -fv $(LIBM_A)

@@ -19,6 +19,7 @@ export LOADER_ELF=$(CURDIR)/loader.elf
 export KERNEL_ELF=$(CURDIR)/kernel.elf
 export CRT0_O=$(CURDIR)/crt0.o
 export LIBC_A=$(CURDIR)/libc.a
+export LIBM_A=$(CURDIR)/libm.a
 
 export INCLUDE_PATHS=$(CURDIR)/include
 export CXXWARNS=-Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual -Wformat=2 -Winit-self -Wmissing-include-dirs -Wredundant-decls -Wstrict-overflow=5 -Wundef -Wdisabled-optimization -Wsign-conversion -Wstack-protector -Winline -Wswitch-enum
@@ -30,13 +31,22 @@ BOOTDIR=$(CURDIR)/boot
 .PHONY: all
 all: image-mbr
 
+.PHONY: sysroot_headers
+sysroot_headers: libc_headers libm_headers
+
 .PHONY: libc_headers
 libc_headers: $(SYSROOT)/usr/include/stdio.h
 
+.PHONY: libm_headers
+libm_headers: $(SYSROOT)/usr/include/math.h
+
 $(SYSROOT)/usr/include/stdio.h: $(shell find libc/include -type f)
-	mkdir -pv $(dir $@)
-	rm -rfv $(dir $@)
-	cp -Rv libc/include $(dir $@)
+	mkdir -pv $(SYSROOT)/usr/include
+	cp -Rv libc/include/* $(dir $@)
+
+$(SYSROOT)/usr/include/math.h: $(shell find libm/include -type f)
+	mkdir -pv $(SYSROOT)/usr/include
+	cp -Rv libm/include/* $(dir $@)
 
 .PHONY: toolchain
 toolchain: libc_headers
@@ -60,7 +70,7 @@ $(KERNEL_ELF): toolchain
 
 .PHONY: $(CRT0_O)
 $(CRT0_O): toolchain
-	$(MAKE) -C libc $@
+	$(MAKE) -C crt0 $@
 
 $(SYSROOT)/usr/lib/crt0.o: $(CRT0_O)
 	mkdir -pv $(dir $@)
@@ -74,15 +84,29 @@ $(SYSROOT)/usr/lib/libc.a: $(LIBC_A)
 	mkdir -pv $(dir $@)
 	cp -v $< $@
 
+.PHONY: $(LIBM_A)
+$(LIBM_A): toolchain
+	$(MAKE) -C libm $@
+
+$(SYSROOT)/usr/lib/libm.a: $(LIBM_A)
+	mkdir -pv $(dir $@)
+	cp -v $< $@
+
+.PHONY: crt0
+crt0: $(SYSROOT)/usr/lib/crt0.o
+
 .PHONY: libc
-libc: $(SYSROOT)/usr/lib/crt0.o $(SYSROOT)/usr/lib/libc.a
+libc: $(SYSROOT)/usr/lib/libc.a
+
+.PHONY: libm
+libm: $(SYSROOT)/usr/lib/libm.a
 
 .PHONY: test
-test: libc
+test: crt0 libc
 	$(MAKE) -C test all
 
 .PHONY: usr
-usr: libc
+usr: crt0 libc libm
 	$(MAKE) -C usr all
 
 .PHONY: clean-image
@@ -117,7 +141,9 @@ clean:
 	$(MAKE) -C mbr clean
 	$(MAKE) -C loader clean
 	$(MAKE) -C kernel clean
+	$(MAKE) -C crt0 clean
 	$(MAKE) -C libc clean
+	$(MAKE) -C libm clean
 
 .PHONY: distclean
 distclean: clean
