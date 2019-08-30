@@ -25,7 +25,6 @@ enum {
 #define STDOUT_FILENO 1
 #define STDERR_FILENO 2
 
-extern char **environ;
 extern char *optarg;
 extern int opterr;
 extern int optind;
