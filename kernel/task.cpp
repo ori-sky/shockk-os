@@ -181,6 +181,8 @@ bool Task::Exec(const char *path, char *argv[]) {
 	stack -= 4;
 	*(uint32_t *)stack = (uint32_t)argvbuf; // argv argument
 	stack -= 4;
+	*(uint32_t *)stack = (uint32_t)argc;    // argc argument
+	stack -= 4;
 	*(uint32_t *)stack = (uint32_t)nullptr; // _start return address
 
 	_kernel_state.pager->Enable(old_context);

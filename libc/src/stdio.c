@@ -59,6 +59,16 @@ int printf(const char * restrict format, ...) {
 	return ret;
 }
 
+int snprintf(char * restrict s, size_t n, const char * restrict format, ...) {
+	va_list arg;
+
+	va_start(arg, format);
+	int ret = vsnprintf(s, n, format, arg);
+	va_end(arg);
+
+	return ret;
+}
+
 int sprintf(char * restrict s, const char * restrict format, ...) {
 	va_list arg;
 

@@ -5,13 +5,16 @@
 #define WNOHANG    2
 #define WUNTRACED  4
 
+#define WIFEXITED(STATUS)     (STATUS == 0)
 #define WEXITSTATUS(STATUS)   0
-#define WIFCONTINUED(STATUS)  0
-#define WIFEXITED(STATUS)     0
+
 #define WIFSIGNALED(STATUS)   0
+#define WTERMSIG(STATUS)      0
+
 #define WIFSTOPPED(STATUS)    0
 #define WSTOPSIG(STATUS)      0
-#define WTERMSIG(STATUS)      0
+
+#define WIFCONTINUED(STATUS)  0
 
 enum {
 	WEXITED,

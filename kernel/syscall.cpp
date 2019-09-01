@@ -20,7 +20,7 @@ struct ret {
 extern "C" ret syscall_main(int command, int arg1, int arg2, int arg3, int /*ret2*/, int /*ret1*/, int /*pad2*/, int /*pad1*/, uint32_t ebp, IRETState iret) {
 	switch(command) {
 	case SYSCALL_COMMAND_FORK: {
-		//screen_print("SYSCALL FORK\n");
+		//_kernel_state.screen << "SYSCALL FORK\n";
 		auto curr = _kernel_state.task;
 		auto task = curr->Fork(ebp, iret);
 		task->next = curr->next;
@@ -28,7 +28,7 @@ extern "C" ret syscall_main(int command, int arg1, int arg2, int arg3, int /*ret
 		return {task->pid, 0};
 	}
 	case SYSCALL_COMMAND_EXEC: {
-		//screen_print("SYSCALL EXEC\n");
+		//_kernel_state.screen << "SYSCALL EXEC\n";
 		char *path = (char *)arg1;
 		char **argv = (char **)arg2;
 		if(_kernel_state.task->Exec(path, argv)) {
@@ -38,9 +38,7 @@ extern "C" ret syscall_main(int command, int arg1, int arg2, int arg3, int /*ret
 	}
 	case SYSCALL_COMMAND_EXIT: {
 		auto curr = _kernel_state.task;
-		screen_print("exiting task ");
-		screen_print(curr->exe_name);
-		screen_put('\n');
+		//_kernel_state.screen << "exiting task " << curr->exe_name << '\n';
 
 		curr->running = false;
 
@@ -86,7 +84,7 @@ extern "C" ret syscall_main(int command, int arg1, int arg2, int arg3, int /*ret
 			screen_put(arg1, SCREEN_COLOR_USER);
 			break;
 		default:
-			screen_print("SYSCALL_COMMAND_PUT: unsupported fileno\n");
+			_kernel_state.screen << "SYSCALL_COMMAND_PUT: unsupported fileno\n";
 			break;
 		}
 		break;
