@@ -8,7 +8,7 @@
 void task_entry(Task *task) {
 	__asm__ ("sti");
 
-	_kernel_state.screen << "spawned new task " << task->exe_name << '\n';
+	//_kernel_state.screen << "spawned new task " << task->exe_name << '\n';
 
 	_kernel_state.pager->Enable(task->context);
 	user_enter(task->entry, task->stack);

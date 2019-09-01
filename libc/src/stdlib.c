@@ -109,11 +109,11 @@ void qsort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, co
 }
 
 void *bsearch(const void *key, const void *base, size_t nel, size_t width, int (*compar)(const void *, const void *)) {
-	(void)key;
-	(void)base;
-	(void)nel;
-	(void)width;
-	(void)compar;
-	puts("bsearch: not implemented");
+	for(size_t i =  0; i < nel; ++i, base += width) {
+		if(compar(key, base) == 0) {
+			return (void *)base;
+		}
+	}
+
 	return NULL;
 }

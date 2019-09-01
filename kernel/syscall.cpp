@@ -20,7 +20,7 @@ struct ret {
 extern "C" ret syscall_main(int command, int arg1, int arg2, int arg3, int /*ret2*/, int /*ret1*/, int /*pad2*/, int /*pad1*/, uint32_t ebp, IRETState iret) {
 	switch(command) {
 	case SYSCALL_COMMAND_FORK: {
-		screen_print("SYSCALL FORK\n");
+		//screen_print("SYSCALL FORK\n");
 		auto curr = _kernel_state.task;
 		auto task = curr->Fork(ebp, iret);
 		task->next = curr->next;
@@ -28,7 +28,7 @@ extern "C" ret syscall_main(int command, int arg1, int arg2, int arg3, int /*ret
 		return {task->pid, 0};
 	}
 	case SYSCALL_COMMAND_EXEC: {
-		screen_print("SYSCALL EXEC\n");
+		//screen_print("SYSCALL EXEC\n");
 		char *path = (char *)arg1;
 		char **argv = (char **)arg2;
 		if(_kernel_state.task->Exec(path, argv)) {
