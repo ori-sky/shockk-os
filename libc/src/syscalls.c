@@ -104,9 +104,8 @@ int dup2(int filedes, int filedes2) {
 }
 
 int execve(const char *path, char * const argv[], char * const envp[]) {
-	(void)argv;
 	(void)envp;
-	syscall_exec(path); // noreturn if successful
+	syscall_exec(path, argv); // noreturn if successful
 	errno = EACCES;
 	return -1;
 }

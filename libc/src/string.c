@@ -4,6 +4,7 @@
 #include <string.h>
 
 void * memcpy(void * restrict s1, const void * restrict s2, size_t n) {
+	//printf("\ndebug memcpy %u %u %u\n", (unsigned int)s1, (unsigned int)s2, (unsigned int)n);
 	char *sz1 = s1;
 	const char *sz2 = s2;
 	for(size_t i = 0; i < n; ++i) {
@@ -115,7 +116,7 @@ char * strstr(const char *s1, const char *s2) {
 char * strtok(char * restrict s1, const char * restrict s2) {
 	(void)s1;
 	(void)s2;
-	puts("strstr: not implemented");
+	puts("strtok: not implemented");
 	return NULL;
 }
 

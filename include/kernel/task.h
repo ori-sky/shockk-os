@@ -5,6 +5,8 @@
 #include <kernel/cpu.h>
 #include <kernel/tss.h>
 
+#define ARG_MAX 4096
+
 class Task {
 private:
 	Task(void) = default;
@@ -32,10 +34,10 @@ public:
 	char exe_name[512];
 	bool running = true;
 
-	static Task * Create(const char *);
+	static Task * Create(const char *, char *[]);
 
 	Task * Fork(uint32_t, IRETState);
-	bool Exec(const char *);
+	bool Exec(const char *, char *[]);
 };
 
 extern "C" void _task_switch(TSS *, Task *, Task *);

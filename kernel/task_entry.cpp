@@ -8,12 +8,10 @@
 void task_entry(Task *task) {
 	__asm__ ("sti");
 
-	screen_print("spawned new task ");
-	screen_print(task->exe_name);
-	screen_put('\n');
+	_kernel_state.screen << "spawned new task " << task->exe_name << '\n';
 
 	_kernel_state.pager->Enable(task->context);
-	user_enter(task->entry, &task->stack[PAGE_ALLOCATOR_PAGE_SIZE * Task::STACK_PAGES]);
+	user_enter(task->entry, task->stack);
 
 	for(;;) { __asm__ ("hlt"); } // unreachable
 }

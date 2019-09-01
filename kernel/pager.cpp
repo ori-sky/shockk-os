@@ -19,6 +19,7 @@ Pager::Context::Context(Pager *parent, Directory *dir, bool copy_kernel_pages)
 
 	// initialize 1:1 mapping
 	for(unsigned int table = 0; table < LOW_MAP; ++table) {
+		directory->tables[table].unprivileged = 0; // reserved
 		for(unsigned int page = 0; page < 1024; ++page) {
 			Map(table, page, (void *)((table * 1024 + page) * PAGE_ALLOCATOR_PAGE_SIZE));
 		}
@@ -27,6 +28,7 @@ Pager::Context::Context(Pager *parent, Directory *dir, bool copy_kernel_pages)
 	// copy kernel pages
 	if(copy_kernel_pages) {
 		for(TableID table = KERNEL_RESERVE; table < 1024; ++table) {
+			directory->tables[table].unprivileged = 0; // reserved
 			Table *table_addr = (Table *)(parent->GetContext().directory->tables[table].address << 12);
 			Make(table, table_addr, false);
 		}

@@ -11,8 +11,6 @@
 bool stdin_available = false;
 char stdin_char = '\0';
 
-static unsigned int alpha_counter;
-
 extern "C" void isr_main(struct CPUState cpu_state, struct IRETState iret) {
 	if(cpu_state.interrupt == IRQ7) { return; }
 	if(cpu_state.interrupt >= IRQ0) {
@@ -26,46 +24,20 @@ extern "C" void isr_main(struct CPUState cpu_state, struct IRETState iret) {
 	uint32_t cr2;
 	__asm__ __volatile__ ("mov %%cr2, %0" : "=r" (cr2));
 
-	char s0[]  = "        ";
-	char s00[] = "        ";
-	char s1[]  = "                ";
-	char s2[]  = "                                ";
-	uint8_t scancode;
-
 	switch(cpu_state.interrupt) {
 	case 0x0: /* divide by zero */
-		screen_print("divide-by-zero at 0x");
-		uitoa((unsigned int)iret.eip, s0, 16);
-		screen_print(s0);
-		screen_put('\n');
+		_kernel_state.screen << "divide-by-zero at " << iret.eip << '\n';
 		break;
 	case 0xD: /* general protection fault */
-		screen_print("GPF at 0x");
-		uitoa((unsigned int)iret.eip, s0, 16);
-		screen_print(s0);
-		screen_print(" error=0b");
-		uitoa((unsigned int)cpu_state.error, s2, 2);
-		screen_print(s2);
-		screen_put('\n');
+		_kernel_state.screen << "GPF at " << iret.eip << " error=" << Screen::Binary(cpu_state.error) << '\n';
 		break;
 	case 0xE: /* page fault */
-		screen_print("page fault at 0x");
-		uitoa((unsigned int)iret.eip, s0, 16);
-		screen_print(s0);
-		screen_print(" task=");
-		screen_print(_kernel_state.task->exe_name);
-		screen_print(" cr2=0x");
-		uitoa((unsigned int)cr2, s0, 16);
-		screen_print(s0);
-		screen_print(" error=0b");
-		uitoa((unsigned int)cpu_state.error, s00, 2);
-		screen_print(s00);
-		screen_put('\n');
+		_kernel_state.screen << "page fault at " << iret.eip << " cr2=" << cr2;
+		_kernel_state.screen << " task=" << _kernel_state.task->pid;
+		_kernel_state.screen << " error=" << Screen::Binary(cpu_state.error) << '\n';
+
 		if(cr2 >= 0x1000000 && cr2 < 0x2000000) {
-			screen_print("allocating page at 0x");
-			uitoa((unsigned int)cr2, s0, 16);
-			screen_print(s0);
-			screen_put('\n');
+			_kernel_state.screen << "allocating page at " << cr2 << '\n';
 
 			Pager::TableID table = cr2 / PAGE_ALLOCATOR_PAGE_SIZE / 1024;
 			Pager::PageID  page  = cr2 / PAGE_ALLOCATOR_PAGE_SIZE % 1024;
@@ -73,21 +45,18 @@ extern "C" void isr_main(struct CPUState cpu_state, struct IRETState iret) {
 		} else {
 			// try to print stack trace for page fault
 			void **ebp = (void **)cpu_state.ebp;
-			for(unsigned int frame = 0; frame < 8; ++frame) {
+			for(unsigned int frame = 0; frame < 4; ++frame) {
 				// if ebp is outside of stack region
 				//if(ebp < (void *)0x8000000 || ebp > (void *)(0x8000000 + 0x100000)) {
-				//	screen_print("from <no frame pointer>\n");
+				//	_kernel_state.screen << "from <no frame pointer"\n";
 				//	break;
 				//}
 
 				void * eip = ebp[1];
-				if(eip == NULL) { break; }
+				if(eip == nullptr) { break; }
 				ebp = (void **)ebp[0];
 
-				screen_print("from 0x");
-				s0[uitoa((unsigned int)eip, s0, 16)] = '\0';
-				screen_print(s0);
-				screen_put('\n');
+				_kernel_state.screen << "from " << eip << '\n';
 			}
 			kernel_panic("page fault");
 		}
@@ -95,31 +64,25 @@ extern "C" void isr_main(struct CPUState cpu_state, struct IRETState iret) {
 	case IRQ0: { /* PIT */
 		auto curr = _kernel_state.task;
 		if(curr != nullptr && curr->next != nullptr) {
-			//screen_print("yield\n");
+			//_kernel_state.screen << "yield\n";
 			task_switch(curr, curr->next);
 		} else {
-			screen_print("ran out of tasks\n");
+			_kernel_state.screen << "ran out of tasks\n";
 		}
 		break;
 	}
-	case IRQ1: /* keyboard */
-		scancode = ports_inb(0x60); // read scancode from keyboard
+	case IRQ1: { /* keyboard */
+		uint8_t scancode = ports_inb(0x60); // read scancode from keyboard
 		stdin_available = true;
-		//stdin_char = 'a' + alpha_counter++ % 26;
 		stdin_char = kb_scancode1_char(scancode);
 
-		//screen_print("scancode = 0x");
-		//uitoa((unsigned int)scancode, s0, 16);
-		//screen_print(s0);
-		//screen_put('\n');
+		//_kernel_state.screen << "scancode = " << scancode << '\n';
 		break;
+	}
 	case IRQ14: /* primary ATA channel */
 		break;
 	default:
-		screen_print("unhandled interrupt: 0x");
-		uitoa((unsigned int)cpu_state.interrupt, s0, 16);
-		screen_print(s0);
-		screen_put('\n');
+		_kernel_state.screen << "unhandled interrupt: " << cpu_state.interrupt << '\n';
 		break;
 	}
 }

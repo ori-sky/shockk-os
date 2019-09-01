@@ -1,13 +1,14 @@
 #include <kernel/elf.h>
 #include <kernel/new.h>
+#include <kernel/panic.h>
 #include <kernel/screen.h>
 #include <kernel/state.h>
 #include <kernel/task.h>
 
-Task * Task::Create(const char *path) {
+Task * Task::Create(const char *path, char *argv[]) {
 	auto ptr = _kernel_state.pager->GetContext().Reserve();
 	auto task = new (ptr) Task(_kernel_state.next_pid);
-	if(task->Exec(path)) {
+	if(task->Exec(path, argv)) {
 		++_kernel_state.next_pid;
 		_kernel_state.pids[task->pid] = task;
 		return task;
@@ -63,9 +64,7 @@ Task * Task::Fork(uint32_t ebp, IRETState iret) {
 	return task;
 }
 
-bool Task::Exec(const char *path) {
-	auto new_context = _kernel_state.pager->MakeContext();
-
+bool Task::Exec(const char *path, char *argv[]) {
 	// find inode
 
 	char buffer[512];
@@ -97,7 +96,8 @@ bool Task::Exec(const char *path) {
 
 	// set new context
 
-	context = new_context;
+	auto old_context = _kernel_state.pager->GetContext();
+	context = _kernel_state.pager->MakeContext();
 
 	// copy path to task structure page
 
@@ -107,7 +107,7 @@ bool Task::Exec(const char *path) {
 	}
 	exe_name[n] = '\0';
 
-	// set up stack
+	// set up kernel stack
 
 	kernel_stack = (unsigned char *)context.Reserve() + PAGE_ALLOCATOR_PAGE_SIZE;
 	kernel_esp = kernel_stack;
@@ -120,10 +120,70 @@ bool Task::Exec(const char *path) {
 	*(uint32_t *)kernel_esp = (uint32_t)&task_entry;    // ret addr for task_switch
 	kernel_esp -= 4*4;                                  // regs pushed by task_switch
 
-	stack = (unsigned char *)context.Alloc();
-	for(size_t n = 1; n < STACK_PAGES; ++n) {
-		context.AllocAt(&stack[PAGE_ALLOCATOR_PAGE_SIZE*n]);
+	// copy argv into kernel memory
+
+	char buf[ARG_MAX];
+	uint32_t *argvbuf = (uint32_t *)buf;
+
+	off = 0;
+
+	// increment offset by 4 for each pointer in argv
+	size_t argc;
+	for(argc = 0; argv[argc] != nullptr; ++argc) {
+		off += 4;
 	}
+
+	// increment offset by 4 for terminating null pointer
+	off += 4;
+
+	for(size_t i = 0; argv[i] != nullptr; ++i) {
+		// set arg offset
+		argvbuf[i] = off;
+
+		// copy arg
+		size_t c = 0;
+		do {
+			if(off >= ARG_MAX) {
+				kernel_panic("ARG_MAX exceeded");
+			}
+
+			buf[off++] = argv[i][c];
+		} while(argv[i][c++] != '\0');
+	}
+
+	// set terminating null pointer
+	argvbuf[argc] = 0;
+
+	// set up user stack
+
+	auto stack_base = (unsigned char *)context.Alloc();
+	for(size_t n = 1; n < STACK_PAGES; ++n) {
+		context.AllocAt(&stack_base[PAGE_ALLOCATOR_PAGE_SIZE*n]);
+	}
+	stack = &stack_base[PAGE_ALLOCATOR_PAGE_SIZE * STACK_PAGES];
+
+	// copy argv to user stack
+
+	stack -= ARG_MAX;
+
+	_kernel_state.pager->Enable(context);
+
+	for(size_t i = 0; i < ARG_MAX; ++i) {
+		stack[i] = ((unsigned char *)buf)[i];
+	}
+
+	argvbuf = (uint32_t *)stack;
+
+	for(size_t i = 0; i < argc; ++i) {
+		argvbuf[i] += (uint32_t)argvbuf;
+	}
+
+	stack -= 4;
+	*(uint32_t *)stack = (uint32_t)argvbuf; // argv argument
+	stack -= 4;
+	*(uint32_t *)stack = (uint32_t)nullptr; // _start return address
+
+	_kernel_state.pager->Enable(old_context);
 
 	// load elf
 

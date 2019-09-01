@@ -38,8 +38,8 @@ void kernel_entry(const State state) {
 
 	_kernel_state.tss = tss;
 
-	auto taskDash = Task::Create("/bin/dash.elf");
-
+	char *argv[] = {"/bin/dash", nullptr};
+	auto taskDash = Task::Create("/bin/dash.elf", argv);
 	taskDash->next = taskDash;
 
 	tss_init(tss, taskDash->kernel_stack);

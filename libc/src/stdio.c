@@ -222,8 +222,12 @@ int vsnprintf(char * restrict s, size_t n, const char * restrict format, va_list
 					len = precision;
 				}
 
-				memcpy(&s[dstpos], sz, len);
-				dstpos += len;
+				for(size_t i = 0; i < len; ++i) {
+					if(dstpos + 1 < n) {
+						s[dstpos] = sz[i];
+					}
+					++dstpos;
+				}
 
 				in_format = false;
 				has_precision = false;
@@ -231,7 +235,9 @@ int vsnprintf(char * restrict s, size_t n, const char * restrict format, va_list
 			}
 			case 'c': {
 				int c = va_arg(arg, int); // char is promoted to int through ...
-				s[dstpos] = c;
+				if(dstpos + 1 < n) {
+					s[dstpos] = c;
+				}
 				++dstpos;
 
 				in_format = false;
@@ -253,7 +259,10 @@ int vsnprintf(char * restrict s, size_t n, const char * restrict format, va_list
 				len += ptr - tmp;
 
 				while(ptr > tmp) {
-					s[dstpos] = *--ptr;
+					--ptr;
+					if(dstpos + 1 < n) {
+						s[dstpos] = *ptr;
+					}
 					++dstpos;
 				}
 
@@ -266,7 +275,9 @@ int vsnprintf(char * restrict s, size_t n, const char * restrict format, va_list
 				size_t len = 0;
 
 				if(x < 0) {
-					s[dstpos] = '-';
+					if(dstpos + 1 < n) {
+						s[dstpos] = '-';
+					}
 					++dstpos;
 					x = -x;
 					++len;
@@ -284,7 +295,10 @@ int vsnprintf(char * restrict s, size_t n, const char * restrict format, va_list
 				len += ptr - tmp;
 
 				while(ptr > tmp) {
-					s[dstpos] = *--ptr;
+					--ptr;
+					if(dstpos + 1 < n) {
+						s[dstpos] = *ptr;
+					}
 					++dstpos;
 				}
 
@@ -295,7 +309,9 @@ int vsnprintf(char * restrict s, size_t n, const char * restrict format, va_list
 			default:
 				printf("vsnprintf: unhandled format specifier (%s)\n", format);
 
-				s[dstpos] = '%';
+				if(dstpos + 1 < n) {
+					s[dstpos] = '%';
+				}
 				++dstpos;
 
 				srcpos = formatpos;
@@ -308,7 +324,9 @@ int vsnprintf(char * restrict s, size_t n, const char * restrict format, va_list
 				formatpos = srcpos;
 				in_format = true;
 			} else {
-				s[dstpos] = format[srcpos];
+				if(dstpos + 1 < n) {
+					s[dstpos] = format[srcpos];
+				}
 				++dstpos;
 			}
 		}
