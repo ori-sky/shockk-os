@@ -38,6 +38,7 @@ FILE *stdin;
 FILE *stdout;
 FILE *stderr;
 
+int fclose(FILE *);
 int fflush(FILE *);
 FILE * fmemopen(void * restrict, size_t, const char * restrict);
 FILE * fopen(const char * restrict, const char * restrict);

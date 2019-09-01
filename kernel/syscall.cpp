@@ -71,8 +71,12 @@ extern "C" ret syscall_main(int command, int arg1, int arg2, int arg3, int /*ret
 
 			return {stdin_char, 0};
 		} else {
-			if(pos > sizeof(buffer)) { return {EOF, 0}; }
-			return {buffer[pos++], 0};
+			//_kernel_state.screen << "c = " << (int)buffer[pos] << " EOF = " << (unsigned char)EOF << '\n';
+			if(pos < sizeof(buffer) - 1) {
+				return {buffer[pos++], 0};
+			} else {
+				return {EOF, 0};
+			}
 		}
 	case SYSCALL_COMMAND_PUT:
 		switch(arg2) {

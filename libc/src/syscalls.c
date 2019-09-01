@@ -253,11 +253,15 @@ int pipe(int filedes[2]) {
 
 ssize_t read(int filedes, void *buf, size_t nbyte) {
 	char *sz = buf;
-	size_t n = 0;
+
+	size_t n;
+
 	for(n = 0; n < nbyte; ++n) {
-		do {
-			syscall_get(sz[n], filedes);
-		} while(sz[n] == '\0');
+		syscall_get(sz[n], filedes);
+
+		if(sz[n] == EOF) {
+			break;
+		}
 
 		// POSIX -> 11. General Terminal Interface -> Canonical Mode Input Processing
 		if(sz[n] == '\n') {
@@ -265,6 +269,7 @@ ssize_t read(int filedes, void *buf, size_t nbyte) {
 			break;
 		}
 	}
+
 	return n;
 }
 

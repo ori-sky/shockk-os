@@ -11,8 +11,26 @@ FILE *stdin  = &_stdin;
 FILE *stdout = &_stdout;
 FILE *stderr = &_stderr;
 
-static FILE *memfile;
-static FILE *file5;
+static FILE memfile;
+static FILE file5;
+
+int fclose(FILE *stream) {
+	if(fflush(stream) == EOF) {
+		return EOF;
+	}
+
+	switch(stream->type) {
+	case FILE_TYPE_FD:
+		if(close(stream->descriptor)) {
+			return EOF;
+		}
+		break;
+	case FILE_TYPE_MEM:
+		break;
+	}
+
+	return 0;
+}
 
 int fflush(FILE *stream) {
 	(void)stream;
@@ -21,11 +39,11 @@ int fflush(FILE *stream) {
 
 FILE * fmemopen(void * restrict buf, size_t size, const char * restrict mode) {
 	(void)mode;
-	memfile->type = FILE_TYPE_MEM;
-	memfile->buffer = buf;
-	memfile->size = size;
-	memfile->position = 0;
-	return memfile;
+	memfile.type = FILE_TYPE_MEM;
+	memfile.buffer = buf;
+	memfile.size = size;
+	memfile.position = 0;
+	return &memfile;
 }
 
 FILE * fopen(const char * restrict filename, const char * restrict mode) {
@@ -33,10 +51,10 @@ FILE * fopen(const char * restrict filename, const char * restrict mode) {
 	int filedes = open(filename, 0);
 	if(filedes == -1) { return NULL; }
 
-	file5->type = FILE_TYPE_FD;
-	file5->descriptor = filedes;
-	file5->position = 0;
-	return file5;
+	file5.type = FILE_TYPE_FD;
+	file5.descriptor = filedes;
+	file5.position = 0;
+	return &file5;
 }
 
 int fprintf(FILE * restrict stream, const char * restrict format, ...) {
